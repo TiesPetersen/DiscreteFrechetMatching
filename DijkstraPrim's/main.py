@@ -1,33 +1,14 @@
 from Point import Point
 
-def computeDiscreteFrechetDistance(curve1: list[Point], curve2: list[Point]) -> float:
+
+def dijkstraPrims(curve1: list[Point], curve2: list[Point]) -> tuple[float, list[tuple[int, int]]]:
     assert(len(curve1) > 0 and len(curve2) > 0)
 
-    distance_matrix = computeDistanceMatrix(curve1, curve2)
+    frechet_distance = 0
+    matching = [(0, 0), (1, 1), (1, 2)]
 
-    dp_table = [[0.0 for _ in range(len(curve1))] for _ in range(len(curve2))]
-    dp_table[0][0] = distance_matrix[0][0]
+    return frechet_distance, matching
 
-    for i in range(1, len(curve2)):
-        dp_table[i][0] = max(dp_table[i-1][0], distance_matrix[i][0])
-
-    for j in range(1, len(curve1)):
-        dp_table[0][j] = max(dp_table[0][j-1], distance_matrix[0][j])
-
-    for i in range(1, len(curve2)):
-        for j in range(1, len(curve1)):
-            dp_table[i][j] = max(
-                min(dp_table[i-1][j], dp_table[i][j-1], dp_table[i-1][j-1]),
-                distance_matrix[i][j]
-            )
-
-    print("DP Table:")
-    printMatrix(dp_table)
-
-
-    printMatrixConditional(dp_table, distance_matrix, 2.0)
-
-    return dp_table[-1][-1]
 
 
 def computeDistanceMatrix(curve1: list[Point], curve2: list[Point]) -> list[list[float]]:
@@ -80,8 +61,9 @@ def main():
     # curve1 = [Point(0, 0), Point(1, 1), Point(0, 2), Point(1, 3)]
     # curve2 = [Point(1, 0), Point(0, 1), Point(1, 2), Point(0, 3)]
 
-    distance = computeDiscreteFrechetDistance(curve1, curve2)
-    print(f"Discrete Fréchet Distance: {distance}")
+    frechet_distance, matching = dijkstraPrims(curve1, curve2)
+    print(f"Discrete Fréchet Distance: {frechet_distance}")
+    print(f"Matching: {matching}")
 
     print("Distance Matrix:")
     distance_matrix = computeDistanceMatrix(curve1, curve2)

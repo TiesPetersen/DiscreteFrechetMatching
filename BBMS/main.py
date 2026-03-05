@@ -4,6 +4,8 @@ from helper import *
 
 
 def BBMS(curve1: list[Point], curve2: list[Point]) -> tuple[float, list[list[float]]]:
+    """ Computes the discrete Fréchet distance between curve1 and curve2 using the BBMS algorithm. Returns a tuple of (frechet_distance, matching) where frechet_distance is the computed distance and matching is a list of (i, j) pairs representing the matching between nodes in G[m][n] and G[0][0]. """
+
     m = len(curve1) - 1
     print(f"Curve 1 (P) has m = {m} edges, and thus m+1 = {m + 1} nodes.")
     n = len(curve2) - 1
@@ -45,21 +47,16 @@ def BBMS(curve1: list[Point], curve2: list[Point]) -> tuple[float, list[list[flo
     return frechet_distance, matching
 
 
-
 def addToTree(G, i, j):
-    A = G[i - 1][j] # left neighbor
-    B = G[i-1][j - 1] # diagonal neighbor
-    C = G[i][j - 1] # bottom neighbor
-    g = G[i][j] # candidate node to add to T
+    """ Adds G[i][j] to the tree T by attaching it to the candidate parent with lowest maximum distance to NCA in T. Also handles dead paths and shortcut updates as necessary. """
+
+    A = G[i - 1][j    ] # left neighbor
+    B = G[i - 1][j - 1] # diagonal neighbor
+    C = G[i    ][j - 1] # bottom neighbor
 
     # parent(G[i, j]) <- candidate parent with lowest maximum distance to Nearest Common Ancestor in T
     selectedParent = selectParent(A, B, C)
-    attach(selectedParent, g)
-    
-    g.is_growth = True # g is a growth node because it has grid neighbors (G[i + 1][j] and G[i][j + 1]) that are not yet in T
-    
-    A.is_growth = False # A is not a growth node because all its grid neighbors are now in T
-
+    attach(selectedParent, G[i][j])
     
     # if G[i - 1, j - 1] is dead then
     #     Remove the dead path ending at G[i - 1, j - 1] from T and extend shortcuts
@@ -67,6 +64,59 @@ def addToTree(G, i, j):
     # Make shortcuts for G[i - 1, j], G[i, j - 1], and G[i, j] where necessary
 
     pass
+
+
+def selectParent(A, B, C):
+    """ Select the parent among A, B, C that has the lowest maximum distance to NCA in T. Break ties by preferring A > B > C. """
+
+    # pair AB
+    max_A_AB, max_B_AB = getMaxDistanceToNCA(A, B)
+
+    # pair BC
+    max_B_BC, max_C_BC = getMaxDistanceToNCA(B, C)
+
+    # pair AC
+    max_A_AC, max_C_AC = getMaxDistanceToNCA(A, C)
+
+    # select the parent with the lowest maximum distance to NCA, breaking ties by A > B > C
+    A_over_B = (max_A_AB <= max_B_AB)
+    B_over_C = (max_B_BC <= max_C_BC)
+    A_over_C = (max_A_AC <= max_C_AC)
+    if A_over_B and A_over_C:
+        return A
+    elif not A_over_B and B_over_C:
+        return B
+    else:
+        return C
+
+
+def getMaxDistanceToNCA(node1, node2):
+    """ Returns the maximum distance from node1 and node2 to their nearest common ancestor in T. The NCA's own distance is NOT included in the maximum calculation. """
+
+    # TODO: using shortcuts
+
+    u = node1
+    v = node2
+    max_distance_u = u.distance
+    max_distance_v = v.distance
+
+    # walk deeper node up until both nodes are at the same depth
+    while u.depth > v.depth:
+        u = u.parent
+        max_distance_u = max(max_distance_u, u.distance)
+    
+    while v.depth > u.depth:
+        v = v.parent
+        max_distance_v = max(max_distance_v, v.distance)
+
+    # now walk both nodes up together until they meet at NCA
+    while u != v:
+        u = u.parent
+        v = v.parent
+        max_distance_u = max(max_distance_u, u.distance)
+        max_distance_v = max(max_distance_v, v.distance)
+
+    return max_distance_u, max_distance_v
 
 
 def extractPath(node):

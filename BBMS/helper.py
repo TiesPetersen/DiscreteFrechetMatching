@@ -2,14 +2,17 @@ from Point import Point
 from Node import Node
 
 
-# Helper functions for BBMS algorithm implementation
-
+# HELPER FUNCTIONS
 
 def distance(p: Point, q: Point) -> float:
+    """ Returns the Euclidean distance between points p and q. """
+
     return ((p.x - q.x) ** 2 + (p.y - q.y) ** 2) ** 0.5
 
 
 def attach(parent: Node, child: Node):
+    """ Attaches the child node to the parent node in the tree T, and updates the depth of the child node accordingly. """
+
     parent.children.append(child)
     child.parent = parent
     child.depth = parent.depth + 1
@@ -17,19 +20,19 @@ def attach(parent: Node, child: Node):
 
 
 
+#  DEVELOPMENT HELPER FUNCTIONS
 
-
-#  DEV HELPER FUNCTIONS
-
-def printGrid(G):
+def printGrid(G: list[list[Node]]):
+    """ Prints the grid G with distances. """
     for y in reversed(range(len(G[0]))):
         for x in range(len(G)):
             print(f"{G[x][y].distance:6.2f}", end=" ")
         print()
 
 
+def printGridWithConnections(G: list[list[Node]], type_to_print="distance"):
+    """ Prints the grid G with distances and connections in the tree T. type_to_print can be 'distance' or 'depth' to specify which value to print for each node. """
 
-def printGridWithConnections(G, type_to_print="distance"):
     if not G or not G[0]:
         return
 

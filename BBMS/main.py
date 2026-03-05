@@ -57,15 +57,12 @@ def selectParent(A, B, C):
 
     # pair AB
     max_A_AB, max_B_AB = getMaxDistanceToNCA(A, B)
-    print(f"max_A_AB: {max_A_AB}, max_B_AB: {max_B_AB}")
 
     # pair BC
     max_B_BC, max_C_BC = getMaxDistanceToNCA(B, C)
-    print(f"max_B_BC: {max_B_BC}, max_C_BC: {max_C_BC}")
 
     # pair AC
     max_A_AC, max_C_AC = getMaxDistanceToNCA(A, C)
-    print(f"max_A_AC: {max_A_AC}, max_C_AC: {max_C_AC}")
 
     # select the parent with the lowest maximum distance to NCA, breaking ties by A > B > C
     A_over_B = (max_A_AB <= max_B_AB)

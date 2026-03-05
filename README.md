@@ -6,4 +6,4 @@ The discrite Fréchet distance is a measure of similarity between two curves. It
 ## File Structure
 - `discreteDistance/`: Contains the "standard" implementation of the discrete Fréchet **distance** algorithm using dynamic programming.
 - `DijkstraPrim's/`: Contains the implementation of the discrete locally correct Fréchet **matching** algorithm, as described in the paper "The Fréchet Distance Unleashed: Approximating a Dog with a Frog" by Sariel Har-Peled, Benjamin Raichel and Eliot W. Robson (2026).
-- `BBMS/`: Contains the implementation of the discrete locally correct Fréchet **matching** algorithm, as described in the paper "Locally correct Fréchet matchings" by Buchin, K., Buchin, M., Meulemans, W., & Speckmann, B. (2012).
+- `BBMS/`: Contains the implementation of the discrete locally correct Fréchet **matching** algorithm, as described in the paper "Locally correct Fréchet matchings" by Buchin, K., Buchin, M., Meulemans, W., & Speckmann, B. (2012). **Note: The current implementation of this algorithm does not yet include the shortcut optimization described in the paper.**

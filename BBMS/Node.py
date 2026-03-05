@@ -24,15 +24,22 @@
 
 
 class Node:
+    distance : float
+    i : int
+    j : int
+
     parent = None
     children = []
+
+    depth : int
+
+    is_growth : bool
+    is_dead : bool
+
     sc_lo = None
     sc_hi = None
-    is_growth = True
-    is_dead = False
 
     def __init__(self, i, j, distance):
         self.i = i
         self.j = j
         self.distance = distance
-        

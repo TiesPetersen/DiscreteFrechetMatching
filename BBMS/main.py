@@ -37,14 +37,11 @@ def BBMS(curve1: list[Point], curve2: list[Point]) -> tuple[float, list[list[flo
     for i in range(1, m + 1):
         for j in range(1, n + 1):
             addToTree(G, i, j)
+            printGridWithConnections(G, type_to_print="distance")
+            print("\n\n")
 
-    # get path in T between G[0, 0] and G[m, n]
-    matching = extractPath(G[m][n])
-
-    # get maximum distance along the path
-    frechet_distance = max(G[i][j].distance for (i, j) in matching)
-
-    return frechet_distance, matching
+    # return path in T between G[0, 0] and G[m, n], and return Frechet distance
+    return extractMatchingAndFrechetDistance(G[m][n])
 
 
 def addToTree(G, i, j):
@@ -63,20 +60,21 @@ def addToTree(G, i, j):
 
     # Make shortcuts for G[i - 1, j], G[i, j - 1], and G[i, j] where necessary
 
-    pass
-
 
 def selectParent(A, B, C):
     """ Select the parent among A, B, C that has the lowest maximum distance to NCA in T. Break ties by preferring A > B > C. """
 
     # pair AB
     max_A_AB, max_B_AB = getMaxDistanceToNCA(A, B)
+    print(f"max_A_AB: {max_A_AB}, max_B_AB: {max_B_AB}")
 
     # pair BC
     max_B_BC, max_C_BC = getMaxDistanceToNCA(B, C)
+    print(f"max_B_BC: {max_B_BC}, max_C_BC: {max_C_BC}")
 
     # pair AC
     max_A_AC, max_C_AC = getMaxDistanceToNCA(A, C)
+    print(f"max_A_AC: {max_A_AC}, max_C_AC: {max_C_AC}")
 
     # select the parent with the lowest maximum distance to NCA, breaking ties by A > B > C
     A_over_B = (max_A_AB <= max_B_AB)
@@ -97,45 +95,52 @@ def getMaxDistanceToNCA(node1, node2):
 
     u = node1
     v = node2
-    max_distance_u = u.distance
-    max_distance_v = v.distance
+    max_distance_u = float('-inf')
+    max_distance_v = float('-inf')
 
     # walk deeper node up until both nodes are at the same depth
     while u.depth > v.depth:
-        u = u.parent
         max_distance_u = max(max_distance_u, u.distance)
+        u = u.parent
     
     while v.depth > u.depth:
-        v = v.parent
         max_distance_v = max(max_distance_v, v.distance)
+        v = v.parent
 
     # now walk both nodes up together until they meet at NCA
     while u != v:
-        u = u.parent
-        v = v.parent
         max_distance_u = max(max_distance_u, u.distance)
         max_distance_v = max(max_distance_v, v.distance)
+        u = u.parent
+        v = v.parent
 
     return max_distance_u, max_distance_v
 
 
-def extractPath(node):
+def extractMatchingAndFrechetDistance(node):
     """ Traces the path from the given node up to the root G[0][0], returning matching as a list of (i, j) pairs and the maximum distance along the path. """
     
-    # e.g. return [(1, 4), (2, 4), (3, 4)]
+    path = []
+    max_distance = float('-inf')
+    while node is not None:
+        path.append((node.i, node.j))
+        max_distance = max(max_distance, node.distance)
+        node = node.parent
 
-    #TODO: implement
+    path.reverse()
+
+    return path, max_distance
 
 
 def main():
-    # curve1 = [Point(1, 0), Point(1, 1), Point(0, 2), Point(2,3), Point(1, 4), Point(2, 4), Point(0, 5)]
-    # curve2 = [Point(3, 0), Point(3, 1), Point(1, 2), Point(2, 2), Point(1, 3), Point(3, 4), Point(3, 4), Point(3, 3), Point(4, 4), Point(1, 5)]
+    curve1 = [Point(1, 0), Point(1, 1), Point(0, 2), Point(2,3), Point(1, 4), Point(2, 4), Point(0, 5)]
+    curve2 = [Point(3, 0), Point(3, 1), Point(1, 2), Point(2, 2), Point(1, 3), Point(3, 4), Point(3, 4), Point(3, 3), Point(4, 4), Point(1, 5)]
 
     # curve1 = [Point(0, 0), Point(1, 1), Point(0, 2), Point(1, 3)]
     # curve2 = [Point(1, 0), Point(0, 1), Point(1, 2), Point(0, 3)]
 
-    curve1 = [Point(2, 0), Point(3, 1), Point(2, 2), Point(2, 4)]
-    curve2 = [Point(1, 0), Point(2, 1), Point(3, 3), Point(2, 4), Point(2, 5)]
+    # curve1 = [Point(2, 0), Point(3, 1), Point(2, 2), Point(2, 4)]
+    # curve2 = [Point(1, 0), Point(2, 1), Point(3, 3), Point(2, 4), Point(2, 5)]
 
     frechet_distance, matching = BBMS(curve1, curve2)
     print(f"Discrete Fréchet Distance: {frechet_distance}")

@@ -51,7 +51,7 @@ def printGridWithConnections(G, type_to_print="distance"):
                 parts.append(f"{G[x][y].distance:6.2f}")
             elif type_to_print == "depth":
                 if hasattr(G[x][y], "depth") and G[x][y].depth is not None:
-                    parts.append(f"{G[x][y].depth:6d}")
+                    parts.append(f"{G[x][y].depth:6.2f}")
                 else:
                     parts.append(" " * 3 + "NA" + " " * 3)
             

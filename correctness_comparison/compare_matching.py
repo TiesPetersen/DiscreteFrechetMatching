@@ -13,10 +13,22 @@ def compare_matching_bbms_basic_to_bbms(filename):
 
     while current_index < len(polylines) - 1:
         # Run BBMS
-        BBMS_matching, BBMS_frechet_distance = BBMS(polylines[current_index - 1], polylines[current_index])
+        try:
+            BBMS_matching, BBMS_frechet_distance = BBMS(polylines[current_index - 1], polylines[current_index])
+        except Exception as e:
+            print(f"Error running BBMS on polylines {current_index - 1} and {current_index}: {e}")
+            mismatches += 1
+            current_index += 2
+            continue
 
         # Run BBMS_basic
-        BBMS_basic_matching, BBMS_basic_frechet_distance = BBMS_basic(polylines[current_index - 1], polylines[current_index])
+        try:
+            BBMS_basic_matching, BBMS_basic_frechet_distance = BBMS_basic(polylines[current_index - 1], polylines[current_index])
+        except Exception as e:
+            print(f"Error running BBMS_basic on polylines {current_index - 1} and {current_index}: {e}")
+            mismatches += 1
+            current_index += 2
+            continue
 
         # Compare results
         if BBMS_matching != BBMS_basic_matching or BBMS_frechet_distance != BBMS_basic_frechet_distance:

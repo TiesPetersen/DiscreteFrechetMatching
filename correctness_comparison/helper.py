@@ -7,6 +7,8 @@ def load_polylines(file_path):
     with open(file_path, 'r') as f:
         for line in f:
             line = line.strip()
+            if line.startswith("#") or line.startswith("//") or line.startswith(";"):
+                continue  # skip comment lines
             if line == '':
                 if current_polyline:
                     polylines.append(current_polyline)

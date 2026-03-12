@@ -1,4 +1,7 @@
 from BBMS.main import BBMS
+from BBMS_basic.main import BBMS as BBMS_basic
+from DijkstraPrims.main import DijkstraPrims
+from discreteDistance.main import computeDiscreteFrechetDistance
 from .helper import load_polylines
 import sys
 
@@ -8,14 +11,52 @@ ALGORITHMS = ['bbms', 'bbms_basic', 'dijkstraprims']
 
 def compare_frechet_distance(filename, algorithm):
     # Load polylines from the specified file
-    # polylines = load_polylines(filename)
+    polylines = load_polylines(filename)
 
-    # matching, frechet_distance = BBMS(polylines[0], polylines[1])
+    mismatches = 0
+    current_index = 1
 
-    # print(f"Matching from BBMS: {matching}")
-    # print(f"Frechet distance from BBMS: {frechet_distance}")
+    while current_index < len(polylines) - 1:
+        # Run the specified algorithm
+        try:
+            if algorithm == 'bbms':
+                _, frechet_distance = BBMS(polylines[current_index - 1], polylines[current_index])
+            elif algorithm == 'bbms_basic':
+                _, frechet_distance = BBMS_basic(polylines[current_index - 1], polylines[current_index])
+            elif algorithm == 'dijkstraprims':
+                _, frechet_distance = DijkstraPrims(polylines[current_index - 1], polylines[current_index])
+            else:
+                print(f"Unknown algorithm: {algorithm}")
+                return
+        except Exception as e:
+            print(f"Error running {algorithm} on polylines {current_index - 1} and {current_index}: {e}")
+            mismatches += 1
+            current_index += 2
+            continue
 
-    pass
+        # Compare to dynamic programming solution
+        try:
+            dp_frechet_distance = computeDiscreteFrechetDistance(polylines[current_index - 1], polylines[current_index])
+        except Exception as e:
+            print(f"Error running dynamic programming solution on polylines {current_index - 1} and {current_index}: {e}")
+            mismatches += 1
+            current_index += 2
+            continue
+
+        if frechet_distance != dp_frechet_distance:
+            mismatches += 1
+            print(f"Mismatch in Frechet distance for polylines {current_index - 1} and {current_index}:")
+            print(f"{algorithm} Frechet distance: {frechet_distance}")
+            print(f"Dynamic programming Frechet distance: {dp_frechet_distance}")
+            print()
+
+        # Move to the next pair of polylines (in order)
+        current_index += 2
+
+    if mismatches == 0:
+        print(f"Success: All Frechet distances match between {algorithm} and dynamic programming solution")
+    else:
+        print(f"\n\nFail: {mismatches} mismatches found between {algorithm} and dynamic programming solution. See above for details.")
 
 
 def main():
@@ -34,7 +75,6 @@ def main():
         sys.exit(1)
 
     # Run the comparison
-    print(f"Comparing frechet distance from {algorithm} to dynamic programming solution for correctness...")
     compare_frechet_distance("correctness_comparison/test_data/" + filename, algorithm)
 
 

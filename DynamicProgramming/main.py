@@ -2,7 +2,7 @@ from .Point import Point
 from .helper import computeDistanceMatrix, printMatrix, printMatrixConditional
 
 
-def computeDiscreteFrechetDistance(curve1: list[Point], curve2: list[Point]) -> float:
+def DynamicProgramming(curve1: list[Point], curve2: list[Point]) -> float:
     assert(len(curve1) > 0 and len(curve2) > 0)
 
     distance_matrix = computeDistanceMatrix(curve1, curve2)
@@ -38,7 +38,7 @@ def main():
     # curve1 = [Point(0, 0), Point(1, 1), Point(0, 2), Point(1, 3)]
     # curve2 = [Point(1, 0), Point(0, 1), Point(1, 2), Point(0, 3)]
 
-    distance = computeDiscreteFrechetDistance(curve1, curve2)
+    distance = DynamicProgramming(curve1, curve2)
     print(f"Discrete Fréchet Distance: {distance}")
 
     print("Distance Matrix:")

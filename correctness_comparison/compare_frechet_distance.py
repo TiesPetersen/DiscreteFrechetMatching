@@ -1,7 +1,7 @@
 from BBMS.main import BBMS
 from BBMS_basic.main import BBMS as BBMS_basic
 from DijkstraPrims.main import DijkstraPrims
-from discreteDistance.main import computeDiscreteFrechetDistance
+from DynamicProgramming.main import DynamicProgramming
 from .helper import load_polylines
 import sys
 
@@ -36,7 +36,7 @@ def compare_frechet_distance(filename, algorithm):
 
         # Compare to dynamic programming solution
         try:
-            dp_frechet_distance = computeDiscreteFrechetDistance(polylines[current_index - 1], polylines[current_index])
+            dp_frechet_distance = DynamicProgramming(polylines[current_index - 1], polylines[current_index])
         except Exception as e:
             print(f"Error running dynamic programming solution on polylines {current_index - 1} and {current_index}: {e}")
             mismatches += 1

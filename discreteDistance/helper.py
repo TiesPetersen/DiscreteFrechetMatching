@@ -1,4 +1,4 @@
-from Point import Point
+from .Point import Point
 
 def computeDistanceMatrix(curve1: list[Point], curve2: list[Point]) -> list[list[float]]:
     matrix = [[0.0 for _ in range(len(curve1))] for _ in range(len(curve2))]

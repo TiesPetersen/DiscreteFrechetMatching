@@ -1,5 +1,5 @@
-from Point import Point
-from helper import computeDistanceMatrix, printMatrix, printMatrixConditional
+from .Point import Point
+from .helper import computeDistanceMatrix, printMatrix, printMatrixConditional
 
 
 def computeDiscreteFrechetDistance(curve1: list[Point], curve2: list[Point]) -> float:
@@ -23,10 +23,10 @@ def computeDiscreteFrechetDistance(curve1: list[Point], curve2: list[Point]) -> 
                 distance_matrix[i][j]
             )
 
-    print("DP Table:")
-    printMatrix(dp_table)
+    # print("DP Table:")
+    # printMatrix(dp_table)
 
-    printMatrixConditional(dp_table, distance_matrix, 2.0)
+    # printMatrixConditional(dp_table, distance_matrix, 2.0)
 
     return dp_table[-1][-1]
 

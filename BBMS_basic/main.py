@@ -139,7 +139,7 @@ def main():
     # curve1 = [Point(2, 0), Point(3, 1), Point(2, 2), Point(2, 4)]
     # curve2 = [Point(1, 0), Point(2, 1), Point(3, 3), Point(2, 4), Point(2, 5)]
 
-    frechet_distance, matching = BBMS(curve1, curve2)
+    matching, frechet_distance = BBMS(curve1, curve2)
     print(f"Discrete Fréchet Distance: {frechet_distance}")
     print(f"Matching: {matching}")
 

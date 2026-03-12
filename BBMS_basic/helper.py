@@ -1,5 +1,5 @@
-from Point import Point
-from Node import Node
+from .Point import Point
+from .Node import Node
 
 
 # HELPER FUNCTIONS

@@ -5,5 +5,14 @@ The discrite Fréchet distance is a measure of similarity between two curves. It
 
 ## File Structure
 - `discreteDistance/`: Contains the "standard" implementation of the discrete Fréchet **distance** algorithm using dynamic programming.
-- `DijkstraPrim's/`: Contains the implementation of the discrete locally correct Fréchet **matching** algorithm, as described in the paper "The Fréchet Distance Unleashed: Approximating a Dog with a Frog" by Sariel Har-Peled, Benjamin Raichel and Eliot W. Robson (2026).
+
+- `DijkstraPrims/`: Contains the implementation of the discrete locally correct Fréchet **matching** algorithm, as described in the paper "The Fréchet Distance Unleashed: Approximating a Dog with a Frog" by Sariel Har-Peled, Benjamin Raichel and Eliot W. Robson (2026).
+
 - `BBMS/`: Contains the implementation of the discrete locally correct Fréchet **matching** algorithm, as described in the paper "Locally correct Fréchet matchings" by Buchin, K., Buchin, M., Meulemans, W., & Speckmann, B. (2012). **Note: The current implementation of this algorithm does not yet include the shortcut optimization described in the paper.**
+
+- `BBMS_basic/`: Contains a simplified version of the BBMS algorithm. This implementation does not include any shortcut optimizations and serves as a baseline for comparison with the optimized version in `BBMS/`. Mainly used for testing and debugging purposes.
+
+- `correctness_comparison/`: Contains scripts for comparing the correctness of the different algorithms by running them on the same test curves (as defined in `test_data/`) and comparing their outputs.
+    - `compare_matching.py`: Compares the matchings produced by BBMS to BBMS_basic, to ensure that the optimizations in BBMS do not change the resulting matching.
+    - `compare_frechet_distance.py`: Compares the Fréchet distances produced by all three algorithms to the distance produced by the dynamic programming solution, to ensure that all algorithms are producing the correct distance.
+    - `test_data/`: Contains test curves for use in the correctness comparison scripts. Each file contains multiple curves, with each curve represented by multiple lines of x and y coordinates. The curves are ordered so that the first two curves in the file form a pair to be compared, the next two curves form another pair, and so on.

@@ -23,9 +23,11 @@ The discrite Fréchet distance is a measure of similarity between two curves. It
 
 
 ## Run correctness comparison
-There are two scripts for comparing the correctness of the algorithms: `compare_matching.py` and `compare_frechet_distance.py`. 
+There are two scripts for comparing the correctness of the algorithms: `compare_matching.py` (see [Compare matchings](#compare-matchings)) and `compare_frechet_distance.py` (see [Compare Fréchet distances](#compare-fréchet-distances)). 
 
 ### Compare matchings
+The script will run both algorithms on each pair of curves in the file and compare their matchings. If any mismatches are found, they will be printed to the console along with details about the curves and the matchings. 
+
 To compare the matchings produced by BBMS to BBMS_basic, run the following command:
 
 ```bash
@@ -34,10 +36,12 @@ python -m correctness_comparison.compare_matching <filename>
 
 `<filename>` should be the name of the .txt file in `correctness_comparison/test_data/` that contains the curves you want to compare (e.g. `sample_polylines`). 
 
-The script will run both algorithms on each pair of curves in the file and compare their matchings. If any mismatches are found, they will be printed to the console along with details about the curves and the matchings. 
+
 
 ### Compare Fréchet distances
-To compare the Fréchet distances produced by all three algorithms to the distance produced by the dynamic programming solution, run the following command:
+The script will run the specified algorithm on each pair of curves in the file and compare the resulting Fréchet distance to the distance produced by the dynamic programming solution. If any mismatches are found, they will be printed to the console along with details about the curves and the distances.
+
+To compare the Fréchet distances produced by one of the three algorithms to the distance produced by the dynamic programming solution, run the following command:
 
 ```bash
 python -m correctness_comparison.compare_frechet_distance <filename> <algorithm>
@@ -45,6 +49,5 @@ python -m correctness_comparison.compare_frechet_distance <filename> <algorithm>
 
 `<filename>` should be the name of the .txt file in `correctness_comparison/test_data/` that contains the curves you want to compare (e.g. `sample_polylines`). 
 
-`<algorithm>` should be the name of the algorithm you want to compare to the dynamic programming solution. Valid options are: `BBMS`, `BBMS_basic`, and `DijkstraPrims`.
+`<algorithm>` should be the name of the algorithm you want to compare to the dynamic programming solution. Valid options are: `bbms`, `bbms_basic`, and `dijkstraprims`.
 
-The script will run the specified algorithm on each pair of curves in the file and compare the resulting Fréchet distance to the distance produced by the dynamic programming solution. If any mismatches are found, they will be printed to the console along with details about the curves and the distances.

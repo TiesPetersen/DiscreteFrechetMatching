@@ -34,9 +34,7 @@ def main():
         sys.exit(1)
 
     # Run the comparison
-
     print(f"Comparing frechet distance from {algorithm} to dynamic programming solution for correctness...")
-
     compare_frechet_distance("correctness_comparison/test_data/" + filename, algorithm)
 
 

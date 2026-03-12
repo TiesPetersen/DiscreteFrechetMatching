@@ -1,4 +1,5 @@
 from BBMS.main import BBMS
+from BBMS_basic.main import BBMS as BBMS_basic
 from .helper import load_polylines
 import sys
 
@@ -6,11 +7,34 @@ def compare_matching_bbms_basic_to_bbms(filename):
     # Load polylines from the specified file
     polylines = load_polylines(filename)
 
-    matching, frechet_distance = BBMS(polylines[0], polylines[1])
+    # Compare matching from BBMS_basic to BBMS on pairwise selection of polylines (in order)
+    mismatches = 0
+    current_index = 1
 
-    print(f"Matching from BBMS: {matching}")
-    print(f"Frechet distance from BBMS: {frechet_distance}")
+    while current_index < len(polylines) - 1:
+        # Run BBMS
+        BBMS_matching, BBMS_frechet_distance = BBMS(polylines[current_index - 1], polylines[current_index])
 
+        # Run BBMS_basic
+        BBMS_basic_matching, BBMS_basic_frechet_distance = BBMS_basic(polylines[current_index - 1], polylines[current_index])
+
+        # Compare results
+        if BBMS_matching != BBMS_basic_matching or BBMS_frechet_distance != BBMS_basic_frechet_distance:
+            mismatches += 1
+            print(f"Mismatch in matching for polylines {current_index - 1} and {current_index}:")
+            print(f"BBMS matching: {BBMS_matching}")
+            print(f"BBMS_basic matching: {BBMS_basic_matching}")
+            print(f"BBMS frechet distance: {BBMS_frechet_distance}")
+            print(f"BBMS_basic frechet distance: {BBMS_basic_frechet_distance}")
+            print()
+
+        # Move to the next pair of polylines (in order)
+        current_index += 2
+
+    if mismatches == 0:
+        print("Success: All matchings and Frechet distances match between BBMS_basic and BBMS")
+    else:
+        print(f"\n\nFail: {mismatches} mismatches found between BBMS_basic and BBMS. See above for details.")
 
 def main():
     # Check command line arguments
@@ -23,9 +47,6 @@ def main():
         filename += ".txt"
 
     # Run the comparison
-
-    print(f"Comparing matching from BBMS_basic to BBMS for correctness...")
-
     compare_matching_bbms_basic_to_bbms("correctness_comparison/test_data/" + filename)
 
 

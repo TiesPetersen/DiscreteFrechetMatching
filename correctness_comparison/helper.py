@@ -1,8 +1,6 @@
 from .Point import Point
 
 def load_polylines(file_path):
-    print(f"Loading polylines from {file_path}...")
-
     polylines = []
     current_polyline = []
 

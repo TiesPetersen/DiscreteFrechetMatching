@@ -1,9 +1,9 @@
-from Point import Point
+from .Point import Point
+from .helper import computeDistanceMatrix, printMatrix, printMatrixConditional, distance
 import heapq
-from helper import computeDistanceMatrix, printMatrix, printMatrixConditional, distance
 
 
-def dijkstraPrims(curve1: list[Point], curve2: list[Point]) -> tuple[float, list[tuple[int, int]]]:
+def DijkstraPrims(curve1: list[Point], curve2: list[Point]) -> tuple[list[tuple[int, int]], float]:
     assert(len(curve1) > 0 and len(curve2) > 0)
 
     d = distance(curve1[0], curve2[0])
@@ -17,7 +17,6 @@ def dijkstraPrims(curve1: list[Point], curve2: list[Point]) -> tuple[float, list
 
     while priority_queue:
         # pop the pair of indices with the smallest distance from the priority queue
-        print(priority_queue)
         current_dist, i, j = heapq.heappop(priority_queue)
 
         # update the longest distance if the current distance is greater
@@ -54,7 +53,7 @@ def dijkstraPrims(curve1: list[Point], curve2: list[Point]) -> tuple[float, list
 
     matching.reverse()
 
-    return longest_dist, matching
+    return matching, longest_dist
 
 
 def main():
@@ -64,7 +63,7 @@ def main():
     curve1 = [Point(0, 0), Point(1, 1), Point(0, 2), Point(1, 3)]
     curve2 = [Point(1, 0), Point(0, 1), Point(1, 2), Point(0, 3)]
 
-    frechet_distance, matching = dijkstraPrims(curve1, curve2)
+    matching, frechet_distance = DijkstraPrims(curve1, curve2)
     print(f"Discrete Fréchet Distance: {frechet_distance}")
     print(f"Matching: {matching}")
 

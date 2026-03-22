@@ -97,6 +97,7 @@ def getMaxDistanceToNCA(u, v):
     """ Returns the maximum distance from u and v to their nearest common ancestor in T. The NCA's own distance is NOT included in the maximum calculation. """
 
     # Note: u should always take the low shortcut if it exists, and v should always take the high shortcut if it exists
+    # TODO: proof that this is correct
 
     max_distance_u = float('-inf')
     max_distance_v = float('-inf')

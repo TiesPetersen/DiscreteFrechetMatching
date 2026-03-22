@@ -29,8 +29,6 @@ def BBMS(curve1: list[Point], curve2: list[Point]) -> tuple[float, list[list[flo
     for i in range(1, m + 1):
         for j in range(1, n + 1):
             addToTree(G, i, j)
-            printGridWithConnections(G, type_to_print="distance")
-            print("\n\n")
 
     # return path in T between G[0, 0] and G[m, n], and return Frechet distance
     return extractMatchingAndFrechetDistance(G[m][n])
@@ -95,76 +93,33 @@ def selectParent(A, B, C):
         return C, extra_info
 
 
-def getMaxDistanceToNCA(node1, node2):
-    """ Returns the maximum distance from node1 and node2 to their nearest common ancestor in T. The NCA's own distance is NOT included in the maximum calculation. """
+def getMaxDistanceToNCA(u, v):
+    """ Returns the maximum distance from u and v to their nearest common ancestor in T. The NCA's own distance is NOT included in the maximum calculation. """
 
-    # TODO: using shortcuts
-    # -> if no shortcut exists, walk towards parent, then continue
-    # -> use 1 shortcut from node1, then take as many shortcuts from node2 until we get to the same depth as node1 or deeper
-    # -> repeat the process until we find the NCA, keeping track of the maximum distance along the way 
+    # Note: u should always take the low shortcut if it exists, and v should always take the high shortcut if it exists
 
-    u = node1
-    v = node2
     max_distance_u = float('-inf')
     max_distance_v = float('-inf')
 
     while u != v:
-        print("u: ", u.i, u.j, "v: ", v.i, v.j)
-        print("depth u: ", u.depth, "depth v: ", v.depth)
-        print("max_distance_u: ", max_distance_u, "max_distance_v: ", max_distance_v)
         if v.depth > u.depth:
-            # walk down v using shortcuts or if no shortcut exists, walk towards parent
-            max_distance_v = max(max_distance_v, v.distance) # doesnt work like that, we need to consider the distance of the shortcut as well
-            if v.low is None:
-                print("no low shortcut for v: ", v.i, v.j)
+            # v should take high shortcut if it exists
+            if v.high is not None:
+                max_distance_v = max(max_distance_v, v.high.value)
+                v = v.high.target
+            else:
+                max_distance_v = max(max_distance_v, v.distance)
                 v = v.parent
-            else:
-                print("taking low shortcut for v: ", v.i, v.j, "to ", v.low.target.i, v.low.target.j)
-                if u.i < v.i and u.j > v.j:
-                    v = v.high.target
-                else:
-                    v = v.low.target
         else:
-            # walk down u using shortcuts or if no shortcut exists, walk towards parent
-            max_distance_u = max(max_distance_u, u.distance) # doesnt work like that, we need to consider the distance of the shortcut as well
-            if u.high is None:
-                print("no high shortcut for u: ", u.i, u.j)
-                u = u.parent
+            # u should take low shortcut if it exists
+            if u.low is not None:
+                max_distance_u = max(max_distance_u, u.low.value)
+                u = u.low.target
             else:
-                print("taking high shortcut for u: ", u.i, u.j, "to ", u.high.target.i, u.high.target.j)
-                if u.i < v.i and u.j > v.j:
-                    u = u.low.target
-                else:
-                    u = u.high.target
+                max_distance_u = max(max_distance_u, u.distance)
+                u = u.parent
 
-
-    print("final NCA: ", u.i, u.j)
-    print("final max_distance_u: ", max_distance_u, "final max_distance_v: ", max_distance_v)
     return max_distance_u, max_distance_v, u
-
-
-    # u = node1
-    # v = node2
-    # max_distance_u = float('-inf')
-    # max_distance_v = float('-inf')
-
-    # # walk deeper node up until both nodes are at the same depth
-    # while u.depth > v.depth:
-    #     max_distance_u = max(max_distance_u, u.distance)
-    #     u = u.parent
-    
-    # while v.depth > u.depth:
-    #     max_distance_v = max(max_distance_v, v.distance)
-    #     v = v.parent
-
-    # # now walk both nodes up together until they meet at NCA
-    # while u != v:
-    #     max_distance_u = max(max_distance_u, u.distance)
-    #     max_distance_v = max(max_distance_v, v.distance)
-    #     u = u.parent
-    #     v = v.parent
-
-    # return max_distance_u, max_distance_v, u
 
 
 def updateShortcuts(G, i, j, extra_info, A, B, C, D):
@@ -191,7 +146,7 @@ def updateShortcuts(G, i, j, extra_info, A, B, C, D):
             C.high = Shortcut(extra_info['nca_AC'], extra_info['max_C_AC'])
             D.low = Shortcut(extra_info['nca_AC'], max(extra_info['max_A_AC'], D.distance))
         else:
-            D.low = Shortcut(extra_info['nca_AC'], max(extra_info['max_A_AC'], D.distance))
+            D.low = Shortcut(extra_info['nca_AB'], max(extra_info['max_A_AB'], D.distance))
     elif extra_info['selectedParent'] == B:
         # chosen parent is B
         if AB and BC:
@@ -208,8 +163,8 @@ def updateShortcuts(G, i, j, extra_info, A, B, C, D):
             D.high = Shortcut(extra_info['nca_AC'], max(extra_info['max_B_AB'], D.distance))
             D.low = Shortcut(B, D.distance)
         else:
-            D.high = Shortcut(extra_info['nca_AC'], max(extra_info['max_B_AB'], D.distance))
-            D.low = Shortcut(extra_info['nca_AC'], max(extra_info['max_B_BC'], D.distance))
+            D.high = Shortcut(extra_info['nca_AB'], max(extra_info['max_B_AB'], D.distance))
+            D.low = Shortcut(extra_info['nca_BC'], max(extra_info['max_B_BC'], D.distance))
     elif extra_info['selectedParent'] == C:
         # chosen parent is C
         if AB and BC:
@@ -223,7 +178,7 @@ def updateShortcuts(G, i, j, extra_info, A, B, C, D):
             C.high = Shortcut(extra_info['nca_AC'], extra_info['max_C_AC'])
             D.high = Shortcut(extra_info['nca_AC'], max(extra_info['max_C_AC'], D.distance))
         else:
-            D.high = Shortcut(extra_info['nca_AC'], max(extra_info['max_C_AC'], D.distance))
+            D.high = Shortcut(extra_info['nca_BC'], max(extra_info['max_C_BC'], D.distance))
     
 
 def extractMatchingAndFrechetDistance(node):
@@ -255,8 +210,13 @@ def main():
     # curve1 = [Point(0, 0), Point(1, 1), Point(0, 2), Point(1, 3)]
     # curve2 = [Point(1, 0), Point(0, 1), Point(1, 2), Point(0, 3)]
 
-    curve1 = [Point(2, 0), Point(3, 1), Point(2, 2), Point(2, 4)]
-    curve2 = [Point(1, 0), Point(2, 1), Point(3, 3), Point(2, 4), Point(2, 5)]
+    # curve1 = [Point(2, 0), Point(3, 1), Point(2, 2), Point(2, 4)]
+    # curve2 = [Point(1, 0), Point(2, 1), Point(3, 3), Point(2, 4), Point(2, 5)]
+
+    # mismatch
+    curve1 = [Point(15.430897697402301, 7.012266292451537), Point(16.479431787284355, 0.24915999248408705), Point(0.08662979788381486, 9.599882499457152), Point(16.161005208422168, 12.472362077900295)]
+    curve2 =  [Point(16.713460090916975, 18.62216328024803), Point(7.649762652559218, 3.526158468117011), Point(18.397409530207828, 15.047014709024078), Point(13.299081860770874, 11.264590330307172), Point(6.433505020102719, 5.033144137299956), Point(7.955301386807896, 11.04084769280904), Point(1.8898280595204464, 16.045814245995054)]
+
 
     matching, frechet_distance = BBMS(curve1, curve2)
     print(f"Discrete Fréchet Distance: {frechet_distance}")

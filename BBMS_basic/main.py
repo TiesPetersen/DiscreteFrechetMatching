@@ -43,13 +43,6 @@ def addToTree(G, i, j):
     # parent(G[i, j]) <- candidate parent with lowest maximum distance to Nearest Common Ancestor in T
     selectedParent = selectParent(A, B, C)
     attach(selectedParent, G[i][j])
-    
-    # if G[i - 1, j - 1] is dead then
-    #     Remove the dead path ending at G[i - 1, j - 1] from T and extend shortcuts
-    # TODO
-
-    # Make shortcuts for G[i - 1, j], G[i, j - 1], and G[i, j] where necessary
-    # TODO
 
 
 def selectParent(A, B, C):
@@ -77,9 +70,7 @@ def selectParent(A, B, C):
 
 
 def getMaxDistanceToNCA(node1, node2):
-    """ Returns the maximum distance from node1 and node2 to their nearest common ancestor in T. The NCA's own distance is NOT included in the maximum calculation. """
-
-    # TODO: using shortcuts
+    """ Returns the maximum distance from node1 and node2 to their nearest common ancestor in T. The NCA's own distance is NOT included in the maximum calculation. This implementation does not use shortcuts, but instead walks up the tree one step at a time."""
 
     u = node1
     v = node2
@@ -136,6 +127,10 @@ def main():
 
     # curve1 = [Point(2, 0), Point(3, 1), Point(2, 2), Point(2, 4)]
     # curve2 = [Point(1, 0), Point(2, 1), Point(3, 3), Point(2, 4), Point(2, 5)]
+
+    # mismatch
+    curve1 = [Point(15.430897697402301, 7.012266292451537), Point(16.479431787284355, 0.24915999248408705), Point(0.08662979788381486, 9.599882499457152), Point(16.161005208422168, 12.472362077900295)]
+    curve2 =  [Point(16.713460090916975, 18.62216328024803), Point(7.649762652559218, 3.526158468117011), Point(18.397409530207828, 15.047014709024078), Point(13.299081860770874, 11.264590330307172), Point(6.433505020102719, 5.033144137299956), Point(7.955301386807896, 11.04084769280904), Point(1.8898280595204464, 16.045814245995054)]
 
     matching, frechet_distance = BBMS(curve1, curve2)
     print(f"Discrete Fréchet Distance: {frechet_distance}")

@@ -99,29 +99,72 @@ def getMaxDistanceToNCA(node1, node2):
     """ Returns the maximum distance from node1 and node2 to their nearest common ancestor in T. The NCA's own distance is NOT included in the maximum calculation. """
 
     # TODO: using shortcuts
+    # -> if no shortcut exists, walk towards parent, then continue
+    # -> use 1 shortcut from node1, then take as many shortcuts from node2 until we get to the same depth as node1 or deeper
+    # -> repeat the process until we find the NCA, keeping track of the maximum distance along the way 
 
     u = node1
     v = node2
     max_distance_u = float('-inf')
     max_distance_v = float('-inf')
 
-    # walk deeper node up until both nodes are at the same depth
-    while u.depth > v.depth:
-        max_distance_u = max(max_distance_u, u.distance)
-        u = u.parent
-    
-    while v.depth > u.depth:
-        max_distance_v = max(max_distance_v, v.distance)
-        v = v.parent
-
-    # now walk both nodes up together until they meet at NCA
     while u != v:
-        max_distance_u = max(max_distance_u, u.distance)
-        max_distance_v = max(max_distance_v, v.distance)
-        u = u.parent
-        v = v.parent
+        print("u: ", u.i, u.j, "v: ", v.i, v.j)
+        print("depth u: ", u.depth, "depth v: ", v.depth)
+        print("max_distance_u: ", max_distance_u, "max_distance_v: ", max_distance_v)
+        if v.depth > u.depth:
+            # walk down v using shortcuts or if no shortcut exists, walk towards parent
+            max_distance_v = max(max_distance_v, v.distance) # doesnt work like that, we need to consider the distance of the shortcut as well
+            if v.low is None:
+                print("no low shortcut for v: ", v.i, v.j)
+                v = v.parent
+            else:
+                print("taking low shortcut for v: ", v.i, v.j, "to ", v.low.target.i, v.low.target.j)
+                if u.i < v.i and u.j > v.j:
+                    v = v.high.target
+                else:
+                    v = v.low.target
+        else:
+            # walk down u using shortcuts or if no shortcut exists, walk towards parent
+            max_distance_u = max(max_distance_u, u.distance) # doesnt work like that, we need to consider the distance of the shortcut as well
+            if u.high is None:
+                print("no high shortcut for u: ", u.i, u.j)
+                u = u.parent
+            else:
+                print("taking high shortcut for u: ", u.i, u.j, "to ", u.high.target.i, u.high.target.j)
+                if u.i < v.i and u.j > v.j:
+                    u = u.low.target
+                else:
+                    u = u.high.target
 
+
+    print("final NCA: ", u.i, u.j)
+    print("final max_distance_u: ", max_distance_u, "final max_distance_v: ", max_distance_v)
     return max_distance_u, max_distance_v, u
+
+
+    # u = node1
+    # v = node2
+    # max_distance_u = float('-inf')
+    # max_distance_v = float('-inf')
+
+    # # walk deeper node up until both nodes are at the same depth
+    # while u.depth > v.depth:
+    #     max_distance_u = max(max_distance_u, u.distance)
+    #     u = u.parent
+    
+    # while v.depth > u.depth:
+    #     max_distance_v = max(max_distance_v, v.distance)
+    #     v = v.parent
+
+    # # now walk both nodes up together until they meet at NCA
+    # while u != v:
+    #     max_distance_u = max(max_distance_u, u.distance)
+    #     max_distance_v = max(max_distance_v, v.distance)
+    #     u = u.parent
+    #     v = v.parent
+
+    # return max_distance_u, max_distance_v, u
 
 
 def updateShortcuts(G, i, j, extra_info, A, B, C, D):

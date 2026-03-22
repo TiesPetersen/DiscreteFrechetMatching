@@ -28,9 +28,9 @@ def save_polylines(polylines, file_path):
 
 
 def main():
-    random_lines = generate_random_polylines(num_polylines=100, length_range=(10, 100), x_range=(0, 1000), y_range=(0, 1000))
+    random_lines = generate_random_polylines(num_polylines=100000, length_range=(2, 10), x_range=(0, 20), y_range=(0, 20))
 
-    save_polylines(random_lines, "correctness_comparison/test_data/random_polylines.txt")
+    save_polylines(random_lines, "correctness_comparison/test_data/random_polylines_small.txt")
 
 
 if __name__ == "__main__":

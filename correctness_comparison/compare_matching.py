@@ -34,6 +34,8 @@ def compare_matching_bbms_basic_to_bbms(filename):
         if BBMS_matching != BBMS_basic_matching or BBMS_frechet_distance != BBMS_basic_frechet_distance:
             mismatches += 1
             print(f"Mismatch in matching for polylines {current_index - 1} and {current_index}:")
+            print(f"Polyline 1: {polylines[current_index - 1]}")
+            print(f"Polyline 2: {polylines[current_index]}")
             print(f"BBMS matching: {BBMS_matching}")
             print(f"BBMS_basic matching: {BBMS_basic_matching}")
             print(f"BBMS frechet distance: {BBMS_frechet_distance}")

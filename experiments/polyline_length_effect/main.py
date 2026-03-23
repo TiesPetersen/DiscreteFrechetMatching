@@ -12,46 +12,42 @@ from scipy import stats
 
 # Parameters for the experiment
 startingLength = 250
-endingLength = 5000
+endingLength = 4000
 step = 250
-num_polylines = 10  # Number of random polylines to generate for each length (must be even)
+max_num_polylines = 20  # Number of cumulative iterations (one pair per length per iteration)
 
 
-def run_benchmark(polylines, algorithm):
-    pair_times = []
-    current_index = 1
+def run_benchmark(polyline_a, polyline_b, algorithm):
+    """Runs one algorithm call on one pair and returns runtime in seconds."""
+    try:
+        start = time.perf_counter()
 
-    while current_index <= len(polylines) - 1:
-        # Run the specified algorithm and time each pair
-        try:
-            start = time.perf_counter()
-            
-            if algorithm == 'bbms':
-                BBMS(polylines[current_index - 1], polylines[current_index])
-            elif algorithm == 'bbms_basic':
-                BBMS_basic(polylines[current_index - 1], polylines[current_index])
-            elif algorithm == 'dijkstraprims':
-                DijkstraPrims(polylines[current_index - 1], polylines[current_index])
-            else:
-                print(f"Unknown algorithm: {algorithm}")
-                return None
-            
-            end = time.perf_counter()
-            pair_times.append(end - start)
-            
-        except Exception as e:
-            print(f"Error running {algorithm} on polylines {current_index - 1} and {current_index}: {e}")
-            current_index += 2
+        if algorithm == 'bbms':
+            BBMS(polyline_a, polyline_b)
+        elif algorithm == 'bbms_basic':
+            BBMS_basic(polyline_a, polyline_b)
+        elif algorithm == 'dijkstraprims':
+            DijkstraPrims(polyline_a, polyline_b)
+        else:
+            print(f"Unknown algorithm: {algorithm}")
             return None
 
-        # Move to the next pair of polylines (in order)
-        current_index += 2
+        end = time.perf_counter()
+        return end - start
 
-    # Calculate mean time and 95% confidence interval half-width
-    mean_time = np.mean(pair_times)
-    std_error = stats.sem(pair_times)
-    ci_half_width = std_error * stats.t.ppf(0.975, len(pair_times) - 1)
-    
+    except Exception as e:
+        print(f"Error running {algorithm}: {e}")
+        return None
+
+
+def summarize_times(times):
+    """Returns mean runtime and 95% CI half-width for a list of runtimes."""
+    mean_time = float(np.mean(times))
+    if len(times) < 2:
+        return (mean_time, 0.0)
+
+    std_error = stats.sem(times)
+    ci_half_width = float(std_error * stats.t.ppf(0.975, len(times) - 1))
     return (mean_time, ci_half_width)
 
 
@@ -97,6 +93,7 @@ def plotResults(results):
     plt.grid()
     plt.savefig('polyline_length_effect.png', dpi=300)
     # plt.show()
+    plt.close()
 
 
 def main():
@@ -107,44 +104,65 @@ def main():
     print(f"  Starting length: {startingLength}")
     print(f"  Ending length: {endingLength}")
     print(f"  Step: {step}")
-    print(f"  Number of polylines per length: {num_polylines}")
+    print(f"  Iterations (one pair per length each iteration): {max_num_polylines}")
     print()
 
-    results = {}
+    lengths = list(range(startingLength, endingLength + 1, step))
 
-    for length in range(startingLength, endingLength + 1, step):
-        print(f"Running benchmark for polylines of length {length}...")
-
-        polylines = generate_random_polylines(num_polylines=num_polylines, length_range=(length, length), x_range=(0, 10), y_range=(0, 10))
-        
-        bbms_time = run_benchmark(polylines, 'bbms')
-        bbms_basic_time = run_benchmark(polylines, 'bbms_basic')
-        dijkstraprims_time = run_benchmark(polylines, 'dijkstraprims')
-
-        if bbms_time is None or bbms_basic_time is None or dijkstraprims_time is None:
-            print(f"Aborting entire experiment, because one or more algorithms failed.")
-            exit(1)
-
-        results[length] = {
-            'bbms': bbms_time,
-            'bbms_basic': bbms_basic_time,
-            'dijkstraprims': dijkstraprims_time
+    # Store all observed runtimes across iterations.
+    accumulated_times = {
+        length: {
+            'bbms': [],
+            'bbms_basic': [],
+            'dijkstraprims': []
         }
+        for length in lengths
+    }
 
+    for iteration in range(1, max_num_polylines + 1):
+        print(f"Starting iteration {iteration}/{max_num_polylines}...")
+        for length in lengths:
+            print(f"  Testing length {length}...")
+            polylines = generate_random_polylines(
+                num_polylines=2,
+                length_range=(length, length),
+                x_range=(0, 10),
+                y_range=(0, 10)
+            )
+
+            bbms_time = run_benchmark(polylines[0], polylines[1], 'bbms')
+            bbms_basic_time = run_benchmark(polylines[0], polylines[1], 'bbms_basic')
+            dijkstraprims_time = run_benchmark(polylines[0], polylines[1], 'dijkstraprims')
+
+            if bbms_time is None or bbms_basic_time is None or dijkstraprims_time is None:
+                print("Aborting entire experiment, because one or more algorithms failed.")
+                exit(1)
+
+            accumulated_times[length]['bbms'].append(bbms_time)
+            accumulated_times[length]['bbms_basic'].append(bbms_basic_time)
+            accumulated_times[length]['dijkstraprims'].append(dijkstraprims_time)
+
+        results = {}
+        for length in lengths:
+            results[length] = {
+                'bbms': summarize_times(accumulated_times[length]['bbms']),
+                'bbms_basic': summarize_times(accumulated_times[length]['bbms_basic']),
+                'dijkstraprims': summarize_times(accumulated_times[length]['dijkstraprims'])
+            }
+
+        print(f"Iteration {iteration}/{max_num_polylines} completed")
+        print("Benchmark results (as table):")
+        print("| Length | BBMS (mean ± CI) | BBMS Basic (mean ± CI) | DijkstraPrims (mean ± CI) |")
+        print("|--------|------------------|------------------------|---------------------------|")
+        for length, times in results.items():
+            bbms_mean, bbms_ci = times['bbms']
+            bbms_basic_mean, bbms_basic_ci = times['bbms_basic']
+            dijkstraprims_mean, dijkstraprims_ci = times['dijkstraprims']
+            print(f"| {length} | {bbms_mean:.4f} ± {bbms_ci:.4f} | {bbms_basic_mean:.4f} ± {bbms_basic_ci:.4f} | {dijkstraprims_mean:.4f} ± {dijkstraprims_ci:.4f} |")
+
+        plotResults(results)
         print()
 
-
-    print("Benchmark results (as table):")
-    print("| Length | BBMS (mean ± CI) | BBMS Basic (mean ± CI) | DijkstraPrims (mean ± CI) |")
-    print("|--------|------------------|------------------------|---------------------------|")
-    for length, times in results.items():
-        bbms_mean, bbms_ci = times['bbms']
-        bbms_basic_mean, bbms_basic_ci = times['bbms_basic']
-        dijkstraprims_mean, dijkstraprims_ci = times['dijkstraprims']
-        print(f"| {length} | {bbms_mean:.4f} ± {bbms_ci:.4f} | {bbms_basic_mean:.4f} ± {bbms_basic_ci:.4f} | {dijkstraprims_mean:.4f} ± {dijkstraprims_ci:.4f} |")
-
-
-    plotResults(results)
 
 if __name__ == "__main__":
     main()

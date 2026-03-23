@@ -18,8 +18,9 @@ Based on the paper "The Fréchet Distance Unleashed: Approximating a Dog with a 
 ## File Structure
 
 - `experiments` : Contains scripts for running experiments to compare the performance of the different algorithms. Each subdirectory contains a separate experiment, with its own main script and any necessary helper functions or data.
-    - `example/`: Contains a simple example script that demonstrates how to use the different algorithms
-    - `total_runtime_benchmark/`: Contains a script for benchmarking the total runtime of the different algorithms on a set of test curves.
+    - `example/`: See [Example experiment](#example-experiment) below for a description of this experiment.
+    - `polyline_length_effect/`: See [Polyline length effect experiment](#polyline-length-effect-experiment) below for a description of this experiment.
+    - `total_runtime_benchmark/`: See [Total runtime experiment](#total-runtime-experiment) below for a description of this experiment.
 - `polyline_datasets/`: Contains scripts for generating and loading datasets of polylines for use in testing and benchmarking the algorithms. Also includes the generated datasets themselves.
     - `generate_polylines.py`: Contains a script for generating random polylines with specified parameters (number of polylines, length range, x and y coordinate ranges).
     - `load_polylines.py`: Contains a function for loading polylines from a text file. The text file should be formatted so that each curve is represented by multiple lines of x and y coordinates, with curves ordered in pairs (i.e. the first two curves form a pair to be compared, the next two curves form another pair, etc.).
@@ -41,6 +42,8 @@ Below is a description of the experiments included in the `experiments/` directo
 ### Example experiment
 The `example` experiment contains a simple script that demonstrates how to use the different algorithms to compute the discrete locally correct Fréchet distance and matching between two curves. The script defines two simple curves (each consisting of 3 points) and runs all three algorithms on these curves, printing the resulting distances and matchings to the console. This experiment serves as a basic demonstration of how to use the algorithms and can be used as a starting point for developing more complex experiments.
 
+### Polyline length effect experiment
+The `polyline_length_effect` experiment contains a script for benchmarking the runtime of the different algorithms on pairs of curves of varying lengths. The script generates a specified number of random polylines with lengths in a specified range, runs the specified algorithm on each consecutive pair of curves, and records the runtime for each pair. The results are printed to the console at the end of the experiment, showing how the runtime of each algorithm changes as the length of the curves increases.
 
 ### Total runtime experiment
 The `total_runtime` experiment contains a script for benchmarking the total runtime of the different algorithms on a set of test curves. The script loads a set of curves from a specified text file, runs the specified algorithm on each consecutive pair of curves, and records the total runtime. The results are printed to the console at the end of the experiment.

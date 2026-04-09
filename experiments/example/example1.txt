@@ -1,0 +1,2 @@
+curve1 = [Point(17, 9), Point(9, 0), Point(15, 1), Point(8, 3), Point(17, 8)]
+curve2 = [Point(18, 17), Point(6, 9), Point(19, 17), Point(3, 2), Point(5, 8), Point(4, 5), Point(2, 4), Point(8, 15)]

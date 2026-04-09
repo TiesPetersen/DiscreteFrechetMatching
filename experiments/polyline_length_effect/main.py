@@ -12,7 +12,7 @@ from scipy import stats
 
 # Parameters for the experiment
 startingLength = 250
-endingLength = 4000
+endingLength = 5000
 step = 250
 max_num_polylines = 20  # Number of cumulative iterations (one pair per length per iteration)
 
@@ -51,39 +51,41 @@ def summarize_times(times):
     return (mean_time, ci_half_width)
 
 
-def plotResults(results):
+def plotResults(results, iteration):
     lengths = list(results.keys())
     bbms_times = [results[length]['bbms'][0] for length in lengths]
     bbms_ci = [results[length]['bbms'][1] for length in lengths]
-    bbms_basic_times = [results[length]['bbms_basic'][0] for length in lengths]
-    bbms_basic_ci = [results[length]['bbms_basic'][1] for length in lengths]
+    # bbms_basic_times = [results[length]['bbms_basic'][0] for length in lengths]
+    # bbms_basic_ci = [results[length]['bbms_basic'][1] for length in lengths]
     dijkstraprims_times = [results[length]['dijkstraprims'][0] for length in lengths]
     dijkstraprims_ci = [results[length]['dijkstraprims'][1] for length in lengths]
 
     plt.figure(figsize=(10, 6), dpi=300)
     
     # Plot BBMS with confidence interval shading
-    plt.plot(lengths, bbms_times, label='BBMS', marker='o', linewidth=2)
+    plt.plot(lengths, bbms_times, label='BBMS', marker='o', linewidth=2, color='tab:blue')
     plt.fill_between(lengths, 
                       [t - ci for t, ci in zip(bbms_times, bbms_ci)],
                       [t + ci for t, ci in zip(bbms_times, bbms_ci)],
-                      alpha=0.2, label='95% CI')
+                      alpha=0.2, label='95% CI', color='tab:blue')
     
     # Plot BBMS Basic with confidence interval shading
-    plt.plot(lengths, bbms_basic_times, label='BBMS Basic', marker='o', linewidth=2)
-    plt.fill_between(lengths,
-                      [t - ci for t, ci in zip(bbms_basic_times, bbms_basic_ci)],
-                      [t + ci for t, ci in zip(bbms_basic_times, bbms_basic_ci)],
-                      alpha=0.2, label='95% CI')
+    # plt.plot(lengths, bbms_basic_times, label='BBMS Basic', marker='o', linewidth=2, color='tab:orange')
+    # plt.fill_between(lengths,
+    #                   [t - ci for t, ci in zip(bbms_basic_times, bbms_basic_ci)],
+    #                   [t + ci for t, ci in zip(bbms_basic_times, bbms_basic_ci)],
+    #                   alpha=0.2, label='95% CI', color='tab:orange')
     
     # Plot DijkstraPrims with confidence interval shading
-    plt.plot(lengths, dijkstraprims_times, label='DijkstraPrims', marker='o', linewidth=2)
+    plt.plot(lengths, dijkstraprims_times, label='DijkstraPrims', marker='o', linewidth=2, color='tab:green')
     plt.fill_between(lengths,
                       [t - ci for t, ci in zip(dijkstraprims_times, dijkstraprims_ci)],
                       [t + ci for t, ci in zip(dijkstraprims_times, dijkstraprims_ci)],
-                      alpha=0.2, label='95% CI')
+                      alpha=0.2, label='95% CI', color='tab:green')
     
     
+    # y axis should start at 0, but with some padding to make the plot look better
+    plt.ylim(bottom=0)
 
     plt.xlabel('Polyline Length')
     plt.ylabel('Mean Runtime (seconds)')
@@ -91,7 +93,7 @@ def plotResults(results):
     plt.tight_layout()
     plt.legend()
     plt.grid()
-    plt.savefig('polyline_length_effect.png', dpi=300)
+    plt.savefig(f'polyline_length_effect_{iteration}.png', dpi=300)
     # plt.show()
     plt.close()
 
@@ -113,7 +115,7 @@ def main():
     accumulated_times = {
         length: {
             'bbms': [],
-            'bbms_basic': [],
+            # 'bbms_basic': [],
             'dijkstraprims': []
         }
         for length in lengths
@@ -131,36 +133,47 @@ def main():
             )
 
             bbms_time = run_benchmark(polylines[0], polylines[1], 'bbms')
-            bbms_basic_time = run_benchmark(polylines[0], polylines[1], 'bbms_basic')
+            # bbms_basic_time = run_benchmark(polylines[0], polylines[1], 'bbms_basic')
             dijkstraprims_time = run_benchmark(polylines[0], polylines[1], 'dijkstraprims')
 
-            if bbms_time is None or bbms_basic_time is None or dijkstraprims_time is None:
-                print("Aborting entire experiment, because one or more algorithms failed.")
+            # if bbms_time is None or bbms_basic_time is None or dijkstraprims_time is None:
+            #     print("Aborting entire experiment, because one or more algorithms failed.")
+            #     exit(1)
+
+            if bbms_time is None or dijkstraprims_time is None:
+                print("Warning: One or more algorithms failed on this pair, skipping.")
                 exit(1)
 
             accumulated_times[length]['bbms'].append(bbms_time)
-            accumulated_times[length]['bbms_basic'].append(bbms_basic_time)
+            # accumulated_times[length]['bbms_basic'].append(bbms_basic_time)
             accumulated_times[length]['dijkstraprims'].append(dijkstraprims_time)
 
         results = {}
         for length in lengths:
             results[length] = {
                 'bbms': summarize_times(accumulated_times[length]['bbms']),
-                'bbms_basic': summarize_times(accumulated_times[length]['bbms_basic']),
+                # 'bbms_basic': summarize_times(accumulated_times[length]['bbms_basic']),
                 'dijkstraprims': summarize_times(accumulated_times[length]['dijkstraprims'])
             }
 
         print(f"Iteration {iteration}/{max_num_polylines} completed")
         print("Benchmark results (as table):")
-        print("| Length | BBMS (mean ± CI) | BBMS Basic (mean ± CI) | DijkstraPrims (mean ± CI) |")
-        print("|--------|------------------|------------------------|---------------------------|")
+        # print("| Length | BBMS (mean ± CI) | BBMS Basic (mean ± CI) | DijkstraPrims (mean ± CI) |")
+        # print("|--------|------------------|------------------------|---------------------------|")
+        # for length, times in results.items():
+        #     bbms_mean, bbms_ci = times['bbms']
+        #     bbms_basic_mean, bbms_basic_ci = times['bbms_basic']
+        #     dijkstraprims_mean, dijkstraprims_ci = times['dijkstraprims']
+        #     print(f"| {length} | {bbms_mean:.4f} ± {bbms_ci:.4f} | {bbms_basic_mean:.4f} ± {bbms_basic_ci:.4f} | {dijkstraprims_mean:.4f} ± {dijkstraprims_ci:.4f} |")
+
+        print("| Length | BBMS (mean ± CI) | DijkstraPrims (mean ± CI) |")
+        print("|--------|------------------|---------------------------|")
         for length, times in results.items():
             bbms_mean, bbms_ci = times['bbms']
-            bbms_basic_mean, bbms_basic_ci = times['bbms_basic']
             dijkstraprims_mean, dijkstraprims_ci = times['dijkstraprims']
-            print(f"| {length} | {bbms_mean:.4f} ± {bbms_ci:.4f} | {bbms_basic_mean:.4f} ± {bbms_basic_ci:.4f} | {dijkstraprims_mean:.4f} ± {dijkstraprims_ci:.4f} |")
+            print(f"| {length} | {bbms_mean:.4f} ± {bbms_ci:.4f} | {dijkstraprims_mean:.4f} ± {dijkstraprims_ci:.4f} |")
 
-        plotResults(results)
+        plotResults(results, iteration)
         print()
 
 

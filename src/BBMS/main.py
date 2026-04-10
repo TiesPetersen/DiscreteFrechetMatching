@@ -137,6 +137,7 @@ def updateShortcuts(G, i, j, extra_info, A, B, C, D):
     BC = C.parent == B # C is child of B
 
     # 12 different cases
+    # TODO: make this cleaner
     if extra_info['selectedParent'] == A:
         # chosen parent is A 
         if AB and BC:

@@ -5,13 +5,16 @@ The discrite Fréchet distance is a measure of the similarity between two curves
 
 This repository contains implementations of two different algorithms for computing the discrete locally correct Fréchet distance and matching between two curves, as well as scripts for testing their correctness and benchmarking their performance.
 
-### Some visualizations
+### Visualizations
+Enjoy some visualizations of the concepts and algorithms involved in this project:
+
 ![Shortcut Creation Case Distinction](figures/case_distinction6.drawio.png)
 *Case distinction for when and where to create shortcuts for a new node.*
 
 ![Possible Shortcut Extensions](figures/shortcut_extension.drawio.png)
 *Possible shortcut extensions for a node, given a dead path and incoming shortcuts.*
 
+TODO: redo this visulalization
 
 ## Algorithms
 In this project we are interested in 2 different algorithms for computing the discrete locally correct Fréchet matching between two curves: the **BBMS** algorithm and the **DijkstraPrims** algorithm:

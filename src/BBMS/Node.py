@@ -8,9 +8,18 @@ class Node:
         self.distance = distance
 
         # tree structure information
+        self.child_upper = False
+        self.child_diagonal = False
+        self.child_right = False
         self.parent = None
         self.depth = None
 
-        # shortcut information
+        # outgoing shortcut information
         self.low = None
         self.high = None
+
+        # incoming shortcut information
+        self.upper_right = None
+        self.diagonal_upper = None
+        self.diagonal_lower = None
+        self.right_upper = None

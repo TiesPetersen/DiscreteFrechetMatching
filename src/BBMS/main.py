@@ -48,7 +48,15 @@ def addToTree(G, i, j):
     # parent(G[i, j]) <- candidate parent with lowest maximum distance to Nearest Common Ancestor in T
     selectedParent, extra_info = selectParent(A, B, C)
     attach(selectedParent, D)
-    
+
+    # no_children = (G[i - 1][j - 1].child_upper == False) + (G[i - 1][j - 1].child_diagonal == False) + (G[i - 1][j - 1].child_right == False)
+    # if no_children:
+    #    s <- deepest shortcut from G[i - 1, j - 1] (make function for this: getDeepestShortcut)
+    #    n <- target node of shortcut s
+    #    extend shortcuts based on: s.direction, n's children (make function for this: extendShortcuts)
+    #    delete shortcuts??? you cannot delete all shortcuts starting somewhere in the dead path. not deleted shortcuts will still be extended in the future, which is inefficient.
+    #    update children, etc of n
+
     # if G[i - 1, j - 1] is dead then
     #     Remove the dead path ending at G[i - 1, j - 1] from T and extend shortcuts
     # TODO

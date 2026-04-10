@@ -1,5 +1,6 @@
 from src.BBMS.main import BBMS
-from src.BBMS_basic.main import BBMS_basic
+from src.BBMS_core.main import BBMS_core
+from src.BBMS_inter.main import BBMS_inter
 from src.DijkstraPrims.main import DijkstraPrims
 from src.DynamicProgramming.main import DynamicProgramming
 
@@ -8,7 +9,7 @@ from polyline_datasets.load_polylines import load_polylines
 import sys
 
 
-ALGORITHMS = ['bbms', 'bbms_basic', 'dijkstraprims']
+ALGORITHMS = ['bbms', 'bbms_core', 'bbms_inter', 'dijkstraprims']
 
 
 def compare_frechet_distance(filename, algorithm):
@@ -23,8 +24,10 @@ def compare_frechet_distance(filename, algorithm):
         try:
             if algorithm == 'bbms':
                 _, frechet_distance = BBMS(polylines[current_index - 1], polylines[current_index])
-            elif algorithm == 'bbms_basic':
-                _, frechet_distance = BBMS_basic(polylines[current_index - 1], polylines[current_index])
+            elif algorithm == 'bbms_core':
+                _, frechet_distance = BBMS_core(polylines[current_index - 1], polylines[current_index])
+            elif algorithm == 'bbms_inter':
+                _, frechet_distance = BBMS_inter(polylines[current_index - 1], polylines[current_index])
             elif algorithm == 'dijkstraprims':
                 _, frechet_distance = DijkstraPrims(polylines[current_index - 1], polylines[current_index])
             else:

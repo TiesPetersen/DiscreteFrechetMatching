@@ -1,5 +1,6 @@
+from src.BBMS_core.main import BBMS_core
+from src.BBMS_inter.main import BBMS_inter
 from src.BBMS.main import BBMS
-from src.BBMS_basic.main import BBMS_basic
 from src.DijkstraPrims.main import DijkstraPrims
 from src.DynamicProgramming.main import DynamicProgramming
 
@@ -23,10 +24,16 @@ def main():
 
     # print()
 
-    # print("BBMS_basic:")
-    # matching, distance = BBMS_basic(curve1, curve2)
+    # print("BBMS_core:")
+    # matching, distance = BBMS_core(curve1, curve2)
     # print(f"Discrete Fréchet distance: {distance}")
     # print("Matching:" + str(matching))
+
+    # print()
+
+    # print("BBMS_inter:")
+    # matching, distance = BBMS_inter(curve1, curve2)
+    # print(f"Discrete Fréchet distance: {distance}")
 
     # print()
 

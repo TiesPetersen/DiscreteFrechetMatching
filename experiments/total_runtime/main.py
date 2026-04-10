@@ -1,5 +1,6 @@
+from src.BBMS_core.main import BBMS_core
+from src.BBMS_inter.main import BBMS_inter
 from src.BBMS.main import BBMS
-from src.BBMS_basic.main import BBMS_basic
 from src.DijkstraPrims.main import DijkstraPrims
 
 from polyline_datasets.load_polylines import load_polylines
@@ -8,7 +9,7 @@ import sys
 import time
 
 
-ALGORITHMS = ['bbms', 'bbms_basic', 'dijkstraprims']
+ALGORITHMS = ['bbms', 'bbms_core', 'bbms_inter', 'dijkstraprims']
 
 
 def run_benchmark(filename, algorithm):
@@ -27,8 +28,10 @@ def run_benchmark(filename, algorithm):
         try:
             if algorithm == 'bbms':
                 BBMS(polylines[current_index - 1], polylines[current_index])
-            elif algorithm == 'bbms_basic':
-                BBMS_basic(polylines[current_index - 1], polylines[current_index])
+            elif algorithm == 'bbms_core':
+                BBMS_core(polylines[current_index - 1], polylines[current_index])
+            elif algorithm == 'bbms_inter':
+                BBMS_inter(polylines[current_index - 1], polylines[current_index])
             elif algorithm == 'dijkstraprims':
                 DijkstraPrims(polylines[current_index - 1], polylines[current_index])
             else:

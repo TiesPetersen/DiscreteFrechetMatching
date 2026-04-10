@@ -5,6 +5,14 @@ The discrite Fréchet distance is a measure of the similarity between two curves
 
 This repository contains implementations of two different algorithms for computing the discrete locally correct Fréchet distance and matching between two curves, as well as scripts for testing their correctness and benchmarking their performance.
 
+### Some visualizations
+![Shortcut Creation Case Distinction](figures/case_distinction6.drawio.png)
+*Case distinction for when and where to create shortcuts for a new node.*
+
+*Possible shortcut extensions for a node, given a dead path and incoming shortcuts.*
+![Possible Shortcut Extensions](figures/shortcut_extension.drawio.png)
+
+
 ## Algorithms
 In this project we are interested in 2 different algorithms for computing the discrete locally correct Fréchet matching between two curves: the **BBMS** algorithm and the **DijkstraPrims** algorithm:
 
@@ -22,6 +30,7 @@ Based on the paper "The Fréchet Distance Unleashed: Approximating a Dog with a 
     - `example/`: See [Example experiment](#example-experiment) below for a description of this experiment.
     - `polyline_length_effect/`: See [Polyline length effect experiment](#polyline-length-effect-experiment) below for a description of this experiment.
     - `total_runtime_benchmark/`: See [Total runtime experiment](#total-runtime-experiment) below for a description of this experiment.
+- `figures` : Contains figures/diagrams used during development, in the README, or elsewhere. 
 - `polyline_datasets/`: Contains scripts for generating and loading datasets of polylines for use in testing and benchmarking the algorithms. Also includes the generated datasets themselves.
     - `generate_polylines.py`: Contains a script for generating random polylines with specified parameters (number of polylines, length range, x and y coordinate ranges).
     - `load_polylines.py`: Contains a function for loading polylines from a text file. The text file should be formatted so that each curve is represented by multiple lines of x and y coordinates, with curves ordered in pairs (i.e. the first two curves form a pair to be compared, the next two curves form another pair, etc.).

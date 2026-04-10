@@ -7,10 +7,11 @@ This repository contains implementations of two different algorithms for computi
 
 ## Algorithms
 In this project we are interested in 2 different algorithms for computing the discrete locally correct Fréchet matching between two curves: the **BBMS** algorithm and the **DijkstraPrims** algorithm:
+
 ### BBMS
 Based on the paper "Locally correct Fréchet matchings" by Buchin, K., Buchin, M., Meulemans, W., & Speckmann, B. (2012). "
 
-In the repository, we use 2 versions of this algorithm: `BBMS_basic`, which is a simplified version without any shortcut optimizations, and `BBMS`, which includes the shortcut optimizations described in the paper.
+In the repository, we use 3 versions of this algorithm: `BBMS_core`, which is a simplified version without any optimizations, `BBMS_inter`, which includes shortcut optimizations, and `BBMS`, which includes the shortcut optimizations and dead path pruning as described in the paper.
 
 ### DijkstraPrims
 Based on the paper "The Fréchet Distance Unleashed: Approximating a Dog with a Frog" by Sariel Har-Peled, Benjamin Raichel and Eliot W. Robson (2026). 
@@ -28,11 +29,12 @@ Based on the paper "The Fréchet Distance Unleashed: Approximating a Dog with a 
     - `Point.py`: Contains the definition of the `Point` class, which represents a point in 2D space with x and y coordinates. This class is used throughout the implementations of the algorithms to represent the vertices of the curves.
     - `helper.py`: Contains helper functions required by all algorithms (such as distance calculations) and functions that are useful for development.
     - `BBMS/` : Contains the implementation of the discrete locally correct Fréchet matching algorithm, as described in the paper "Locally correct Fréchet matchings" by Buchin, K., Buchin, M., Meulemans, W., & Speckmann, B. (2012). **Note: The current implementation of this algorithm does not yet include the shortcut optimization described in the paper.**
-    - `BBMS_basic/` : Contains a simplified version of the BBMS algorithm. This implementation does not include any shortcut optimizations and serves as a baseline for comparison with the optimized version in `BBMS/`. Mainly used for testing and debugging purposes.
+    - `BBMS_core/` : Contains a simplified version of the BBMS algorithm. This implementation does not include any shortcut optimizations or dead path pruning and serves as a baseline for comparison with the optimized version in `BBMS/`. Mainly used for testing and debugging purposes.
+    - `BBMS_inter/` : Contains an intermediate version of the BBMS algorithm. This implementation includes shortcut optimizations described in the paper, except for the dead path pruning. It serves as a stepping stone between `BBMS_core/` and the fully optimized version in `BBMS/`, and is useful for testing and debugging purposes.
     - `DijkstraPrims/` : Contains the implementation of the discrete locally correct Fréchet matching algorithm, as described in the paper "The Fréchet Distance Unleashed: Approximating a Dog with a Frog" by Sariel Har-Peled, Benjamin Raichel and Eliot W. Robson (2026).
     - `DynamicProgramming/` : Contains the "standard" implementation of the discrete Fréchet **distance** algorithm using dynamic programming.
 - `tests` : Contains scripts for testing the correctness of the different algorithms by comparing their outputs on the same test curves.
-    - `compare_matching.py`: Compares the matchings produced by BBMS to BBMS_basic, to ensure that the shortcut optimizations in BBMS do not change the resulting matching.
+    - `compare_matching.py`: Compares the matchings between BBMS_core, BBMS_inter and BBMS, to ensure that the shortcut optimizations in BBMS do not change the resulting matching.
     - `compare_frechet_distance.py`: Compares the Fréchet distances produced by all three algorithms to the distance produced by the dynamic programming solution, to ensure that all algorithms are producing the correct distance.
 
 
@@ -68,9 +70,9 @@ Correctness tests are done by comparing the outputs of the algorithms on the sam
 There are two scripts for checking the correctness of the algorithms: `tests/compare_matching.py` (see [Compare matchings](#compare-matchings)) and `tests/compare_frechet_distance.py` (see [Compare Fréchet distances](#compare-fréchet-distances)). 
 
 ### Compare matchings
-The script will run BBMS and BBMS_basic on the same pairs of curves loaded from the specified file and compare their matchings. If any mismatches are found, they will be printed to the console along with details about the curves and the matchings. 
+The script will run BBMS_core, BBMS_inter and BBMS on the same pairs of curves loaded from the specified file and compare their matchings. If any mismatches are found, they will be printed to the console along with details about the curves and the matchings. 
 
-To compare the matchings produced by BBMS to BBMS_basic, run the following command:
+To compare the matchings produced by BBMS_core, BBMS_inter and BBMS, run the following command:
 
 ```bash
 python -m tests.compare_matching <filename>
@@ -91,5 +93,5 @@ python -m tests.compare_frechet_distance <filename> <algorithm>
 
 `<filename>` should be the name of the .txt file in `polyline_datasets/` that contains the curves you want to compare (e.g. `sample_polylines`). 
 
-`<algorithm>` should be the name of the algorithm you want to compare to the dynamic programming solution. Valid options are: `bbms`, `bbms_basic`, and `dijkstraprims`.
+`<algorithm>` should be the name of the algorithm you want to compare to the dynamic programming solution. Valid options are: `bbms`, `bbms_core`, and `dijkstraprims`.
 

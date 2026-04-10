@@ -28,7 +28,7 @@ Based on the paper "The Fréchet Distance Unleashed: Approximating a Dog with a 
 - `src/`: Contains the implementations of the different algorithms for computing the discrete locally correct Fréchet distance and matching, as well as any necessary helper functions and classes.
     - `Point.py`: Contains the definition of the `Point` class, which represents a point in 2D space with x and y coordinates. This class is used throughout the implementations of the algorithms to represent the vertices of the curves.
     - `helper.py`: Contains helper functions required by all algorithms (such as distance calculations) and functions that are useful for development.
-    - `BBMS/` : Contains the implementation of the discrete locally correct Fréchet matching algorithm, as described in the paper "Locally correct Fréchet matchings" by Buchin, K., Buchin, M., Meulemans, W., & Speckmann, B. (2012). **Note: The current implementation of this algorithm does not yet include the shortcut optimization described in the paper.**
+    - `BBMS/` : Contains the implementation of the discrete locally correct Fréchet matching algorithm, as described in the paper "Locally correct Fréchet matchings" by Buchin, K., Buchin, M., Meulemans, W., & Speckmann, B. (2012). **Note: The current implementation of this algorithm does not yet include the dead path pruning described in the paper.**
     - `BBMS_core/` : Contains a simplified version of the BBMS algorithm. This implementation does not include any shortcut optimizations or dead path pruning and serves as a baseline for comparison with the optimized version in `BBMS/`. Mainly used for testing and debugging purposes.
     - `BBMS_inter/` : Contains an intermediate version of the BBMS algorithm. This implementation includes shortcut optimizations described in the paper, except for the dead path pruning. It serves as a stepping stone between `BBMS_core/` and the fully optimized version in `BBMS/`, and is useful for testing and debugging purposes.
     - `DijkstraPrims/` : Contains the implementation of the discrete locally correct Fréchet matching algorithm, as described in the paper "The Fréchet Distance Unleashed: Approximating a Dog with a Frog" by Sariel Har-Peled, Benjamin Raichel and Eliot W. Robson (2026).
@@ -93,5 +93,5 @@ python -m tests.compare_frechet_distance <filename> <algorithm>
 
 `<filename>` should be the name of the .txt file in `polyline_datasets/` that contains the curves you want to compare (e.g. `sample_polylines`). 
 
-`<algorithm>` should be the name of the algorithm you want to compare to the dynamic programming solution. Valid options are: `bbms`, `bbms_core`, and `dijkstraprims`.
+`<algorithm>` should be the name of the algorithm you want to compare to the dynamic programming solution. Valid options are: `bbms`, `bbms_core`, `bbms_inter`, and `dijkstraprims`.
 

@@ -29,9 +29,6 @@ def BBMS(curve1, curve2):
     for i in range(1, m + 1):
         for j in range(1, n + 1):
             addToTree(G, i, j)
-            # printGridWithConnections(G, type_to_print="distance")
-            printGridWithShortcuts(G, type_to_print="distance")
-            print("\n\n")
 
     # return path in T between G[0, 0] and G[m, n], and return Frechet distance
     return extractMatchingAndFrechetDistance(G[m][n])
@@ -49,10 +46,6 @@ def addToTree(G, i, j):
     selectedParent, extra_info = selectParent(A, B, C)
     attach(selectedParent, D)
     
-    # if G[i - 1, j - 1] is dead then
-    #     Remove the dead path ending at G[i - 1, j - 1] from T and extend shortcuts
-    # TODO
-
     # Make shortcuts for G[i - 1, j], G[i, j - 1], and G[i, j] where necessary
     extra_info['selectedParent'] = selectedParent
     updateShortcuts(G, i, j, extra_info, A, B, C, D)

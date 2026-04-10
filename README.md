@@ -9,8 +9,8 @@ This repository contains implementations of two different algorithms for computi
 ![Shortcut Creation Case Distinction](figures/case_distinction6.drawio.png)
 *Case distinction for when and where to create shortcuts for a new node.*
 
-*Possible shortcut extensions for a node, given a dead path and incoming shortcuts.*
 ![Possible Shortcut Extensions](figures/shortcut_extension.drawio.png)
+*Possible shortcut extensions for a node, given a dead path and incoming shortcuts.*
 
 
 ## Algorithms

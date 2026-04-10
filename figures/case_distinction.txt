@@ -1,0 +1,110 @@
+Case 1:
+
+chosen = A
+neighbors = AB
+->
+A.low -> AC=BC
+D.low -> AC=BC
+
+
+Case 2:
+
+chosen = A
+neighbors = BC
+->
+C.high -> AB=AC
+D.low -> AB=AC
+
+
+Case 3:
+
+chosen = A
+neighbors = AB,BC
+->
+A.low -> B
+C.high -> B
+D.low -> B
+
+
+Case 4:
+
+chosen = A
+neighbors = /
+->
+D.low -> AB=BC=AC
+
+
+Case 5:
+
+chosen = B
+neighbors = AB
+->
+A.low -> B
+D.high -> B
+D.low -> AC=BC
+
+
+Case 6:
+
+chosen = B
+neighbors = BC
+->
+C.high -> B
+D.high -> AB=AC
+D.low -> B
+
+
+Case 7:
+
+chosen = B
+neighbors = AB,BC
+->
+A.low -> B
+C.high -> B
+D.high -> B
+D.low -> B
+
+
+Case 8:
+
+chosen = B
+neighbors = /
+->
+D.high -> AB=BC=AC
+D.low -> AB=BC=AC
+
+
+Case 9:
+
+chosen = C
+neighbors = AB
+->
+A.low -> AC=BC
+D.high -> AC=BC
+
+
+Case 10:
+
+chosen = C
+neighbors = BC
+->
+C.high -> AB=AC
+D.high -> AB=AC
+
+
+Case 11:
+
+chosen = C
+neighbors = AB,BC
+->
+A.low -> B
+C.high -> B
+D.high -> B
+
+
+Case 12:
+
+chosen = C
+neighbors = /
+->
+D.high -> AB=BC=AC

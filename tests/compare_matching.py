@@ -1,6 +1,7 @@
 from src.BBMS_core.main import BBMS_core
 from src.BBMS_inter.main import BBMS_inter
-from src.BBMS.main import BBMS
+from src.BBMS_dpp_instant.main import BBMS_dpp_instant
+from src.BBMS_dpp_stepwise.main import BBMS_dpp_stepwise
 
 from polyline_datasets.load_polylines import load_polylines
 
@@ -33,27 +34,39 @@ def compare_matching_bbms(filename):
             current_index += 2
             continue
 
-        # Run BBMS
+        # Run BBMS_dpp_instant
         try:
-            BBMS_matching, BBMS_frechet_distance = BBMS(polylines[current_index - 1], polylines[current_index])
+            BBMS_matching, BBMS_frechet_distance = BBMS_dpp_instant(polylines[current_index - 1], polylines[current_index])
         except Exception as e:
-            print(f"Error running BBMS on polylines {current_index - 1} and {current_index}: {e}")
+            print(f"Error running BBMS_dpp_instant on polylines {current_index - 1} and {current_index}: {e}")
             mismatches += 1
             current_index += 2
             continue
 
+        # Run BBMS_dpp_stepwise
+        # try:
+        #     BBMS_stepwise_matching, BBMS_stepwise_frechet_distance = BBMS_dpp_stepwise(polylines[current_index - 1], polylines[current_index])
+        # except Exception as e:
+        #     print(f"Error running BBMS_dpp_stepwise on polylines {current_index - 1} and {current_index}: {e}")
+        #     mismatches += 1
+        #     current_index += 2
+        #     continue
+
         # Compare results
-        BBMS_to_core = (BBMS_matching == BBMS_core_matching) and (BBMS_frechet_distance == BBMS_core_frechet_distance)
-        BBMS_to_inter = (BBMS_matching == BBMS_inter_matching) and (BBMS_frechet_distance == BBMS_inter_frechet_distance)
-        if not BBMS_to_core or not BBMS_to_inter:
+        instant_to_core = (BBMS_matching == BBMS_core_matching) and (BBMS_frechet_distance == BBMS_core_frechet_distance)
+        # stepwise_to_core = (BBMS_stepwise_matching == BBMS_core_matching) and (BBMS_stepwise_frechet_distance == BBMS_core_frechet_distance)
+        inter_to_core = (BBMS_inter_matching == BBMS_core_matching) and (BBMS_inter_frechet_distance == BBMS_core_frechet_distance)
+        if not instant_to_core or not inter_to_core: # or not stepwise_to_core:
             mismatches += 1
             print(f"Mismatch in matching for polylines {current_index - 1} and {current_index}:")
             print(f"Polyline 1: {polylines[current_index - 1]}")
             print(f"Polyline 2: {polylines[current_index]}")
-            print(f"BBMS matching: {BBMS_matching}")
+            print(f"BBMS_dpp_instant matching: {BBMS_matching}")
+            # print(f"BBMS_dpp_stepwise matching: {BBMS_stepwise_matching}")
             print(f"BBMS_core matching: {BBMS_core_matching}")
             print(f"BBMS_inter matching: {BBMS_inter_matching}")
-            print(f"BBMS frechet distance: {BBMS_frechet_distance}")
+            print(f"BBMS_dpp_instant frechet distance: {BBMS_frechet_distance}")
+            # print(f"BBMS_dpp_stepwise frechet distance: {BBMS_stepwise_frechet_distance}")
             print(f"BBMS_core frechet distance: {BBMS_core_frechet_distance}")
             print(f"BBMS_inter frechet distance: {BBMS_inter_frechet_distance}")
             print()
@@ -81,7 +94,7 @@ def main():
 
 
 def usage():
-    print("Usage: python -m correctness_comparison.compare_matching <filename>      # filename of test data in polyline_datasets/")
+    print("Usage: python -m tests.compare_matching <filename>      # filename of test data in polyline_datasets/")
 
 
 if __name__ == "__main__":

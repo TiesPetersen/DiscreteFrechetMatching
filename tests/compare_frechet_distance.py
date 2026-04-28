@@ -84,7 +84,7 @@ def main():
 
 
 def usage():
-    print("Usage: python -m correctness_comparison.compare_frechet_distance <filename> <algorithm>      # filename of test data in polyline_datasets/")
+    print("Usage: python -m tests.compare_frechet_distance <filename> <algorithm>      # filename of test data in polyline_datasets/")
     print("Available algorithms: " + ", ".join(ALGORITHMS))
 
 

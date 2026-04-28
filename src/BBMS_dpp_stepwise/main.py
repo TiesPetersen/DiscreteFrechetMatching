@@ -4,7 +4,7 @@ from .Node import Node
 from ..helper import distance, printGridWithShortcuts, printGridWithConnections
 
 
-def BBMS(curve1, curve2):
+def BBMS_dpp_stepwise(curve1, curve2):
     """ Computes the discrete Fréchet distance between curve1 and curve2 using the BBMS algorithm. Returns a tuple of (frechet_distance, matching) where frechet_distance is the computed distance and matching is a list of (i, j) pairs representing the matching between nodes in G[m][n] and G[0][0]. """
 
     m = len(curve1) - 1

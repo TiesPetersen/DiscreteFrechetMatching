@@ -21,6 +21,9 @@ def compare_matching_bbms(filename):
             BBMS_core_matching, BBMS_core_frechet_distance = BBMS_core(polylines[current_index - 1], polylines[current_index])
         except Exception as e:
             print(f"Error running BBMS_core on polylines {current_index - 1} and {current_index}: {e}")
+            print(f"Polyline 1: {polylines[current_index - 1]}")
+            print(f"Polyline 2: {polylines[current_index]}")
+            print()
             mismatches += 1
             current_index += 2
             continue
@@ -30,6 +33,9 @@ def compare_matching_bbms(filename):
             BBMS_inter_matching, BBMS_inter_frechet_distance = BBMS_inter(polylines[current_index - 1], polylines[current_index])
         except Exception as e:
             print(f"Error running BBMS_inter on polylines {current_index - 1} and {current_index}: {e}")
+            print(f"Polyline 1: {polylines[current_index - 1]}")
+            print(f"Polyline 2: {polylines[current_index]}")
+            print()
             mismatches += 1
             current_index += 2
             continue
@@ -39,6 +45,9 @@ def compare_matching_bbms(filename):
             BBMS_matching, BBMS_frechet_distance = BBMS_dpp_instant(polylines[current_index - 1], polylines[current_index])
         except Exception as e:
             print(f"Error running BBMS_dpp_instant on polylines {current_index - 1} and {current_index}: {e}")
+            print(f"Polyline 1: {polylines[current_index - 1]}")
+            print(f"Polyline 2: {polylines[current_index]}")
+            print()
             mismatches += 1
             current_index += 2
             continue
@@ -75,9 +84,9 @@ def compare_matching_bbms(filename):
         current_index += 2
 
     if mismatches == 0:
-        print("Success: All matchings and Frechet distances match between BBMS_core, BBMS_inter and BBMS")
+        print("Success: All matchings and Frechet distances match between BBMS_core, BBMS_inter and BBMS_dpp_instant.")
     else:
-        print(f"\n\nFail: {mismatches} mismatches found between BBMS_core, BBMS_inter and BBMS. See above for details.")
+        print(f"\n\nFail: {mismatches} mismatches found between BBMS_core, BBMS_inter and BBMS_dpp_instant. See above for details.")
 
 def main():
     # Check command line arguments

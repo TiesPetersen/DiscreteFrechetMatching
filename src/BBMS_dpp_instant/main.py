@@ -52,28 +52,20 @@ def addToTree(G, i, j):
     selectedParent, extra_info = selectParent(A, B, C)
     attach(selectedParent, D)
 
+    # if G[i - 1, j - 1] is dead
     if not hasChildren(B):
+        # get dead path base
         s = getDeepestShortcut(B)
-        if s is None: 
-            raise ValueError("Node B has no children and no shortcuts, which should not be possible.")
-        
         dead_path_base = s.target
 
-        extendShortcuts(dead_path_base, s.final_direction)
-        detachDeadPath(dead_path_base, s.final_direction)
+        # detach the dead path ending at G[i - 1, j - 1] 
+        detachDeadPath(B, dead_path_base,s.final_direction)
 
+        # extend shortcuts from the dead path base (via followup_shortcut)
+        followup_shortcut = extendShortcuts(dead_path_base, s.final_direction)
 
-    # no_children = (G[i - 1][j - 1].child_upper == False) + (G[i - 1][j - 1].child_diagonal == False) + (G[i - 1][j - 1].child_right == False)
-    # if no_children:
-    #    s <- deepest shortcut from G[i - 1, j - 1] (make function for this: getDeepestShortcut)
-    #    n <- target node of shortcut s
-    #    extend shortcuts based on: s.direction, n's children (make function for this: extendShortcuts)
-    #    delete shortcuts??? you cannot delete all shortcuts starting somewhere in the dead path. not deleted shortcuts will still be extended in the future, which is inefficient.
-    #    update children, etc of n
-
-    # if G[i - 1, j - 1] is dead then
-    #     Remove the dead path ending at G[i - 1, j - 1] from T and extend shortcuts
-    # TODO
+        # change NCA info, since NCAs might have changed by the dead path removal
+        adjustNCAs(extra_info, dead_path_base, followup_shortcut)
 
     # Make shortcuts for G[i - 1, j], G[i, j - 1], and G[i, j] where necessary
     extra_info['selectedParent'] = selectedParent
@@ -145,6 +137,7 @@ def getMaxDistanceToNCA(u, v):
                 v = v.out_high.target
             else:
                 max_distance_v = max(max_distance_v, v.distance)
+                # TODO: maybe store the direction to the parent in the node itself to avoid calling getDirection here
                 final_dir_v = getDirection(v, v.parent)
                 v = v.parent
         else:
@@ -176,71 +169,68 @@ def updateShortcuts(G, i, j, extra_info, A, B, C, D):
     if extra_info['selectedParent'] == A:
         # chosen parent is A
         if AB and BC:
-            addShortcut(A, "out_low", B, A.distance, Direction.DOWN, None)
-            addShortcut(C, "out_high", B, C.distance, Direction.LEFT, None)
-            addShortcut(D, "out_low", B, max(A.distance, D.distance), Direction.DOWN, None)
+            addShortcut(A, "out_low", B, A.distance, Direction.DOWN)
+            addShortcut(C, "out_high", B, C.distance, Direction.LEFT)
+            addShortcut(D, "out_low", B, max(A.distance, D.distance), Direction.DOWN)
         elif AB:
-            addShortcut(A, "out_low", extra_info['nca_AC'], extra_info['max_A_AC'], extra_info['dir_A_AC'], "lower")
-            addShortcut(D, "out_low", extra_info['nca_AC'], max(extra_info['max_A_AC'], D.distance), extra_info['dir_A_AC'], "lower")
+            addShortcut(A, "out_low", extra_info['nca_AC'], extra_info['max_A_AC'], extra_info['dir_A_AC'])
+            addShortcut(D, "out_low", extra_info['nca_AC'], max(extra_info['max_A_AC'], D.distance), extra_info['dir_A_AC'])
         elif BC:
-            addShortcut(C, "out_high", extra_info['nca_AC'], extra_info['max_C_AC'], extra_info['dir_C_AC'], "upper")
-            addShortcut(D, "out_low", extra_info['nca_AC'], max(extra_info['max_C_AC'], D.distance), extra_info['dir_C_AC'], "upper")
+            addShortcut(C, "out_high", extra_info['nca_AC'], extra_info['max_C_AC'], extra_info['dir_C_AC'])
+            addShortcut(D, "out_low", extra_info['nca_AC'], max(extra_info['max_A_AC'], D.distance), extra_info['dir_A_AC'])
         else:
-            addShortcut(D, "out_low", extra_info['nca_AB'], max(extra_info['max_A_AB'], D.distance), extra_info['dir_A_AB'], "upper")
+            addShortcut(D, "out_low", extra_info['nca_AB'], max(extra_info['max_A_AB'], D.distance), extra_info['dir_A_AB'])
     elif extra_info['selectedParent'] == B:
         # chosen parent is B
         if AB and BC:
-            addShortcut(A, "out_low", B, A.distance, Direction.DOWN, None)
-            addShortcut(C, "out_high", B, C.distance, Direction.LEFT, None)
-            addShortcut(D, "out_high", B, D.distance, Direction.DIAGONAL, None)
-            addShortcut(D, "out_low", B, D.distance, Direction.DIAGONAL, None)
+            addShortcut(A, "out_low", B, A.distance, Direction.DOWN)
+            addShortcut(C, "out_high", B, C.distance, Direction.LEFT)
+            addShortcut(D, "out_high", B, D.distance, Direction.DIAGONAL_UPPER)
+            addShortcut(D, "out_low", B, D.distance, Direction.DIAGONAL_LOWER)
         elif AB:
-            addShortcut(A, "out_low", B, A.distance, Direction.DOWN, None)
-            addShortcut(D, "out_high", B, D.distance, Direction.DIAGONAL, None)
-            addShortcut(D, "out_low", extra_info['nca_AC'], max(extra_info['max_B_BC'], D.distance), extra_info['dir_B_BC'], "lower")
+            addShortcut(A, "out_low", B, A.distance, Direction.DOWN)
+            addShortcut(D, "out_high", B, D.distance, Direction.DIAGONAL_UPPER)
+            addShortcut(D, "out_low", extra_info['nca_AC'], max(extra_info['max_B_BC'], D.distance), extra_info['dir_B_BC'])
         elif BC:
-            addShortcut(C, "out_high", B, C.distance, Direction.LEFT, None)
-            addShortcut(D, "out_high", extra_info['nca_AC'], max(extra_info['max_B_AB'], D.distance), extra_info['dir_B_AB'], "upper")
-            addShortcut(D, "out_low", B, D.distance, Direction.DIAGONAL, None)
+            addShortcut(C, "out_high", B, C.distance, Direction.LEFT)
+            addShortcut(D, "out_high", extra_info['nca_AC'], max(extra_info['max_B_AB'], D.distance), extra_info['dir_B_AB'])
+            addShortcut(D, "out_low", B, D.distance, Direction.DIAGONAL_LOWER)
         else:
-            addShortcut(D, "out_high", extra_info['nca_AB'], max(extra_info['max_B_AB'], D.distance), extra_info['dir_B_AB'], "upper")
-            addShortcut(D, "out_low", extra_info['nca_BC'], max(extra_info['max_B_BC'], D.distance), extra_info['dir_B_BC'], "lower")
+            addShortcut(D, "out_high", extra_info['nca_AB'], max(extra_info['max_B_AB'], D.distance), extra_info['dir_B_AB'])
+            addShortcut(D, "out_low", extra_info['nca_BC'], max(extra_info['max_B_BC'], D.distance), extra_info['dir_B_BC'])
     elif extra_info['selectedParent'] == C:
         # chosen parent is C
         if AB and BC:
-            addShortcut(A, "out_low", B, A.distance, Direction.DOWN, None)
-            addShortcut(C, "out_high", B, C.distance, Direction.LEFT, None)
-            addShortcut(D, "out_high", B, max(C.distance, D.distance), Direction.LEFT, None)
+            addShortcut(A, "out_low", B, A.distance, Direction.DOWN)
+            addShortcut(C, "out_high", B, C.distance, Direction.LEFT)
+            addShortcut(D, "out_high", B, max(C.distance, D.distance), Direction.LEFT)
         elif AB:
-            addShortcut(A, "out_low", extra_info['nca_AC'], extra_info['max_A_AC'], extra_info['dir_A_AC'], "lower")
-            addShortcut(D, "out_high", extra_info['nca_AC'], max(extra_info['max_C_AC'], D.distance), extra_info['dir_C_AC'], "lower")
+            addShortcut(A, "out_low", extra_info['nca_AC'], extra_info['max_A_AC'], extra_info['dir_A_AC'])
+            addShortcut(D, "out_high", extra_info['nca_AC'], max(extra_info['max_C_AC'], D.distance), extra_info['dir_C_AC'])
         elif BC:
-            addShortcut(C, "out_high", extra_info['nca_AC'], extra_info['max_C_AC'], extra_info['dir_C_AC'], "upper")
-            addShortcut(D, "out_high", extra_info['nca_AC'], max(extra_info['max_C_AC'], D.distance), extra_info['dir_C_AC'], "upper")
+            addShortcut(C, "out_high", extra_info['nca_AC'], extra_info['max_C_AC'], extra_info['dir_C_AC'])
+            addShortcut(D, "out_high", extra_info['nca_AC'], max(extra_info['max_C_AC'], D.distance), extra_info['dir_C_AC'])
         else:
-            addShortcut(D, "out_high", extra_info['nca_BC'], max(extra_info['max_C_BC'], D.distance), extra_info['dir_C_BC'], "lower")
+            addShortcut(D, "out_high", extra_info['nca_BC'], max(extra_info['max_C_BC'], D.distance), extra_info['dir_C_BC'])
     
 
-def addShortcut(origin_node, out_attr, target, value, final_direction, bias):
+def addShortcut(origin_node, out_attr, target, value, final_direction):
     """ Helper function to add a shortcut from origin_node.out_attr to target with the given value and final direction, and to update the incoming shortcut lists of the target node accordingly. Bias is used to determine whether a diagonal shortcut should be added to the upper or lower diagonal incoming shortcuts of the target node. """
 
     shortcut = Shortcut(target, value, final_direction)
 
-    # write back to the actual node attribute
+    # write back to the actual node attribute (out_low or out_high)
     setattr(origin_node, out_attr, shortcut)
 
     # update target's incoming shortcut information based on final direction of the shortcut
     if final_direction == Direction.DOWN:
         target.in_upper.append(shortcut)
-    elif final_direction == Direction.DIAGONAL:
-        if bias == "upper":
-            target.in_diagonal_upper.append(shortcut)
-        elif bias == "lower":
-            target.in_diagonal_lower.append(shortcut)
+    elif final_direction == Direction.DIAGONAL_UPPER:
+        target.in_diagonal_upper.append(shortcut)
+    elif final_direction == Direction.DIAGONAL_LOWER:
+        target.in_diagonal_lower.append(shortcut)
     elif final_direction == Direction.LEFT:
         target.in_right.append(shortcut)
-
-
 
 
 def extendShortcuts(dead_path_base, final_direction):
@@ -253,30 +243,46 @@ def extendShortcuts(dead_path_base, final_direction):
         elif dead_path_base.child_right:
             # extend right upper incoming shortcuts to dead_path_base.out_high
             extendShortcutsTo(dead_path_base.in_right, dead_path_base.out_high)
-    elif final_direction == Direction.DIAGONAL:
+        return dead_path_base.out_high
+    
+    if final_direction == Direction.DIAGONAL_UPPER or final_direction == Direction.DIAGONAL_LOWER:
         if dead_path_base.child_right and not dead_path_base.child_upper:
             # extend right upper incoming shortcuts to dead_path_base.out_high
             extendShortcutsTo(dead_path_base.in_right, dead_path_base.out_high)
-            pass
+            return dead_path_base.out_high
         elif dead_path_base.child_upper and not dead_path_base.child_right:
             # extend upper right incoming shortcuts to dead_path_base.out_low
             extendShortcutsTo(dead_path_base.in_upper, dead_path_base.out_low)
-    elif final_direction == Direction.LEFT:
+            return dead_path_base.out_low
+        
+    if final_direction == Direction.LEFT:
         if dead_path_base.child_diagonal:
             # extend diagonal lower incoming shortcuts to dead_path_base.out_low
             extendShortcutsTo(dead_path_base.in_diagonal_lower, dead_path_base.out_low)
         elif dead_path_base.child_upper:
             # extend upper right incoming shortcuts to dead_path_base.out_low
             extendShortcutsTo(dead_path_base.in_upper, dead_path_base.out_low)
-
+        return dead_path_base.out_low
 
 def extendShortcutsTo(shortcuts, followup_shortcut):
     """ Helper function for extendShortcuts that extends the given list of shortcuts to the target of the followup_shortcut. """
 
     for shortcut in shortcuts:
+        # update shortcut
         shortcut.target = followup_shortcut.target
         shortcut.value = max(shortcut.value, followup_shortcut.value)
         shortcut.final_direction = followup_shortcut.final_direction
+        
+        # update incoming shortcut list
+        if followup_shortcut.final_direction == Direction.DOWN:
+            followup_shortcut.target.in_upper.append(shortcut)
+        elif followup_shortcut.final_direction == Direction.DIAGONAL_UPPER:
+            followup_shortcut.target.in_diagonal_upper.append(shortcut)
+        elif followup_shortcut.final_direction == Direction.DIAGONAL_LOWER:
+            followup_shortcut.target.in_diagonal_lower.append(shortcut)
+        elif followup_shortcut.final_direction == Direction.LEFT:
+            followup_shortcut.target.in_right.append(shortcut)
+
 
 
 def extractMatchingAndFrechetDistance(node):
@@ -303,6 +309,7 @@ def attach(parent, child):
     child.parent = parent
     child.depth = parent.depth + 1
 
+    # TODO: this is ugly
     # update parent's child information
     if child.i == parent.i and child.j == parent.j + 1:
         parent.child_upper = True
@@ -314,14 +321,47 @@ def attach(parent, child):
         raise ValueError("Invalid child-parent relationship: child ({}, {}) and parent ({}, {})".format(child.i, child.j, parent.i, parent.j))
 
 
-def detachDeadPath(dead_path_base, final_direction):
+def detachDeadPath(B, dead_path_base, final_direction):
+
+    # remove shortcuts from incoming list where out_high and out_low of B point to
+    if B.out_high is not None:
+        target = B.out_high.target
+        if B.out_high.final_direction == Direction.DOWN:
+            target.in_upper.remove(B.out_high)
+        elif B.out_high.final_direction == Direction.DIAGONAL_UPPER:
+            target.in_diagonal_upper.remove(B.out_high)
+        elif B.out_high.final_direction == Direction.DIAGONAL_LOWER:
+            target.in_diagonal_lower.remove(B.out_high)
+        elif B.out_high.final_direction == Direction.LEFT:
+            target.in_right.remove(B.out_high)
+
+    if B.out_low is not None:
+        target = B.out_low.target
+        if B.out_low.final_direction == Direction.DOWN:
+            target.in_upper.remove(B.out_low)
+        elif B.out_low.final_direction == Direction.DIAGONAL_UPPER:
+            target.in_diagonal_upper.remove(B.out_low)
+        elif B.out_low.final_direction == Direction.DIAGONAL_LOWER:
+            target.in_diagonal_lower.remove(B.out_low)
+        elif B.out_low.final_direction == Direction.LEFT:
+            target.in_right.remove(B.out_low)
+
+    # empty incoming shortcut lists of the dead path base, using final_direction to determine which list(s) to empty
+    if final_direction == Direction.DOWN:
+        dead_path_base.in_upper = []
+    elif final_direction == Direction.DIAGONAL_UPPER or final_direction == Direction.DIAGONAL_LOWER:
+        dead_path_base.in_diagonal_upper = []
+        dead_path_base.in_diagonal_lower = []
+    elif final_direction == Direction.LEFT:
+        dead_path_base.in_right = []
+
+    # update dead_path_base's child information
     if final_direction == Direction.DOWN:
         dead_path_base.child_upper = False
-    elif final_direction == Direction.DIAGONAL:
+    elif final_direction == Direction.DIAGONAL_UPPER or final_direction == Direction.DIAGONAL_LOWER:
         dead_path_base.child_diagonal = False
     elif final_direction == Direction.LEFT:
         dead_path_base.child_right = False
-
 
 def hasChildren(node):
     """ Returns True if the given node has any children in T, and False otherwise. """
@@ -333,13 +373,12 @@ def getDirection(child, parent):
     """ Returns the direction from child to parent as a Direction enum value. Assumes child is directly connected to parent in T. """
 
     if child.i == parent.i + 1 and child.j == parent.j:
-        return Direction.DOWN
-    elif child.i == parent.i + 1 and child.j == parent.j + 1:
-        return Direction.DIAGONAL
-    elif child.i == parent.i and child.j == parent.j + 1:
         return Direction.LEFT
-    else:
-        raise ValueError("Invalid child-parent relationship: child ({}, {}) and parent ({}, {})".format(child.i, child.j, parent.i, parent.j))
+    
+    if child.i == parent.i and child.j == parent.j + 1:
+        return Direction.DOWN
+    
+    raise ValueError("Invalid child-parent relationship: child ({}, {}) and parent ({}, {})".format(child.i, child.j, parent.i, parent.j))
 
 
 def getDeepestShortcut(node):
@@ -354,3 +393,30 @@ def getDeepestShortcut(node):
             max_depth = shortcut.target.depth
 
     return deepest_shortcut
+
+
+def adjustNCAs(extra_info, dead_path_base, followup_shortcut):
+    """ Adjusts the NCA information in extra_info based on the removal of the dead path and the new target that replaces the dead path. """
+
+    # shortcuts weren't extended so no need to update NCA info
+    if followup_shortcut is None:
+        return
+
+    if extra_info['nca_AB'] == dead_path_base:
+        extra_info['nca_AB'] = followup_shortcut.target
+        extra_info['max_A_AB'] = max(extra_info['max_A_AB'], followup_shortcut.value)
+        extra_info['max_B_AB'] = max(extra_info['max_B_AB'], followup_shortcut.value)
+        extra_info['dir_A_AB'] = followup_shortcut.final_direction
+        extra_info['dir_B_AB'] = followup_shortcut.final_direction
+    if extra_info['nca_BC'] == dead_path_base:
+        extra_info['nca_BC'] = followup_shortcut.target
+        extra_info['max_B_BC'] = max(extra_info['max_B_BC'], followup_shortcut.value)
+        extra_info['max_C_BC'] = max(extra_info['max_C_BC'], followup_shortcut.value)
+        extra_info['dir_B_BC'] = followup_shortcut.final_direction
+        extra_info['dir_C_BC'] = followup_shortcut.final_direction
+    if extra_info['nca_AC'] == dead_path_base:
+        extra_info['nca_AC'] = followup_shortcut.target
+        extra_info['max_A_AC'] = max(extra_info['max_A_AC'], followup_shortcut.value)
+        extra_info['max_C_AC'] = max(extra_info['max_C_AC'], followup_shortcut.value)
+        extra_info['dir_A_AC'] = followup_shortcut.final_direction
+        extra_info['dir_C_AC'] = followup_shortcut.final_direction

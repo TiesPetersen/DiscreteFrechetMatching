@@ -128,13 +128,13 @@ def printGridWithShortcuts(G, type_to_print="distance"):
         print("".join(parts))
 
         # --- shortcut rows ---
-        any_low  = any(getattr(G[x][y], "low",  None) is not None for x in range(num_x))
-        any_high = any(getattr(G[x][y], "high", None) is not None for x in range(num_x))
+        any_low  = any(getattr(G[x][y], "out_low",  None) is not None for x in range(num_x))
+        any_high = any(getattr(G[x][y], "out_high", None) is not None for x in range(num_x))
 
         if any_low:
             parts = []
             for x in range(num_x):
-                sc = getattr(G[x][y], "low", None)
+                sc = getattr(G[x][y], "out_low", None)
                 s = f"lo->({sc.target.i},{sc.target.j})={sc.value:.2f}" if sc else ""
                 parts.append(f"{s:<{COL_W}}")
             print("".join(parts).rstrip())
@@ -142,7 +142,7 @@ def printGridWithShortcuts(G, type_to_print="distance"):
         if any_high:
             parts = []
             for x in range(num_x):
-                sc = getattr(G[x][y], "high", None)
+                sc = getattr(G[x][y], "out_high", None)
                 s = f"hi->({sc.target.i},{sc.target.j})={sc.value:.2f}" if sc else ""
                 parts.append(f"{s:<{COL_W}}")
             print("".join(parts).rstrip())

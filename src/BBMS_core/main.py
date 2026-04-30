@@ -1,4 +1,4 @@
-from ..helper import distance
+from ..helper import distance, printGridWithConnections
 
 from .Node import Node
 
@@ -28,6 +28,8 @@ def BBMS_core(curve1, curve2):
     for i in range(1, m + 1):
         for j in range(1, n + 1):
             addToTree(G, i, j)
+            # printGridWithConnections(G, type_to_print="distance")
+            # print("\n\n")
 
     # return path in T between G[0, 0] and G[m, n], and return Frechet distance
     return extractMatchingAndFrechetDistance(G[m][n])

@@ -19,7 +19,7 @@ class Node:
         self.out_high = None
 
         # incoming shortcut information
-        self.in_upper = []
-        self.in_diagonal_upper = []
-        self.in_diagonal_lower = []
-        self.in_right = []
+        self.in_upper = set()
+        self.in_diagonal_upper = set()
+        self.in_diagonal_lower = set()
+        self.in_right = set()

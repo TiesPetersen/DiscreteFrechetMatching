@@ -1,11 +1,13 @@
 from src.BBMS_core.main import BBMS_core
 from src.BBMS_inter.main import BBMS_inter
 from src.BBMS_dpp_instant.main import BBMS_dpp_instant
+from src.BBMS_dpp_instant_opt.main import BBMS_dpp_instant_opt
 from src.BBMS_dpp_stepwise.main import BBMS_dpp_stepwise
 
 from polyline_datasets.load_polylines import load_polylines
 
 import sys
+import math
 
 def compare_matching_bbms(filename):
     # Load polylines from the specified file
@@ -15,7 +17,7 @@ def compare_matching_bbms(filename):
     mismatches = 0
     current_index = 1
 
-    while current_index < len(polylines) - 1:
+    while current_index < len(polylines):
         # Run BBMS_core
         try:
             BBMS_core_matching, BBMS_core_frechet_distance = BBMS_core(polylines[current_index - 1], polylines[current_index])
@@ -42,9 +44,21 @@ def compare_matching_bbms(filename):
 
         # Run BBMS_dpp_instant
         try:
-            BBMS_matching, BBMS_frechet_distance = BBMS_dpp_instant(polylines[current_index - 1], polylines[current_index])
+            BBMS_dpp_instant_matching, BBMS_dpp_instant_frechet_distance = BBMS_dpp_instant(polylines[current_index - 1], polylines[current_index])
         except Exception as e:
             print(f"Error running BBMS_dpp_instant on polylines {current_index - 1} and {current_index}: {e}")
+            print(f"Polyline 1: {polylines[current_index - 1]}")
+            print(f"Polyline 2: {polylines[current_index]}")
+            print()
+            mismatches += 1
+            current_index += 2
+            continue
+
+        # Run BBMS_dpp_instant_opt
+        try:
+            BBMS_dpp_instant_opt_matching, BBMS_dpp_instant_opt_frechet_distance = BBMS_dpp_instant_opt(polylines[current_index - 1], polylines[current_index])
+        except Exception as e:
+            print(f"Error running BBMS_dpp_instant_opt on polylines {current_index - 1} and {current_index}: {e}")
             print(f"Polyline 1: {polylines[current_index - 1]}")
             print(f"Polyline 2: {polylines[current_index]}")
             print()
@@ -62,19 +76,22 @@ def compare_matching_bbms(filename):
         #     continue
 
         # Compare results
-        instant_to_core = (BBMS_matching == BBMS_core_matching) and (BBMS_frechet_distance == BBMS_core_frechet_distance)
-        # stepwise_to_core = (BBMS_stepwise_matching == BBMS_core_matching) and (BBMS_stepwise_frechet_distance == BBMS_core_frechet_distance)
-        inter_to_core = (BBMS_inter_matching == BBMS_core_matching) and (BBMS_inter_frechet_distance == BBMS_core_frechet_distance)
-        if not instant_to_core or not inter_to_core: # or not stepwise_to_core:
+        dpp_instant_to_core = (BBMS_dpp_instant_matching == BBMS_core_matching) and math.isclose(BBMS_dpp_instant_frechet_distance, BBMS_core_frechet_distance, rel_tol=1e-12)
+        # stepwise_to_core = (BBMS_stepwise_matching == BBMS_core_matching) and math.isclose(BBMS_stepwise_frechet_distance, BBMS_core_frechet_distance, rel_tol=1e-12)
+        inter_to_core = (BBMS_inter_matching == BBMS_core_matching) and math.isclose(BBMS_inter_frechet_distance, BBMS_core_frechet_distance, rel_tol=1e-12)
+        dpp_opt_to_core = (BBMS_dpp_instant_opt_matching == BBMS_core_matching) and math.isclose(BBMS_dpp_instant_opt_frechet_distance, BBMS_core_frechet_distance, rel_tol=1e-12)
+        if not dpp_instant_to_core or not inter_to_core or not dpp_opt_to_core:
             mismatches += 1
             print(f"Mismatch in matching for polylines {current_index - 1} and {current_index}:")
             print(f"Polyline 1: {polylines[current_index - 1]}")
             print(f"Polyline 2: {polylines[current_index]}")
-            print(f"BBMS_dpp_instant matching: {BBMS_matching}")
+            print(f"BBMS_dpp_instant matching: {BBMS_dpp_instant_matching}")
+            print(f"BBMS_dpp_instant_opt matching: {BBMS_dpp_instant_opt_matching}")
             # print(f"BBMS_dpp_stepwise matching: {BBMS_stepwise_matching}")
             print(f"BBMS_core matching: {BBMS_core_matching}")
             print(f"BBMS_inter matching: {BBMS_inter_matching}")
-            print(f"BBMS_dpp_instant frechet distance: {BBMS_frechet_distance}")
+            print(f"BBMS_dpp_instant frechet distance: {BBMS_dpp_instant_frechet_distance}")
+            print(f"BBMS_dpp_instant_opt frechet distance: {BBMS_dpp_instant_opt_frechet_distance}")
             # print(f"BBMS_dpp_stepwise frechet distance: {BBMS_stepwise_frechet_distance}")
             print(f"BBMS_core frechet distance: {BBMS_core_frechet_distance}")
             print(f"BBMS_inter frechet distance: {BBMS_inter_frechet_distance}")

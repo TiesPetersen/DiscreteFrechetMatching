@@ -1,5 +1,6 @@
 from src.BBMS_core.main import BBMS_core
 from src.BBMS_inter.main import BBMS_inter
+from src.BBMS_inter_opt.main import BBMS_inter_opt
 from src.BBMS_dpp_instant.main import BBMS_dpp_instant
 from src.BBMS_dpp_stepwise.main import BBMS_dpp_stepwise
 from src.DijkstraPrims.main import DijkstraPrims
@@ -10,7 +11,7 @@ import sys
 import time
 
 
-ALGORITHMS = ['bbms_core', 'bbms_inter', 'bbms_dpp_instant', 'bbms_dpp_stepwise', 'dijkstraprims']
+ALGORITHMS = ['bbms_core', 'bbms_inter', 'bbms_inter_opt', 'bbms_dpp_instant', 'bbms_dpp_stepwise', 'dijkstraprims']
 
 
 def run_benchmark(filename, algorithm):
@@ -31,6 +32,8 @@ def run_benchmark(filename, algorithm):
                 BBMS_core(polylines[current_index - 1], polylines[current_index])
             elif algorithm == 'bbms_inter':
                 BBMS_inter(polylines[current_index - 1], polylines[current_index])
+            elif algorithm == 'bbms_inter_opt':
+                BBMS_inter_opt(polylines[current_index - 1], polylines[current_index])
             elif algorithm == 'bbms_dpp_instant':
                 BBMS_dpp_instant(polylines[current_index - 1], polylines[current_index])
             elif algorithm == 'bbms_dpp_stepwise':

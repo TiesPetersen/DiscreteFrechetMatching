@@ -34,7 +34,7 @@ WALL_EXCESS = 3.0
 # Wall detection stops each algorithm automatically.
 NS = list(range(1000, 55001, 1000))  # 1000 .. 50000
 
-ALGORITHMS = ["DijkstraPrims"] #, "BBMSInter", "BBMSDppStepwise", "BBMSCore", "BBMSDppInstant"]  # BBMSCore, BBMSDppInstant excluded — scaling characterised up to N=12000
+ALGORITHMS = ["DijkstraPrims" , "BBMSInter", "BBMSDppStepwise", "BBMSCore", "BBMSDppInstant"]  # BBMSCore, BBMSDppInstant excluded — scaling characterised up to N=12000
 FIELDNAMES = ["algorithm", "N", "sample", "runtime_s", "frechet_dist", "ok"]
 
 _interrupted = False
@@ -110,6 +110,7 @@ def detect_walls_in_existing(rows):
 
 
 def run_one(alg, N, sample):
+    """Returns runtime_s on success, None on error/timeout."""
     cmd = [BENCHMARK_EXE, alg, str(N), str(sample)]
     t0 = time.perf_counter()
     try:
@@ -127,6 +128,8 @@ def run_one(alg, N, sample):
                    frechet_dist=round(frechet_dist, 4), ok=ok)
         status = f"{runtime_s:8.4f}s  fd={frechet_dist:.3f}" if ok else "FAIL"
         print(f"  {alg:20s} N={N:6d} s={sample}  {status}", flush=True)
+        append_row(row)
+        return runtime_s
     except subprocess.TimeoutExpired:
         row = dict(algorithm=alg, N=N, sample=sample,
                    runtime_s=-1, frechet_dist=-1, ok=False)
@@ -136,6 +139,7 @@ def run_one(alg, N, sample):
                    runtime_s=-1, frechet_dist=-1, ok=False)
         print(f"  {alg:20s} N={N:6d} s={sample}  ERROR: {e}", flush=True)
     append_row(row)
+    return None
 
 
 def build_jobs():
@@ -174,10 +178,14 @@ def main():
         if alg in walls and N >= walls[alg]:
             print(f"  [SKIP] {alg} N={N} s={s}", flush=True)
             continue
-        run_one(alg, N, s)
+        runtime_s = run_one(alg, N, s)
         rows = load_csv()
-        if alg not in walls and check_wall(rows, alg, N):
-            walls[alg] = N
+        if alg not in walls:
+            if runtime_s is not None and runtime_s > 1000:
+                print(f"  [WALL] {alg} N={N}: single run {runtime_s:.1f}s > 1000s threshold — skipping larger N.", flush=True)
+                walls[alg] = N
+            elif check_wall(rows, alg, N):
+                walls[alg] = N
 
     print("\nAll runs complete.", flush=True)
 

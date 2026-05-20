@@ -1,0 +1,5 @@
+algorithm,bytes_per_cell_nodes,bytes_per_cell_pool_practical,bytes_per_cell_total_practical,bytes_per_cell_total_upper,N_wall_formula,N_wall_8_5GB_practical,N_wall_8_5GB_upper
+DijkstraPrims,4.125,0,4.125,4.125,sqrt(R/4.125),47036,47036
+BBMSCore,16,0,16,16,sqrt(R/16),23883,23883
+BBMSInter,48,0,48,48,sqrt(R/48),13789,13789
+BBMSDppInstant,136,48,184,232,sqrt(R/184),7043,6272

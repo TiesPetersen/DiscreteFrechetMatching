@@ -2,3 +2,5 @@ __pycache__
 .claude
 .pytest_cache
 *.out
+*.o
+*.exe

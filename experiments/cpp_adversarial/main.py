@@ -27,7 +27,7 @@ BENCHMARK_EXE = os.path.join("src_cpp", "benchmark.exe")
 RESULTS_DIR   = os.path.join("experiments", "cpp_adversarial", "results")
 CSV_PATH      = os.path.join(RESULTS_DIR, "results.csv")
 
-SAMPLES    = 3
+SAMPLES    = 10
 WALL_EXCESS = 3.0
 
 # N ranges — interleaved so both algorithms make progress in lockstep.

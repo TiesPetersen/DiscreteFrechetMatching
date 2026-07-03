@@ -1,28 +1,26 @@
 #include "bbms_core.h"
 #include <algorithm>
-#include <limits>
-#include <cassert>
+
 
 namespace {
 
 struct Node {
-    double distance;
-    int parent; // -1 = root, -2 = unattached
-    int depth;
+    double distance;    // distance from p[i] to q[j]
+    long long parent;   // index of parent, -1 = root, -2 = no parent/unattached
+    int depth;          // depth in the tree, root has depth 0
 };
 
 // Get maximum distance from u and v to their nearest common ancestor (NCA) in G. 
 // The NCA's own distance is not included in the max-distance calculation. 
-// Assumes u and v are attached to G.
-std::pair<double,double> max_distance_to_nca(const std::vector<Node>& G, int u, int v) {
-    double max_distance_u = -std::numeric_limits<double>::infinity();
-    double max_distance_v = -std::numeric_limits<double>::infinity();
+std::pair<double,double> max_distance_to_nca(const std::vector<Node>& G, long long u, long long v) {
+    double max_distance_u = -INF;
+    double max_distance_v = -INF;
 
-    // Walk the deeper node up until both nodes are at the same depth
+    // Walk the deeper node up the tree, until both nodes are at the same depth
     while (G[u].depth > G[v].depth) { max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent; }
     while (G[v].depth > G[u].depth) { max_distance_v = std::max(max_distance_v, G[v].distance); v = G[v].parent; }
 
-    // Now walk both nodes up until they meet at the NCA
+    // Now walk both nodes up the tree until they meet at the NCA
     while (u != v) {
         max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent;
         max_distance_v = std::max(max_distance_v, G[v].distance); v = G[v].parent;
@@ -33,7 +31,7 @@ std::pair<double,double> max_distance_to_nca(const std::vector<Node>& G, int u, 
 
 // Select parent among A, B, C that has the lowest maximum distance to NCA.
 // Break ties by preferring A > B > C.
-int select_parent(const std::vector<Node>& G, int A, int B, int C) {
+long long select_parent(const std::vector<Node>& G, long long A, long long B, long long C) {
     // Check pair A, B
     auto [max_A_AB, max_B_AB] = max_distance_to_nca(G, A, B);
 
@@ -53,36 +51,21 @@ int select_parent(const std::vector<Node>& G, int A, int B, int C) {
 }
 
 // Attach child to parent in G, updating child's depth and parent index.
-void attach(std::vector<Node>& G, int parent, int child) {
+void attach(std::vector<Node>& G, long long parent, long long child) {
     G[child].parent = parent;
     G[child].depth  = G[parent].depth + 1;
 }
 
-std::pair<std::vector<std::pair<int,int>>, double> extract_matching(const std::vector<Node>& G, int m, int n) {
-    std::vector<std::pair<int,int>> matching;
-    double max_distance = -std::numeric_limits<double>::infinity();
-
-    // Trace path from (m-1, n-1) to root
-    for (int cur = (m - 1) * n + (n - 1); cur != -1; cur = G[cur].parent) {
-        matching.push_back({cur / n, cur % n});
-        max_distance = std::max(max_distance, G[cur].distance);
-    }
-
-    // Reverse to get matching in order from (0,0) to (m-1,n-1)
-    std::reverse(matching.begin(), matching.end());
-
-    return {matching, max_distance};
-}
+} // namespace
 
 
-// Assumes p and q have length >= 1
 MatchingAndFrechetDistance bbms_core(const Curve& p, const Curve& q) {
-    int m = (int) p.size(), n = (int) q.size();
+    long long m = (long long) p.size(), n = (long long) q.size();
 
     // Initialize graph G with distances and unattached nodes
     std::vector<Node> G((size_t) m * n);
-    for (int i = 0; i < m; ++i)
-        for (int j = 0; j < n; ++j)
+    for (long long i = 0; i < m; ++i)
+        for (long long j = 0; j < n; ++j)
             G[i * n + j] = { dist(p[i], q[j]), -2, -1 };
 
     // Setup root node
@@ -90,23 +73,26 @@ MatchingAndFrechetDistance bbms_core(const Curve& p, const Curve& q) {
     G[0].depth  = 0;
 
     // Attach bottom row to root
-    for (int i = 1; i < m; ++i) attach(G, (i - 1) * n, i * n);
+    for (long long i = 1; i < m; ++i) attach(G, (i - 1) * n, i * n);
 
     // Attach left column to root
-    for (int j = 1; j < n; ++j) attach(G, j - 1, j);
+    for (long long j = 1; j < n; ++j) attach(G, j - 1, j);
 
     // Attach interior nodes to parent with lowest max-dist path to NCA
-    for (int i = 1; i < m; ++i) {
-        for (int j = 1; j < n; ++j) {
-            int A = (i - 1) * n + j; // left
-            int B = (i - 1) * n + (j - 1); // diagonal
-            int C = i * n + (j - 1); // below
-            attach(G, select_parent(G, A, B, C), i * n + j);
+    for (long long i = 1; i < m; ++i) {
+        for (long long j = 1; j < n; ++j) {
+            long long A = (i - 1) * n + j;        // left
+            long long B = (i - 1) * n + (j - 1);  // diagonal
+            long long C = i * n + (j - 1);        // below
+
+            // Select parent and attach it
+            long long parent = select_parent(G, A, B, C);
+            attach(G, parent, i * n + j);
         }
     }
 
     // Trace path from root to (m-1, n-1) to extract matching and max distance
-    auto [matching, max_distance] = extract_matching(G, m, n);
+    auto [ matching, max_distance ] = extract_matching(G, m, n);
 
-    return {matching, max_distance};
+    return { matching, max_distance };
 }

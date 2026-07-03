@@ -1,12 +1,9 @@
 #include "bbms_dpp_stepwise.h"
 #include <algorithm>
 #include <deque>
-#include <limits>
 #include <cassert>
 
 namespace {
-
-static constexpr double INF = std::numeric_limits<double>::infinity();
 
 enum class Dir { DOWN, DIAG_UP, DIAG_LOW, LEFT };
 

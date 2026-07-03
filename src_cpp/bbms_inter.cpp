@@ -142,7 +142,7 @@ void update_shortcuts(std::vector<Node>& g, int A, int B, int C, int D,
 
 } // namespace
 
-BBMSInterResult bbms_inter(const Curve& p, const Curve& q) {
+MatchingAndFrechetDistance bbms_inter(const Curve& p, const Curve& q) {
     int m = (int)p.size(), n = (int)q.size();
     assert(m > 0 && n > 0);
 

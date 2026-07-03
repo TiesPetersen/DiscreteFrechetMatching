@@ -2,6 +2,11 @@
 #include <vector>
 #include <cmath>
 
+struct MatchingAndFrechetDistance {
+    std::vector<std::pair<int,int>> matching;
+    double frechet_distance;
+};
+
 struct Point { double x, y; };
 
 using Curve = std::vector<Point>;

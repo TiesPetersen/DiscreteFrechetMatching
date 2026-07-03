@@ -5,7 +5,7 @@
 #include <cassert>
 #include <unordered_map>
 
-DPrimsResult dijkstra_prims(const Curve& p, const Curve& q) {
+MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
     int m = (int)p.size(), n = (int)q.size();
     assert(m > 0 && n > 0);
 

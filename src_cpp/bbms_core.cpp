@@ -6,82 +6,107 @@
 namespace {
 
 struct Node {
-    double dist;
-    int parent; // flat index; -1 = root, -2 = unattached
+    double distance;
+    int parent; // -1 = root, -2 = unattached
     int depth;
 };
 
-// Returns (max dist on u's path to NCA, max dist on v's path to NCA).
-// NCA's own distance is NOT included, matching the Python implementation.
-std::pair<double,double> max_dist_to_nca(const std::vector<Node>& g, int u, int v) {
-    double mu = -std::numeric_limits<double>::infinity();
-    double mv = -std::numeric_limits<double>::infinity();
+// Get maximum distance from u and v to their nearest common ancestor (NCA) in G. 
+// The NCA's own distance is not included in the max-distance calculation. 
+// Assumes u and v are attached to G.
+std::pair<double,double> max_distance_to_nca(const std::vector<Node>& G, int u, int v) {
+    double max_distance_u = -std::numeric_limits<double>::infinity();
+    double max_distance_v = -std::numeric_limits<double>::infinity();
 
-    while (g[u].depth > g[v].depth) { mu = std::max(mu, g[u].dist); u = g[u].parent; }
-    while (g[v].depth > g[u].depth) { mv = std::max(mv, g[v].dist); v = g[v].parent; }
+    // Walk the deeper node up until both nodes are at the same depth
+    while (G[u].depth > G[v].depth) { max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent; }
+    while (G[v].depth > G[u].depth) { max_distance_v = std::max(max_distance_v, G[v].distance); v = G[v].parent; }
+
+    // Now walk both nodes up until they meet at the NCA
     while (u != v) {
-        mu = std::max(mu, g[u].dist); u = g[u].parent;
-        mv = std::max(mv, g[v].dist); v = g[v].parent;
+        max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent;
+        max_distance_v = std::max(max_distance_v, G[v].distance); v = G[v].parent;
     }
-    return {mu, mv};
+
+    return {max_distance_u, max_distance_v};
 }
 
-// Select parent among A, B, C: lowest max-dist path to NCA; tie-break A > B > C.
-int select_parent(const std::vector<Node>& g, int A, int B, int C) {
-    auto [mA_AB, mB_AB] = max_dist_to_nca(g, A, B);
-    auto [mB_BC, mC_BC] = max_dist_to_nca(g, B, C);
-    auto [mA_AC, mC_AC] = max_dist_to_nca(g, A, C);
+// Select parent among A, B, C that has the lowest maximum distance to NCA.
+// Break ties by preferring A > B > C.
+int select_parent(const std::vector<Node>& G, int A, int B, int C) {
+    // Check pair A, B
+    auto [max_A_AB, max_B_AB] = max_distance_to_nca(G, A, B);
 
-    bool A_over_B = (mA_AB <= mB_AB);
-    bool B_over_C = (mB_BC <= mC_BC);
-    bool A_over_C = (mA_AC <= mC_AC);
+    // Check pair B, C
+    auto [max_B_BC, max_C_BC] = max_distance_to_nca(G, B, C);
 
+    // Check pair A, C
+    auto [max_A_AC, max_C_AC] = max_distance_to_nca(G, A, C);
+
+    // Select parent with lowest maximum distance to NCA, breaking ties by A > B > C
+    bool A_over_B = (max_A_AB <= max_B_AB);
+    bool B_over_C = (max_B_BC <= max_C_BC);
+    bool A_over_C = (max_A_AC <= max_C_AC);
     if (A_over_B && A_over_C) return A;
     if (!A_over_B && B_over_C) return B;
     return C;
 }
 
-void attach(std::vector<Node>& g, int parent, int child) {
-    g[child].parent = parent;
-    g[child].depth  = g[parent].depth + 1;
+// Attach child to parent in G, updating child's depth and parent index.
+void attach(std::vector<Node>& G, int parent, int child) {
+    G[child].parent = parent;
+    G[child].depth  = G[parent].depth + 1;
 }
 
-} // namespace
-
-BBMSCoreResult bbms_core(const Curve& p, const Curve& q) {
-    int m = (int)p.size(), n = (int)q.size();
-    assert(m > 0 && n > 0);
-
-    std::vector<Node> g((size_t)m * n);
-    for (int i = 0; i < m; ++i)
-        for (int j = 0; j < n; ++j)
-            g[i*n+j] = { dist(p[i], q[j]), -2, -1 };
-
-    // Root
-    g[0].parent = -1;
-    g[0].depth  = 0;
-
-    // First column and first row
-    for (int i = 1; i < m; ++i) attach(g, (i-1)*n, i*n);
-    for (int j = 1; j < n; ++j) attach(g, j-1,     j  );
-
-    // Inner cells: row-major order so all three candidates are already attached
-    for (int i = 1; i < m; ++i)
-        for (int j = 1; j < n; ++j) {
-            int A = (i-1)*n + j;     // left
-            int B = (i-1)*n + (j-1); // diagonal
-            int C =  i   *n + (j-1); // below
-            attach(g, select_parent(g, A, B, C), i*n+j);
-        }
+std::pair<std::vector<std::pair<int,int>>, double> extract_matching(const std::vector<Node>& G, int m, int n) {
+    std::vector<std::pair<int,int>> matching;
+    double max_distance = -std::numeric_limits<double>::infinity();
 
     // Trace path from (m-1, n-1) to root
-    std::vector<std::pair<int,int>> matching;
-    double frechet = -std::numeric_limits<double>::infinity();
-    for (int cur = (m-1)*n + (n-1); cur != -1; cur = g[cur].parent) {
-        matching.push_back({cur/n, cur%n});
-        frechet = std::max(frechet, g[cur].dist);
+    for (int cur = (m - 1) * n + (n - 1); cur != -1; cur = G[cur].parent) {
+        matching.push_back({cur / n, cur % n});
+        max_distance = std::max(max_distance, G[cur].distance);
     }
+
+    // Reverse to get matching in order from (0,0) to (m-1,n-1)
     std::reverse(matching.begin(), matching.end());
 
-    return {matching, frechet};
+    return {matching, max_distance};
+}
+
+
+// Assumes p and q have length >= 1
+MatchingAndFrechetDistance bbms_core(const Curve& p, const Curve& q) {
+    int m = (int) p.size(), n = (int) q.size();
+
+    // Initialize graph G with distances and unattached nodes
+    std::vector<Node> G((size_t) m * n);
+    for (int i = 0; i < m; ++i)
+        for (int j = 0; j < n; ++j)
+            G[i * n + j] = { dist(p[i], q[j]), -2, -1 };
+
+    // Setup root node
+    G[0].parent = -1;
+    G[0].depth  = 0;
+
+    // Attach bottom row to root
+    for (int i = 1; i < m; ++i) attach(G, (i - 1) * n, i * n);
+
+    // Attach left column to root
+    for (int j = 1; j < n; ++j) attach(G, j - 1, j);
+
+    // Attach interior nodes to parent with lowest max-dist path to NCA
+    for (int i = 1; i < m; ++i) {
+        for (int j = 1; j < n; ++j) {
+            int A = (i - 1) * n + j; // left
+            int B = (i - 1) * n + (j - 1); // diagonal
+            int C = i * n + (j - 1); // below
+            attach(G, select_parent(G, A, B, C), i * n + j);
+        }
+    }
+
+    // Trace path from root to (m-1, n-1) to extract matching and max distance
+    auto [matching, max_distance] = extract_matching(G, m, n);
+
+    return {matching, max_distance};
 }

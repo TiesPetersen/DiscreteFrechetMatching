@@ -299,7 +299,7 @@ void update_shortcuts(std::deque<Shortcut>& pool, std::vector<Node>& g,
 
 } // namespace
 
-BBMSDppInstantResult bbms_dpp_instant(const Curve& p, const Curve& q) {
+MatchingAndFrechetDistance bbms_dpp_instant(const Curve& p, const Curve& q) {
     int m = (int)p.size(), n = (int)q.size();
     assert(m > 0 && n > 0);
 

@@ -57,12 +57,12 @@ NCAResult max_distance_to_nca(const std::vector<Node>& G, long long u, long long
 }
 
 // All pairwise NCA results needed by update_shortcuts.
-// max_A_AB = max dist on A's side to NCA(A,B); max_B_AB = max dist on B's side to NCA(A,B).
+// e.g. max_A_AB = max dist on A's side to NCA(A,B); max_B_AB = max dist on B's side to NCA(A,B).
 struct SelectResult {
     long long parent;                               // selected parent for D
-    double max_A_AB, max_B_AB; long long nca_AB;    // 
-    double max_B_BC, max_C_BC; long long nca_BC;    // 
-    double max_A_AC, max_C_AC; long long nca_AC;    // 
+    double max_A_AB, max_B_AB; long long nca_AB;    // pair A, B stats
+    double max_B_BC, max_C_BC; long long nca_BC;    // pair B, C stats
+    double max_A_AC, max_C_AC; long long nca_AC;    // pair A, C stats
 };
 
 // Select parent among A, B, C that has the lowest maximum distance to NCA.

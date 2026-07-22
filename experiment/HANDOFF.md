@@ -83,11 +83,39 @@ That copy has been deleted; nothing under `experiment/` or `algorithms/` changed
 and N-grid ceiling, both deferred to the AWS calibration run since they need real
 hardware numbers.
 
-## What's next: AWS calibration run
+## Local calibration rehearsal (Windows/WSL laptop, not the real testbed): done, 2026-07-22
 
-A calibration run on the real AWS machine (top few N values, no repeats, to
-sanity-check the N grid/timeout value against real hardware — both are currently
-estimates extrapolated from an M1 Mac mini), then the full run, then analysis.
+Before AWS access, ran a small end-to-end rehearsal of `main.py` itself (not just
+`runner.exe` in isolation, as the smoke test above did) on this WSL machine, to
+validate the orchestrator's actual multi-N sweep behavior, and got calibration
+signal worth carrying forward even though this hardware isn't the real testbed:
+
+- `main.py` ran correctly end-to-end across a real multi-N sweep: resumability,
+  wall-skipping, and cross-algorithm agreement all fired correctly on organically
+  (not artificially) triggered timeouts, not just the artificial ones from the
+  earlier smoke test.
+- `BBMSCore`'s runtime scaling on `worst-case` looks much worse than cell-count-
+  linear (~6-8x per N-doubling vs. ~4x expected) and it hit a 20s timeout already
+  at N=4000 — only the 4th of 10 grid points, which goes up to N=50000.
+- Memory scaled close to the expected ~4x/doubling, but extrapolated out to
+  N=50000 implies multi-hundred-GB requirements for at least `BBMSInter` — likely
+  unreachable on typical AWS instances.
+
+Full numbers are in this session's transcript, not reproduced here since they're
+laptop/WSL numbers, not AWS ones — not worth the confusion of looking canonical
+in a doc. What *is* now in the repo, ready for the real machine: a tested
+calibration script, so the AWS session doesn't require Claude to write ad hoc
+commands live.
+
+## What's next: AWS calibration, then the full run
+
+See **`experiment/calibration/AWS_HANDOFF.md`** — a self-contained, step-by-step
+plan for the AWS machine (no Claude Code access assumed there). It covers:
+building, running `experiment/calibration/calibrate.py` (already written and
+tested — reuses `main.py`'s own logic against a separate `results_calibration/`
+output dir, so it can't clobber real data), reading the results to set
+`TIMEOUT_S`/`GRID` in `main.py`, then launching the real full run safely
+(tmux + a memory `ulimit` safety net) and pulling back the final `results/`.
 
 ## Where to look for more detail
 
@@ -96,5 +124,7 @@ estimates extrapolated from an M1 Mac mini), then the full run, then analysis.
   timeout/failure handling).
 - `experiment/PSEUDOCODE.md` — file-by-file pseudocode for everything (now
   implemented for real, but this is still the clearest single-document overview).
+- `experiment/calibration/AWS_HANDOFF.md` — the concrete next-step plan, written
+  for the AWS machine specifically.
 - `paper_draft.md` (repo root) — the paper's own section-by-section skeleton and
   status.

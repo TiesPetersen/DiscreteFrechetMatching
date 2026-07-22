@@ -263,6 +263,19 @@ scheme:
   findings (one's about wall-clock cost, the other's central to the memory-wall
   story), and collapsing them into one `ok=False` would throw that distinction away
   at collection time, before analysis ever gets a chance to use it.
+- **The AWS runs cap each `runner.exe` process to `ulimit -v` = 90% of total RAM**
+  (see `experiment/calibration/AWS_HANDOFF.md` §3/§6), so an over-budget allocation
+  fails cleanly as `bad_alloc` inside the process being measured rather than risking
+  the kernel's OOM-killer picking an unrelated victim (e.g. the SSH session) on a
+  shared machine. This is a methodological choice, not just an ops safeguard, and
+  changes what `status=oom` means in the results: it records "this process exceeded
+  90% of total system RAM," not "the physical machine had no memory left." The exact
+  resolved limit and machine specs (RAM, `uname`, `nproc`) are logged to
+  `results/run_metadata.txt` at the start of the real run for reproducibility — cite
+  that file's contents (instance RAM + the effective `ulimit -v` value it records)
+  when reporting OOM results in the paper, not just "90% of RAM" as a formula, since
+  the actual usable RAM `free` reports is always somewhat below the nominal
+  instance-type spec.
 
 ### 5.6 Cross-algorithm correctness check
 

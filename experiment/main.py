@@ -22,6 +22,11 @@ os.chdir(PROJECT_ROOT)
 RUNNER         = os.path.join("experiment", "runner.exe")
 RUNNER_COUNTED = os.path.join("experiment", "runner_counted.exe")
 
+# Overridable by experiment/calibration/calibrate.py, which reuses these functions
+# against a separate output directory so calibration runs can never be mistaken
+# for, or clobber, real experiment data.
+RESULTS_DIR = "results"
+
 DATASETS   = ["worst-case", "best-case", "random"]
 GRID       = [500, 1000, 2000, 4000, 7000, 11000, 18000, 28000, 40000, 50000]
 K          = 5     # samples per (dataset, N), same for all three datasets
@@ -126,7 +131,7 @@ def run_and_classify(cmd, fieldnames, known):
 
 
 def run_timing_pass(dataset):
-    csv_path = os.path.join("results", dataset, "timing_memory.csv")
+    csv_path = os.path.join(RESULTS_DIR, dataset, "timing_memory.csv")
     done, walls = load_done_and_walls(csv_path, ["algorithm", "N", "sample", "repeat"])
 
     for n in GRID:
@@ -154,7 +159,7 @@ def run_timing_pass(dataset):
 
 
 def run_opcount_pass(dataset):
-    csv_path = os.path.join("results", dataset, "opcounts.csv")
+    csv_path = os.path.join(RESULTS_DIR, dataset, "opcounts.csv")
     done, walls = load_done_and_walls(csv_path, ["algorithm", "N", "sample"])
 
     for n in GRID:
@@ -185,7 +190,7 @@ def verify_cross_algorithm_agreement(dataset):
     """Checks that every algorithm reports the same Frechet distance on the same
     instance. Uses only the op-count CSV -- exactly one row per (algorithm, N,
     sample), no repeats to reconcile -- so this needs no extra runs."""
-    csv_path = os.path.join("results", dataset, "opcounts.csv")
+    csv_path = os.path.join(RESULTS_DIR, dataset, "opcounts.csv")
     if not os.path.exists(csv_path):
         return
 
@@ -210,7 +215,7 @@ def main():
         sys.exit(1)
 
     for dataset in DATASETS:
-        os.makedirs(os.path.join("results", dataset), exist_ok=True)
+        os.makedirs(os.path.join(RESULTS_DIR, dataset), exist_ok=True)
         run_timing_pass(dataset)
         run_opcount_pass(dataset)
 

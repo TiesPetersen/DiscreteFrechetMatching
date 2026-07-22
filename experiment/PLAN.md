@@ -286,7 +286,13 @@ already-collected data; it doesn't require any additional runs.
 - [ ] Confirm N-grid ceiling (§2.1) against real AWS timing/memory behavior — may need
       to trim if the machine is slower than the M1 extrapolation assumed, or could
       safely extend if it's faster and memory allows.
-- [ ] Confirm the returncode-based OOM inference (§5.5) actually fires as expected —
+- [x] Confirm the returncode-based OOM inference (§5.5) actually fires as expected —
       during the WSL smoke test and again during the AWS calibration run, deliberately
       trigger an OOM (e.g. a small `ulimit -v` cap) and check it's classified as
-      `status=oom`, not left unhandled or misclassified.
+      `status=oom`, not left unhandled or misclassified. **WSL: confirmed 2026-07-22.**
+      `ulimit -v` on a large-N allocation reliably triggers the runner's own
+      `bad_alloc` catch → `status=oom` (this path never fired on macOS — see
+      `HANDOFF.md`). Separately, feeding a killed/no-output subprocess directly into
+      `main.py`'s `run_and_classify` confirmed the orchestrator's own inference
+      branch (non-zero/empty-output → `oom`) also works. Still needs the AWS
+      calibration-run recheck.

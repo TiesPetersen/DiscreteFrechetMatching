@@ -28,7 +28,7 @@ curves, random) — see `paper_draft.md` (repo root) for the paper's own structu
   `memory_usage`, `loglog_scaling`), also dev scratch space, not part of the paper.
 - `results/` — where the orchestrator writes CSVs. Empty until a real run happens.
 
-## Status: implementation done, smoke-tested on macOS, not yet run for real
+## Status: implementation done, smoke-tested on macOS + WSL, not yet run for real
 
 Everything in `PLAN.md` and `PSEUDOCODE.md` has been implemented — not just
 pseudocode anymore, the actual code exists and builds. Verified so far (on a Mac):
@@ -47,23 +47,46 @@ pseudocode anymore, the actual code exists and builds. Verified so far (on a Mac
   `algorithm`/`N`/`sample` identity (all `-1`), which would have also silently broken
   wall-reconstruction on resume.
 
-## What's next: the WSL smoke test (Stage 2 in `PLAN.md`)
+## WSL smoke test (Stage 2 in `PLAN.md`): done, 2026-07-22
 
-Three things could **not** be verified on macOS and need checking on WSL before
-trusting them on the real AWS run:
+All three things that couldn't be verified on macOS were checked on WSL (Ubuntu
+24.04, kernel 5.15, native `~/dfm-smoke` filesystem, not `/mnt/c/...`), using a
+throwaway copy of `algorithms/` + `experiment/{runner.cpp,Makefile,main.py}` +
+two small dataset files (`worst-case` N=500 and N=4000) — not the full sweep.
+That copy has been deleted; nothing under `experiment/` or `algorithms/` changed.
 
-1. Whether `major_faults`/`block_input_ops`/`block_output_ops`/context-switch
-   counters actually respond to real memory pressure. Expected to read flat zero on
-   macOS regardless (its memory compressor intercepts pressure before classic page
-   faults) — this is the whole reason Linux is needed to check it at all.
-2. The Linux branch of the `ru_maxrss` unit conversion in `runner.cpp`
-   (`maxrss_to_mb`) — only the macOS branch has actually executed so far.
-3. Whether a real OOM gets classified as `status=oom` by `main.py`'s
-   `run_and_classify`. Tried forcing this on macOS via `ulimit -v` — doesn't work
-   there (`setrlimit failed`) — needs WSL's/Linux's actual memory-limiting tools.
+1. **Memory-pressure counters respond on Linux — confirmed.** Running `BBMSCore`
+   N=500 under a `systemd-run --scope -p MemoryMax=5M -p MemorySwapMax=0` cgroup cap
+   moved `major_faults` from 0 → 360, `block_input_ops` from 0 → 362, and
+   `involuntary_ctx_switches` from ~0 → 71, versus an uncapped baseline run. These
+   fields are genuinely live on Linux, not just schema placeholders.
+2. **`maxrss_to_mb` Linux branch — confirmed correct.** Runner reported
+   `maxrss_after_mb=9.08594`; `/usr/bin/time -v` on the same invocation reported
+   `Maximum resident set size: 9304` KB → 9304/1024 = 9.086 MB. Exact match.
+3. **Real OOM → `status=oom` — confirmed, two ways.**
+   - `ulimit -v 100000` (100MB address-space cap) on a `BBMSCore` N=4000 run (needs
+     ~384MB for its `m*n` node vector) triggered a real `std::bad_alloc`, caught by
+     the runner itself, printed as `status=oom`. This is the path that flatly didn't
+     work on macOS (`setrlimit failed`) — now confirmed on real Linux.
+   - Separately, fed a subprocess that gets SIGKILLed with no stdout directly into
+     `main.py`'s actual `run_and_classify` — confirmed its returncode/empty-output
+     inference branch also classifies this as `status=oom`.
+   - Note: tried to also trigger a *genuine* kernel/cgroup OOM-kill (rather than the
+     `ulimit -v`/simulated-kill paths above) via `systemd-run --scope -p MemoryMax=...`.
+     This turned out to be unreliable to signal/kill cleanly from outside in this WSL
+     session (two runs became unresponsive under a tight cap with swap enabled —
+     thrashing rather than getting OOM-killed — and had to be `pkill -9`'d) rather
+     than actually validating anything new, so it was abandoned in favor of the two
+     more targeted checks above, which cover the same code paths deterministically.
 
-After WSL: a calibration run on the real AWS machine (top few N values, no repeats,
-to sanity-check the N grid/timeout value against real hardware — both are currently
+`PLAN.md` §6 checklist updated accordingly. Still open there: exact timeout value
+and N-grid ceiling, both deferred to the AWS calibration run since they need real
+hardware numbers.
+
+## What's next: AWS calibration run
+
+A calibration run on the real AWS machine (top few N values, no repeats, to
+sanity-check the N grid/timeout value against real hardware — both are currently
 estimates extrapolated from an M1 Mac mini), then the full run, then analysis.
 
 ## Where to look for more detail

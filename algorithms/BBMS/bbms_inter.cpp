@@ -1,4 +1,5 @@
 #include "bbms_inter.h"
+#include "../counters.h"
 #include <algorithm>
 
 
@@ -37,18 +38,22 @@ NCAResult max_distance_to_nca(const std::vector<Node>& G, long long u, long long
             if (G[v].high.target != -1) {
                 max_distance_v = std::max(max_distance_v, G[v].high.value);
                 v  = G[v].high.target;
+                COUNT(nca_shortcut_hops);
             } else {
                 max_distance_v = std::max(max_distance_v, G[v].distance);
                 v  = G[v].parent;
+                COUNT(nca_regular_hops);
             }
         } else {
             // Walk u up the tree, using shortcuts if available
             if (G[u].low.target != -1) {
                 max_distance_u = std::max(max_distance_u, G[u].low.value);
                 u  = G[u].low.target;
+                COUNT(nca_shortcut_hops);
             } else {
                 max_distance_u = std::max(max_distance_u, G[u].distance);
                 u  = G[u].parent;
+                COUNT(nca_regular_hops);
             }
         }
     }
@@ -105,49 +110,49 @@ void update_shortcuts(std::vector<Node>& G, long long A, long long B, long long 
 
     if (sr.parent == A) {
         if (AB && BC) {
-            G[A].low  = { B, G[A].distance };
-            G[C].high = { B, G[C].distance };
-            G[D].low  = { B, std::max(G[A].distance, G[D].distance) };
+            G[A].low  = { B, G[A].distance };                                      COUNT(shortcuts_written);
+            G[C].high = { B, G[C].distance };                                      COUNT(shortcuts_written);
+            G[D].low  = { B, std::max(G[A].distance, G[D].distance) };             COUNT(shortcuts_written);
         } else if (AB) {
-            G[A].low  = { sr.nca_AC, sr.max_A_AC };
-            G[D].low  = { sr.nca_AC, std::max(sr.max_A_AC, G[D].distance) };
+            G[A].low  = { sr.nca_AC, sr.max_A_AC };                                COUNT(shortcuts_written);
+            G[D].low  = { sr.nca_AC, std::max(sr.max_A_AC, G[D].distance) };       COUNT(shortcuts_written);
         } else if (BC) {
-            G[C].high = { sr.nca_AC, sr.max_C_AC };
-            G[D].low  = { sr.nca_AC, std::max(sr.max_A_AC, G[D].distance) };
+            G[C].high = { sr.nca_AC, sr.max_C_AC };                                COUNT(shortcuts_written);
+            G[D].low  = { sr.nca_AC, std::max(sr.max_A_AC, G[D].distance) };       COUNT(shortcuts_written);
         } else {
-            G[D].low  = { sr.nca_AB, std::max(sr.max_A_AB, G[D].distance) };
+            G[D].low  = { sr.nca_AB, std::max(sr.max_A_AB, G[D].distance) };       COUNT(shortcuts_written);
         }
     } else if (sr.parent == B) {
         if (AB && BC) {
-            G[A].low  = { B, G[A].distance };
-            G[C].high = { B, G[C].distance };
-            G[D].high = { B, G[D].distance };
-            G[D].low  = { B, G[D].distance };
+            G[A].low  = { B, G[A].distance };                                      COUNT(shortcuts_written);
+            G[C].high = { B, G[C].distance };                                      COUNT(shortcuts_written);
+            G[D].high = { B, G[D].distance };                                      COUNT(shortcuts_written);
+            G[D].low  = { B, G[D].distance };                                      COUNT(shortcuts_written);
         } else if (AB) {
-            G[A].low  = { B, G[A].distance };
-            G[D].high = { B, G[D].distance };
-            G[D].low  = { sr.nca_AC, std::max(sr.max_B_BC, G[D].distance) };
+            G[A].low  = { B, G[A].distance };                                      COUNT(shortcuts_written);
+            G[D].high = { B, G[D].distance };                                      COUNT(shortcuts_written);
+            G[D].low  = { sr.nca_AC, std::max(sr.max_B_BC, G[D].distance) };       COUNT(shortcuts_written);
         } else if (BC) {
-            G[C].high = { B, G[C].distance };
-            G[D].high = { sr.nca_AC, std::max(sr.max_B_AB, G[D].distance) };
-            G[D].low  = { B, G[D].distance };
+            G[C].high = { B, G[C].distance };                                      COUNT(shortcuts_written);
+            G[D].high = { sr.nca_AC, std::max(sr.max_B_AB, G[D].distance) };       COUNT(shortcuts_written);
+            G[D].low  = { B, G[D].distance };                                      COUNT(shortcuts_written);
         } else {
-            G[D].high = { sr.nca_AB, std::max(sr.max_B_AB, G[D].distance) };
-            G[D].low  = { sr.nca_BC, std::max(sr.max_B_BC, G[D].distance) };
+            G[D].high = { sr.nca_AB, std::max(sr.max_B_AB, G[D].distance) };       COUNT(shortcuts_written);
+            G[D].low  = { sr.nca_BC, std::max(sr.max_B_BC, G[D].distance) };       COUNT(shortcuts_written);
         }
     } else if (sr.parent == C) {
         if (AB && BC) {
-            G[A].low  = { B, G[A].distance };
-            G[C].high = { B, G[C].distance };
-            G[D].high = { B, std::max(G[C].distance, G[D].distance) };
+            G[A].low  = { B, G[A].distance };                                      COUNT(shortcuts_written);
+            G[C].high = { B, G[C].distance };                                      COUNT(shortcuts_written);
+            G[D].high = { B, std::max(G[C].distance, G[D].distance) };             COUNT(shortcuts_written);
         } else if (AB) {
-            G[A].low  = { sr.nca_AC, sr.max_A_AC };
-            G[D].high = { sr.nca_AC, std::max(sr.max_C_AC, G[D].distance) };
+            G[A].low  = { sr.nca_AC, sr.max_A_AC };                                COUNT(shortcuts_written);
+            G[D].high = { sr.nca_AC, std::max(sr.max_C_AC, G[D].distance) };       COUNT(shortcuts_written);
         } else if (BC) {
-            G[C].high = { sr.nca_AC, sr.max_C_AC };
-            G[D].high = { sr.nca_AC, std::max(sr.max_C_AC, G[D].distance) };
+            G[C].high = { sr.nca_AC, sr.max_C_AC };                                COUNT(shortcuts_written);
+            G[D].high = { sr.nca_AC, std::max(sr.max_C_AC, G[D].distance) };       COUNT(shortcuts_written);
         } else {
-            G[D].high = { sr.nca_BC, std::max(sr.max_C_BC, G[D].distance) };
+            G[D].high = { sr.nca_BC, std::max(sr.max_C_BC, G[D].distance) };       COUNT(shortcuts_written);
         }
     }
 }

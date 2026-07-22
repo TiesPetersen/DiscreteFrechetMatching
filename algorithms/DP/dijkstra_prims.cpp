@@ -1,4 +1,5 @@
 #include "dijkstra_prims.h"
+#include "../counters.h"
 #include <queue>
 #include <tuple>
 #include <algorithm>
@@ -26,6 +27,7 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
     while (!pq.empty()) {
         // Get the cell with the smallest distance from the priority queue
         auto [current_distance, i, j] = pq.top(); pq.pop();
+        COUNT(heap_pops);
         frechet = std::max(frechet, current_distance);
 
         // If we reached the last cell, we can stop
@@ -48,6 +50,7 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
             // Add the neighbor to the priority queue
             prev[idx] = (long long) i * n + j;
             pq.push({dist(p[ni], q[nj]), ni, nj});
+            COUNT(heap_pushes);
         }
     }
 

@@ -1,4 +1,5 @@
 #include "bbms_core.h"
+#include "../counters.h"
 #include <algorithm>
 
 
@@ -17,13 +18,13 @@ std::pair<double,double> max_distance_to_nca(const std::vector<Node>& G, long lo
     double max_distance_v = -INF;
 
     // Walk the deeper node up the tree, until both nodes are at the same depth
-    while (G[u].depth > G[v].depth) { max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent; }
-    while (G[v].depth > G[u].depth) { max_distance_v = std::max(max_distance_v, G[v].distance); v = G[v].parent; }
+    while (G[u].depth > G[v].depth) { max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent; COUNT(nca_regular_hops); }
+    while (G[v].depth > G[u].depth) { max_distance_v = std::max(max_distance_v, G[v].distance); v = G[v].parent; COUNT(nca_regular_hops); }
 
     // Now walk both nodes up the tree until they meet at the NCA
     while (u != v) {
-        max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent;
-        max_distance_v = std::max(max_distance_v, G[v].distance); v = G[v].parent;
+        max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent; COUNT(nca_regular_hops);
+        max_distance_v = std::max(max_distance_v, G[v].distance); v = G[v].parent; COUNT(nca_regular_hops);
     }
 
     return {max_distance_u, max_distance_v};

@@ -110,8 +110,9 @@ def main():
     experiment_main.R = args.r
     experiment_main.TIMEOUT_S = args.timeout
 
-    print(f"Calibration run: datasets={datasets} grid={experiment_main.GRID} "
-          f"k={experiment_main.K} r={experiment_main.R} timeout={experiment_main.TIMEOUT_S}s\n"
+    print(f"{experiment_main.log_timestamp()}  Calibration run: datasets={datasets} "
+          f"grid={experiment_main.GRID} k={experiment_main.K} r={experiment_main.R} "
+          f"timeout={experiment_main.TIMEOUT_S}s\n"
           f"Writing to {experiment_main.RESULTS_DIR}/ (not results/ -- this never touches real run data)\n",
           flush=True)
 
@@ -120,7 +121,7 @@ def main():
         experiment_main.run_timing_pass(dataset)
         experiment_main.run_opcount_pass(dataset)
 
-    print("\nCalibration run complete.", flush=True)
+    print(f"\n{experiment_main.log_timestamp()}  Calibration run complete.", flush=True)
     print_summary(datasets)
 
 

@@ -15,9 +15,20 @@ import csv
 import os
 import subprocess
 import sys
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(PROJECT_ROOT)
+
+# Log lines are timestamped in Amsterdam local time (CET/CEST, DST-aware via
+# zoneinfo) regardless of what timezone the machine actually running this
+# (WSL laptop tonight, AWS tomorrow) happens to be set to.
+AMSTERDAM_TZ = ZoneInfo("Europe/Amsterdam")
+
+
+def log_timestamp():
+    return datetime.now(AMSTERDAM_TZ).strftime("%Y-%m-%d %H:%M:%S %Z")
 
 RUNNER         = os.path.join("experiment", "runner.exe")
 RUNNER_COUNTED = os.path.join("experiment", "runner_counted.exe")
@@ -153,7 +164,7 @@ def run_timing_pass(dataset):
                     if status in FAILURE_STATUSES:
                         walls[algorithm] = min(walls.get(algorithm, n), n)
 
-                    print(f"  [timing]   {dataset:10s} {algorithm:15s} N={n:6d} "
+                    print(f"{log_timestamp()}  [timing]   {dataset:10s} {algorithm:15s} N={n:6d} "
                           f"sample={sample} repeat={repeat}  status={status}", flush=True)
                     append_row(csv_path, TIMING_FIELDS, row)
 
@@ -179,7 +190,7 @@ def run_opcount_pass(dataset):
                 if status in FAILURE_STATUSES:
                     walls[algorithm] = min(walls.get(algorithm, n), n)
 
-                print(f"  [opcounts] {dataset:10s} {algorithm:15s} N={n:6d} "
+                print(f"{log_timestamp()}  [opcounts] {dataset:10s} {algorithm:15s} N={n:6d} "
                       f"sample={sample}  status={status}", flush=True)
                 append_row(csv_path, OPCOUNT_FIELDS, row)
 
@@ -205,7 +216,7 @@ def verify_cross_algorithm_agreement(dataset):
     for (n, sample), results in by_instance.items():
         distances = [d for _, d in results]
         if max(distances) - min(distances) > 1e-9:
-            print(f"  WARNING: {dataset} N={n} sample={sample}: algorithms disagree "
+            print(f"{log_timestamp()}  WARNING: {dataset} N={n} sample={sample}: algorithms disagree "
                   f"on frechet_distance -- {results}", flush=True)
 
 
@@ -214,12 +225,14 @@ def main():
         print(f"ERROR: runner binaries not found. Run: cd experiment && make", flush=True)
         sys.exit(1)
 
+    print(f"{log_timestamp()}  Starting run.", flush=True)
+
     for dataset in DATASETS:
         os.makedirs(os.path.join(RESULTS_DIR, dataset), exist_ok=True)
         run_timing_pass(dataset)
         run_opcount_pass(dataset)
 
-    print("\nAll runs complete.", flush=True)
+    print(f"\n{log_timestamp()}  All runs complete.", flush=True)
 
 
 if __name__ == "__main__":

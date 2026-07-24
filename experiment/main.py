@@ -109,7 +109,7 @@ def load_done_and_walls(csv_path, key_fields):
     return done, walls
 
 
-def run_and_classify(cmd, fieldnames, known):
+def run_and_classify(cmd, fieldnames, known, timeout=TIMEOUT_S):
     """Runs one subprocess and returns (row, status). Handles three outcomes:
     a normal exit with a parseable CSV line ("ok" or the runner's own "error"),
     a timeout, and a killed/crashed process with no usable output.
@@ -123,9 +123,13 @@ def run_and_classify(cmd, fieldnames, known):
     `known` is what the orchestrator already knows before running (algorithm, N,
     sample) -- kept in the row even on failure, so a failed run can still be
     identified and so wall-reconstruction on resume has something to read back.
+
+    `timeout=None` disables the subprocess timeout entirely -- used by the op-count
+    pass, which only ever attempts N values the timing pass already succeeded at
+    (see run_opcount_pass), so a timeout there was never expected to fire anyway.
     """
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT_S)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
         return blank_row(fieldnames, known, "timeout"), "timeout"
 
@@ -173,6 +177,15 @@ def run_opcount_pass(dataset):
     csv_path = os.path.join(RESULTS_DIR, dataset, "opcounts.csv")
     done, walls = load_done_and_walls(csv_path, ["algorithm", "N", "sample"])
 
+    # Op-counting does the same algorithmic work as timing (same code, plus cheap
+    # increments), so an N that already failed there is expected to fail here too --
+    # no need to re-pay a real timeout or risk a real OOM just to re-learn a wall
+    # the timing pass already found. Only ever narrows `walls`, never widens it.
+    timing_csv_path = os.path.join(RESULTS_DIR, dataset, "timing_memory.csv")
+    _, timing_walls = load_done_and_walls(timing_csv_path, ["algorithm", "N", "sample", "repeat"])
+    for algorithm, timing_wall_n in timing_walls.items():
+        walls[algorithm] = min(walls.get(algorithm, timing_wall_n), timing_wall_n)
+
     for n in GRID:
         dataset_file = os.path.join("datasets", dataset, f"N_{n}.txt")
         for sample in range(K):
@@ -185,7 +198,7 @@ def run_opcount_pass(dataset):
 
                 known = {"algorithm": algorithm, "N": n, "sample": sample}
                 cmd = [RUNNER_COUNTED, algorithm, dataset_file, str(sample)]
-                row, status = run_and_classify(cmd, OPCOUNT_FIELDS, known)
+                row, status = run_and_classify(cmd, OPCOUNT_FIELDS, known, timeout=None)
 
                 if status in FAILURE_STATUSES:
                     walls[algorithm] = min(walls.get(algorithm, n), n)

@@ -44,7 +44,12 @@ K          = 5     # samples per (dataset, N), same for all three datasets
 R          = 3     # timing repeats per sample
 ALGORITHMS = ["BBMSCore", "BBMSInter", "DijkstraPrims"]
 
-TIMEOUT_S = 2700  # 45 min placeholder -- see PLAN.md 6, needs the calibration run
+TIMEOUT_S = 7200  # 2h -- set from the AWS calibration run (see PLAN.md 6). BBMSCore's
+                  # true cost at N=11000 and BBMSInter/DijkstraPrims' at N=18000 all
+                  # exceeded the calibration script's own tight 120s cap without being
+                  # anywhere near a real wall (extrapolated true times: ~150-260s) --
+                  # 45 min risked mistaking ordinary noise for a genuine wall right
+                  # around DijkstraPrims' top-of-grid runtime; 2h gives real headroom.
 
 # A run that hits either of these is expected to fail again at any larger N for the
 # same (dataset, algorithm), so testing stops there. "error" is excluded on purpose --

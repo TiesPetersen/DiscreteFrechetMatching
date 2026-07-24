@@ -15,8 +15,10 @@ Every line has an IQR error bar per point (25th/75th percentile across
 samples, after first taking the min across repeats within each sample -- see
 aggregate()) and stops at the largest N it actually completed at -- i.e.
 exactly where its wall was hit. Each graph has independent linear/log axis
-dropdowns and a data table underneath (mean [Q1, Q3] per N, plus a final row
-giving the stop reason/status for each line).
+dropdowns and a data table underneath: mean (n=sample count) per N, with the
+IQR (explicitly labeled, not just a bare bracketed pair) and the individual
+per-sample values themselves shown in small grey text below each mean, plus
+a final row giving the stop reason/status for each line.
 
 Usage:
     python analysis/app.py                        # reads <repo-root>/results
@@ -181,8 +183,11 @@ def aggregate(rows, attribute):
     sample) pass straight through the per-sample min as a no-op -- there's
     nothing to denoise there.
 
-    Returns {algorithm: {N: {mean, q1, q3, count}}}; `count` is the number of
-    samples behind each point, not the number of raw rows."""
+    Returns {algorithm: {N: {mean, q1, q3, count, values}}}; `count` is the
+    number of samples behind each point, not the number of raw rows; `values`
+    is the sorted list of those per-sample values themselves (each already
+    reduced across its own repeats), for display alongside the summary stats
+    so a reader can see the actual spread behind the mean, not just trust it."""
     per_sample_values = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     for row in rows:
         if row["status"] != "ok":
@@ -208,6 +213,7 @@ def aggregate(rows, attribute):
             result[algo][n] = {
                 "mean": sum(values) / len(values),
                 "q1": q1, "q3": q3, "count": len(values),
+                "values": sorted(values),
             }
     return result
 
@@ -290,15 +296,29 @@ def build_table(series_by_trace, stop_status_by_trace, trace_order):
     """Rows = every N with at least one trace's data, columns = trace_order
     (algorithms or datasets), plus a final row giving each trace's stop
     reason -- shown regardless of whether it was structurally absent from
-    the graph, since that's independent of this one attribute."""
+    the graph, since that's independent of this one attribute.
+
+    Each data cell is {summary, detail}: `summary` is the mean and how many
+    samples it's from; `detail` is small-grey-font supporting text -- the IQR
+    labeled explicitly (not just a bare bracketed pair, which reads as
+    "some range" without saying what kind), plus the individual per-sample
+    values themselves, so a reader can see the actual data behind the mean
+    rather than only a pre-digested summary of it."""
     all_ns = sorted({n for points in series_by_trace.values() for n in points})
     rows = []
     for n in all_ns:
         cell = {"N": n}
         for name in trace_order:
             point = series_by_trace.get(name, {}).get(n)
-            cell[name] = (f"{fmt(point['mean'])} [{fmt(point['q1'])}, {fmt(point['q3'])}] "
-                          f"(n={point['count']})") if point else "—"
+            if point:
+                values_str = ", ".join(fmt(v) for v in point["values"])
+                cell[name] = {
+                    "summary": f"{fmt(point['mean'])}  (n={point['count']})",
+                    "detail": (f"IQR 25–75%: [{fmt(point['q1'])}, {fmt(point['q3'])}]"
+                               f"  ·  per-sample: {values_str}"),
+                }
+            else:
+                cell[name] = {"summary": "—", "detail": ""}
         rows.append(cell)
 
     stop_row = {"N": "stopped at"}
@@ -454,6 +474,8 @@ PAGE_TEMPLATE = """<!doctype html>
   .data-table-panel h3 { margin: 0 0 10px; font-size: 0.78rem; text-transform: uppercase;
                           letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
   .data-table-panel table { font-size: 0.78rem; white-space: nowrap; }
+  .cell-detail { color: var(--muted); font-size: 0.68rem; margin-top: 3px;
+                  white-space: normal; max-width: 260px; }
   .data-table-panel tr.stop-row td { border-top: 1px solid var(--border-strong); font-style: italic;
                                       color: var(--muted); }
 </style>
@@ -632,9 +654,27 @@ function renderDataTable() {
   const tbody = document.createElement('tbody');
   info.rows.forEach(row => {
     const tr = document.createElement('tr');
-    ['N', ...columns].forEach(col => {
+
+    const tdN = document.createElement('td');
+    tdN.textContent = row['N'];
+    tr.appendChild(tdN);
+
+    // Each data cell is {summary, detail}: summary at normal size/weight,
+    // detail (the IQR label + individual per-sample values) below it in
+    // small grey text -- supporting evidence for the mean, not competing
+    // with it for attention.
+    columns.forEach(col => {
       const td = document.createElement('td');
-      td.textContent = row[col];
+      const cell = row[col];
+      const summary = document.createElement('div');
+      summary.textContent = cell.summary;
+      td.appendChild(summary);
+      if (cell.detail) {
+        const detail = document.createElement('div');
+        detail.className = 'cell-detail';
+        detail.textContent = cell.detail;
+        td.appendChild(detail);
+      }
       tr.appendChild(td);
     });
     tbody.appendChild(tr);

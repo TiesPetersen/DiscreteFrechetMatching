@@ -12,7 +12,8 @@ Two ways to slice the data, selected via tabs at the top:
     nothing to show under total_nca_steps, so it isn't offered).
 
 Every line has an IQR error bar per point (25th/75th percentile across
-samples/repeats) and stops at the largest N it actually completed at -- i.e.
+samples, after first taking the min across repeats within each sample -- see
+aggregate()) and stops at the largest N it actually completed at -- i.e.
 exactly where its wall was hit. Each graph has independent linear/log axis
 dropdowns and a data table underneath (mean [Q1, Q3] per N, plus a final row
 giving the stop reason/status for each line).
@@ -168,9 +169,21 @@ def quartiles(values):
 
 
 def aggregate(rows, attribute):
-    """Per (algorithm, N): mean/q1/q3/count of `attribute` across every
-    sample/repeat. Returns {algorithm: {N: {mean, q1, q3, count}}}."""
-    values_by_group = defaultdict(lambda: defaultdict(list))
+    """Per (algorithm, N): mean/q1/q3/count of `attribute` across samples --
+    after first taking the min across repeats within each (algorithm, N,
+    sample). Repeats and samples are two different things (PLAN.md 5.1):
+    repeats measure the *same* instance multiple times (pure measurement
+    noise, one-directional, so min is the best estimate of the true cost),
+    while different samples are genuinely different instances (characterized
+    with mean/IQR -- taking their min would just cherry-pick the easiest
+    instance rather than describe typical behavior). Rows with no `repeat`
+    column (opcounts.csv, which is deterministic and only ever runs once per
+    sample) pass straight through the per-sample min as a no-op -- there's
+    nothing to denoise there.
+
+    Returns {algorithm: {N: {mean, q1, q3, count}}}; `count` is the number of
+    samples behind each point, not the number of raw rows."""
+    per_sample_values = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     for row in rows:
         if row["status"] != "ok":
             continue
@@ -178,7 +191,14 @@ def aggregate(rows, attribute):
             value = float(row[attribute])
         except (KeyError, ValueError):
             continue
-        values_by_group[row["algorithm"]][int(row["N"])].append(value)
+        algo, n, sample = row["algorithm"], int(row["N"]), int(row["sample"])
+        per_sample_values[algo][n][sample].append(value)
+
+    values_by_group = defaultdict(lambda: defaultdict(list))
+    for algo, by_n in per_sample_values.items():
+        for n, by_sample in by_n.items():
+            for sample_values in by_sample.values():
+                values_by_group[algo][n].append(min(sample_values))
 
     result = {}
     for algo, by_n in values_by_group.items():

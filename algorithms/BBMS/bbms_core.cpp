@@ -6,16 +6,15 @@
 namespace {
 
 struct Node {
-    double distance;    // distance from p[i] to q[j]
-    long long parent;   // index of parent, -1 = root, -2 = no parent/unattached
-    int depth;          // depth in the tree, root has depth 0
+    double distance = 0.0;  // distance from p[i] to q[j]
+    long long parent = -2;  // index of parent, -1 = root, -2 = no parent/unattached
+    int depth = -1;         // depth in the tree, root has depth 0
 };
 
 // Get maximum distance from u and v to their nearest common ancestor (NCA) in G. 
 // The NCA's own distance is not included in the max-distance calculation. 
 std::pair<double,double> max_distance_to_nca(const std::vector<Node>& G, long long u, long long v) {
-    double max_distance_u = -INF;
-    double max_distance_v = -INF;
+    double max_distance_u = -INF, max_distance_v = -INF;
 
     // Walk the deeper node up the tree, until both nodes are at the same depth
     while (G[u].depth > G[v].depth) { max_distance_u = std::max(max_distance_u, G[u].distance); u = G[u].parent; COUNT(nca_regular_hops); }
@@ -64,10 +63,10 @@ MatchingAndFrechetDistance bbms_core(const Curve& p, const Curve& q) {
     long long m = (long long) p.size(), n = (long long) q.size();
 
     // Initialize graph G with distances and unattached nodes
-    std::vector<Node> G((size_t) m * n);
+    std::vector<Node> G(m * n);
     for (long long i = 0; i < m; ++i)
         for (long long j = 0; j < n; ++j)
-            G[i * n + j] = { dist(p[i], q[j]), -2, -1 };
+            G[i * n + j].distance = dist(p[i], q[j]);
 
     // Setup root node
     G[0].parent = -1;

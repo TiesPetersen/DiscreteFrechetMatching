@@ -21,6 +21,7 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
     // Start from the first cell (0, 0)
     double initial_distance = dist(p[0], q[0]);
     pq.push({initial_distance, 0, 0});
+    COUNT(heap_pushes);
     prev[0] = -1;
     double frechet = initial_distance;
 

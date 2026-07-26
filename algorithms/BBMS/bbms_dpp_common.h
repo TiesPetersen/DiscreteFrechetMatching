@@ -205,7 +205,7 @@ void add_shortcut(std::deque<Shortcut>& pool, std::vector<Node>& G, long long or
     add_to_incoming(G, shortcut);
 }
 
-// Extend all incoming shortcuts to a node to point to a follow-up shortcut, updating their values and directions.
+// Extend all incoming shortcuts to a node to point to a follow-up shortcut, updating their values and directions
 void extend_shortcuts_to(std::vector<Node>& G, std::vector<Shortcut*>& list, Shortcut* followup_shortcut) {
     for (Shortcut* shortcut : list) {
         shortcut->value = std::max(shortcut->value, followup_shortcut->value);
@@ -214,6 +214,9 @@ void extend_shortcuts_to(std::vector<Node>& G, std::vector<Shortcut*>& list, Sho
         add_to_incoming(G, shortcut);
         COUNT(shortcuts_extended);
     }
+   
+    // Clear the list of incoming shortcuts since they have been extended to the follow-up shortcut
+    list.clear();
 }
 
 // Extend the shortcuts of a dead path base node to point to a new target, based on the final direction of the dead path.

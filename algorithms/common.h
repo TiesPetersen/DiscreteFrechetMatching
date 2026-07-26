@@ -4,24 +4,31 @@
 #include <algorithm>
 #include <limits>
 
+
 constexpr double INF = std::numeric_limits<double>::infinity();
 
+
 using Matching = std::vector<std::pair<long long, long long>>;
+
 
 struct MatchingAndFrechetDistance {
     Matching matching;
     double frechet_distance;
 };
 
+
 struct Point { double x, y; };
 
+
 using Curve = std::vector<Point>;
+
 
 // Compute Euclidean distance between two points
 inline double dist(const Point& a, const Point& b) {
     double dx = a.x - b.x, dy = a.y - b.y;
     return std::sqrt(dx * dx + dy * dy);
 }
+
 
 // Extract the matching and maximum distance from the graph G.
 // Node must have a `parent` (long long) and `distance` (double) field.

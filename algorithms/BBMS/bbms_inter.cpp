@@ -1,5 +1,6 @@
 #include "bbms_inter.h"
 #include "../counters.h"
+#include "../parent_trace.h"
 #include <algorithm>
 
 
@@ -189,6 +190,7 @@ MatchingAndFrechetDistance bbms_inter(const Curve& p, const Curve& q) {
             // Select parent for D and get all NCA results needed for shortcut updates
             SelectResult select_results = select_parent(G, A, B, C);
             attach(G, select_results.parent, D);
+            TRACE_PARENT(select_results.parent);
 
             // Update shortcuts on A, C, D after attaching D to its parent
             update_shortcuts(G, A, B, C, D, select_results);

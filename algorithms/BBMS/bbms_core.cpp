@@ -1,5 +1,6 @@
 #include "bbms_core.h"
 #include "../counters.h"
+#include "../parent_trace.h"
 #include <algorithm>
 
 
@@ -88,6 +89,7 @@ MatchingAndFrechetDistance bbms_core(const Curve& p, const Curve& q) {
             // Select parent and attach it
             long long parent = select_parent(G, A, B, C);
             attach(G, parent, i * n + j);
+            TRACE_PARENT(parent);
         }
     }
 

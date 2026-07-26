@@ -1,5 +1,6 @@
 #include "bbms_dpp_instant.h"
 #include "bbms_dpp_common.h"
+#include "../parent_trace.h"
 
 namespace {
 
@@ -62,6 +63,7 @@ MatchingAndFrechetDistance bbms_dpp_instant(const Curve& p, const Curve& q) {
             // Select parent for D and get all NCA results needed for updating shortcuts
             SelectResult sr = select_parent(G, A, B, C, n);
             attach(G, sr.parent, D, n);
+            TRACE_PARENT(sr.parent);
 
             // If B has no children, detach the dead path ending at B and extend shortcuts
             if (!has_children(G, B)) {

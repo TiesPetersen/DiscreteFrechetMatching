@@ -1,7 +1,8 @@
 CXX      = g++
 CXXFLAGS = -O2 -std=c++17 -Wall -Wextra -I.
 
-SRCS         = BBMS/bbms_core.cpp BBMS/bbms_inter.cpp DP/dijkstra_prims.cpp counters.cpp
+SRCS         = BBMS/bbms_core.cpp BBMS/bbms_inter.cpp BBMS/bbms_dpp_instant.cpp BBMS/bbms_dpp_stepwise.cpp \
+               DP/dijkstra_prims.cpp counters.cpp
 OBJS         = $(SRCS:.cpp=.o)
 COUNTED_OBJS = $(SRCS:.cpp=_counted.o)
 

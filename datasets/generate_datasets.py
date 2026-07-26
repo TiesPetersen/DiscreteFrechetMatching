@@ -12,6 +12,8 @@ import random
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATASETS_DIR = os.path.join(PROJECT_ROOT, "datasets")
 
+SEED = 1234 # random seed for reproducibility of the datasets
+
 GRID = [500, 1000, 2000, 4000, 7000, 11000, 18000, 28000, 40000, 50000]
 K = 5  # number of sample curve pairs per (dataset, N), same for all three datasets
 
@@ -91,8 +93,8 @@ def main():
 
             samples = []
             for sample_idx in range(K):
-                # Deterministic per (dataset, N, sample) so results are reproducible.
-                seed = hash((dataset_name, n, sample_idx))
+                # Deterministic per (dataset, N, sample, SEED) so results are reproducible.
+                seed = hash((dataset_name, n, sample_idx, SEED))
                 samples.append(generator(n, seed))
 
             write_dataset_file(out_path, samples)

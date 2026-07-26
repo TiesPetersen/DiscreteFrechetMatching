@@ -5,3 +5,6 @@ __pycache__
 *.o
 *.exe
 .venv
+analysis/output/
+/results_small_partial_experiment
+*.dSYM

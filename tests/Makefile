@@ -25,6 +25,15 @@ ORACLE_OBJS = $(ALGO_OBJS) bbms_dpp_instant.o bbms_dpp_stepwise.o reference/dyna
 dynamic_programming_check.exe: dynamic_programming_check.cpp $(ORACLE_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ dynamic_programming_check.cpp $(ORACLE_OBJS)
 
+# Only the BBMS-family objects -- BBMSCore, BBMSInter, and both dpp variants -- since
+# matching_check and parent_trace_check compare internal BBMS behavior; DijkstraPrims
+# has no equivalent concept to compare against.
+BBMS_OBJS = $(ALGO_DIR)/BBMS/bbms_core.o $(ALGO_DIR)/BBMS/bbms_inter.o $(ALGO_DIR)/counters.o \
+            bbms_dpp_instant.o bbms_dpp_stepwise.o
+
+matching_check.exe: matching_check.cpp $(BBMS_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ matching_check.cpp $(BBMS_OBJS)
+
 # Traced variants, compiled here (not via algorithms/Makefile) so TRACE_TEST never
 # touches the real experiment build.
 TRACED_OBJS = bbms_core_traced.o bbms_inter_traced.o bbms_dpp_instant_traced.o \
@@ -48,7 +57,7 @@ parent_trace_traced.o: $(ALGO_DIR)/parent_trace.cpp
 parent_trace_check.exe: parent_trace_check.cpp $(TRACED_OBJS)
 	$(CXX) $(CXXFLAGS) -DTRACE_TEST -o $@ parent_trace_check.cpp $(TRACED_OBJS)
 
-all: dynamic_programming_check.exe parent_trace_check.exe
+all: dynamic_programming_check.exe matching_check.exe parent_trace_check.exe
 
 clean:
 	rm -f *.o reference/*.o *.exe

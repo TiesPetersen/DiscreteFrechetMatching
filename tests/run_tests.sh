@@ -16,6 +16,12 @@ echo "=== dynamic_programming_check ==="
 
 echo
 
+# Run the matching check
+echo "=== matching_check ==="
+./matching_check.exe || status=1
+
+echo
+
 # Run the parent trace check
 echo "=== parent_trace_check ==="
 ./parent_trace_check.exe || status=1

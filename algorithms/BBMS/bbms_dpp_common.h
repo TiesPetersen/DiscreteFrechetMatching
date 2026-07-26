@@ -212,6 +212,7 @@ void extend_shortcuts_to(std::vector<Node>& G, std::vector<Shortcut*>& list, Sho
         shortcut->direction = followup_shortcut->direction;
         shortcut->target = followup_shortcut->target;
         add_to_incoming(G, shortcut);
+        COUNT(shortcuts_extended);
     }
 }
 

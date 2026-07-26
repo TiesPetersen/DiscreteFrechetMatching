@@ -175,6 +175,8 @@ static void run_op_counts(const std::string& algorithm, long long N, int sample_
     std::cout << algorithm << "," << N << "," << sample_index << "," << frechet << ","
                << g_counters.nca_regular_hops << "," << g_counters.nca_shortcut_hops << ","
                << total_nca_steps << "," << g_counters.shortcuts_written << ","
+               << g_counters.dead_paths_pruned << "," << g_counters.shortcuts_extended << ","
+               << g_counters.dead_path_walk_steps << ","
                << g_counters.heap_pushes << "," << g_counters.heap_pops << ","
                << cells_processed << "," << pct_cells_explored << "," << status << "\n";
 }

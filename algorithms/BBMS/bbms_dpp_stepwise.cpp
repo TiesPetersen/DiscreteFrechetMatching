@@ -51,12 +51,14 @@ MatchingAndFrechetDistance bbms_dpp_stepwise(const Curve& p, const Curve& q) {
 
             // If B has no children, walk the dead path ending at B step by step and remove shortcuts, then extend appropriate shortcuts
             if (!has_children(G, B)) {
+                COUNT(dead_paths_pruned);
+
                 // Get the dead path base
                 Shortcut* deepest_shortcut = get_deepest_shortcut(G, B);
                 long long dead_path_base   = deepest_shortcut->target;
                 Direction final_direction  = deepest_shortcut->direction;
 
-                // Walk the tree path from B to dead_path_base, removing outgoing shortcuts at each step. 
+                // Walk the tree path from B to dead_path_base, removing outgoing shortcuts at each step.
                 long long X = B;
                 while (X != dead_path_base) {
                     long long parent = G[X].parent;
@@ -64,6 +66,7 @@ MatchingAndFrechetDistance bbms_dpp_stepwise(const Curve& p, const Curve& q) {
                     remove_from_incoming(G, G[X].out_high);
                     clear_child_flag(G, parent, X, n);
                     X = parent;
+                    COUNT(dead_path_walk_steps);
                 }
 
                 // Extend shortcuts from the dead path base to the followup shortcut

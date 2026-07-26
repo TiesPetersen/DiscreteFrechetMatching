@@ -67,6 +67,7 @@ RUNNER_TIMING_FIELDS = [
 OPCOUNT_FIELDS = [
     "algorithm", "N", "sample", "frechet_dist",
     "nca_regular_hops", "nca_shortcut_hops", "total_nca_steps", "shortcuts_written",
+    "dead_paths_pruned", "shortcuts_extended", "dead_path_walk_steps",
     "heap_pushes", "heap_pops", "cells_processed", "pct_cells_explored", "status",
 ]
 # The CSV on disk also carries `repeat`, which the runner doesn't know about --

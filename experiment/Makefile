@@ -3,8 +3,10 @@ CXXFLAGS = -O2 -std=c++17 -Wall -Wextra -I../algorithms -I../algorithms/BBMS -I.
 
 ALGO_DIR = ../algorithms
 ALGO_OBJS = $(ALGO_DIR)/BBMS/bbms_core.o $(ALGO_DIR)/BBMS/bbms_inter.o \
+            $(ALGO_DIR)/BBMS/bbms_dpp_instant.o $(ALGO_DIR)/BBMS/bbms_dpp_stepwise.o \
             $(ALGO_DIR)/DP/dijkstra_prims.o $(ALGO_DIR)/counters.o
 ALGO_COUNTED_OBJS = $(ALGO_DIR)/BBMS/bbms_core_counted.o $(ALGO_DIR)/BBMS/bbms_inter_counted.o \
+                     $(ALGO_DIR)/BBMS/bbms_dpp_instant_counted.o $(ALGO_DIR)/BBMS/bbms_dpp_stepwise_counted.o \
                      $(ALGO_DIR)/DP/dijkstra_prims_counted.o $(ALGO_DIR)/counters_counted.o
 
 all: runner.exe runner_counted.exe

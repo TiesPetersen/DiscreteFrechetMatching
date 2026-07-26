@@ -1,0 +1,23 @@
+# p and q are both alternating zigzags, offset so that dist(p[i],q[i])
+# alternates between two fixed values and several cross-terms repeat by
+# symmetry -- designed to stack up multiple ties within a single small
+# grid, worth checking carefully by hand rather than assuming which
+# comparisons actually tie.
+
+algorithm BBMSDppInstant
+p 4
+0 0
+1 1
+2 0
+3 1
+q 4
+0 1
+1 0
+2 1
+3 0
+expect nca_regular_hops 22
+expect nca_shortcut_hops 28
+expect shortcuts_written 23
+expect dead_paths_pruned 0
+expect shortcuts_extended 0
+expect dead_path_walk_steps 0

@@ -42,7 +42,7 @@ DATASETS   = ["worst-case", "best-case", "random"]
 GRID       = [500, 1000, 2000, 4000, 7000, 11000, 18000, 28000, 40000, 50000]
 K          = 5     # samples per (dataset, N), same for all three datasets
 R          = 3     # timing repeats per sample
-ALGORITHMS = ["BBMSCore", "BBMSInter", "DijkstraPrims"]
+ALGORITHMS = ["BBMSCore", "BBMSInter", "BBMSDppInstant", "BBMSDppStepwise", "DijkstraPrims"]
 
 TIMEOUT_S = 7200  # 2h -- set from the AWS calibration run (see PLAN.md 6). BBMSCore's
                   # true cost at N=11000 and BBMSInter/DijkstraPrims' at N=18000 all
@@ -67,6 +67,7 @@ RUNNER_TIMING_FIELDS = [
 OPCOUNT_FIELDS = [
     "algorithm", "N", "sample", "frechet_dist",
     "nca_regular_hops", "nca_shortcut_hops", "total_nca_steps", "shortcuts_written",
+    "dead_paths_pruned", "shortcuts_extended", "dead_path_walk_steps",
     "heap_pushes", "heap_pops", "cells_processed", "pct_cells_explored", "status",
 ]
 # The CSV on disk also carries `repeat`, which the runner doesn't know about --

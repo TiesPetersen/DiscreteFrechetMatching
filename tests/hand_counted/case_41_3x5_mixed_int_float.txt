@@ -1,0 +1,20 @@
+# Deliberately mixes integer-valued and fractional coordinates within the
+# same curve (e.g. p's first and last points look like plain integers,
+# its middle point has a fractional value) -- checks that the file format
+# and parser handle a mix of representations on different lines, not just
+# a uniform choice of one or the other per case.
+
+algorithm BBMSInter
+p 3
+0 0
+1.5 2.25
+3 4
+q 5
+0 1
+2.5 1.5
+4 2
+5.5 3.75
+7 5
+expect nca_regular_hops 20
+expect nca_shortcut_hops 24
+expect shortcuts_written 20

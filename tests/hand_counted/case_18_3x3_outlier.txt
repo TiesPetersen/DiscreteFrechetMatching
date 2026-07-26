@@ -1,0 +1,21 @@
+# A tiny analogue of the real experiment's worst-case dataset: p and q are
+# both a tight cluster of points, except q's last point is a distant
+# outlier. Forces a long, lopsided NCA walk once the outlier enters the
+# picture, and gives shortcuts something real to skip over despite the
+# grid being tiny.
+
+algorithm BBMSDppInstant
+p 3
+0 0
+0.1 0.1
+0.05 -0.05
+q 3
+0 0.05
+0.05 0.1
+10 10
+expect nca_regular_hops 12
+expect nca_shortcut_hops 8
+expect shortcuts_written 12
+expect dead_paths_pruned 0
+expect shortcuts_extended 0
+expect dead_path_walk_steps 0

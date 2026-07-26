@@ -1,0 +1,30 @@
+# Another curve found by the same random search as case_49, this one showing a much
+# larger divergence: BBMSDppStepwise's dead_path_walk_steps comes out to exactly
+# double BBMSDppInstant's (12 vs 6) over the same 6 pruning events -- i.e. on average,
+# every dead path on this curve spans 2 real tree nodes, which stepwise walks through
+# one at a time while instant reaches in a single O(1) jump. See case_52 for the same
+# curve under BBMSDppStepwise.
+#
+# Cross-checked against the real binary before being written down here.
+
+algorithm BBMSDppInstant
+p 6
+0 3
+3 0
+0 0
+0 2
+1 0
+3 1
+q 6
+3 4
+1 0
+3 1
+3 4
+2 3
+2 0
+expect nca_regular_hops 40
+expect nca_shortcut_hops 112
+expect shortcuts_written 54
+expect dead_paths_pruned 6
+expect shortcuts_extended 17
+expect dead_path_walk_steps 6

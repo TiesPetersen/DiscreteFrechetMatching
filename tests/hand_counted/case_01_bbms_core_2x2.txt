@@ -1,0 +1,26 @@
+# BBMSCore on the smallest possible non-trivial grid (2 points x 2 points).
+#
+# Hand trace: with m=n=2 there is exactly one interior cell (i=1,j=1), so
+# select_parent makes exactly one call for each of the three pairs (A,B), (B,C), (A,C):
+#   A=index1 (depth 1), B=index0 (depth 0): A is one step below B -- u steps once
+#     to reach v -> 1 hop.
+#   B=index0 (depth 0), C=index2 (depth 1): C is one step below B -- v steps once
+#     to reach u -> 1 hop.
+#   A=index1 (depth 1), C=index2 (depth 1): same depth, neither is the other's
+#     ancestor, so both step once and meet at the root (index0) -> 2 hops.
+# Total: 1 + 1 + 2 = 4 nca_regular_hops. BBMSCore never uses shortcuts, so
+# nca_shortcut_hops and shortcuts_written are always 0 for it.
+#
+# Cross-checked against the real runner_counted.exe before being written down here:
+# BBMSCore,2,0,1.41421,4,0,4,0,0,0,0,0,0,4,100,ok
+
+algorithm BBMSCore
+p 2
+0 0
+1 0
+q 2
+0 1
+2 1
+expect nca_regular_hops 4
+expect nca_shortcut_hops 0
+expect shortcuts_written 0

@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "../counters.h"
 #include <algorithm>
 #include <deque>
 
@@ -57,6 +58,7 @@ Direction get_direction(long long child, long long parent, long long n) {
 // The pool is a deque, so pointers remain valid even if the deque is resized.
 Shortcut* allocate_shortcut(std::deque<Shortcut>& pool, long long target, double value, Direction direction) {
     pool.push_back({target, value, direction});
+    COUNT(shortcuts_written);
     return &pool.back();
 }
 
@@ -86,10 +88,12 @@ NCAResult max_dist_to_nca(const std::vector<Node>& G, long long u, long long v, 
                 max_distance_v = std::max(max_distance_v, G[v].out_high->value);
                 final_direction_v = G[v].out_high->direction;
                 v = G[v].out_high->target;
+                COUNT(nca_shortcut_hops);
             } else {
                 max_distance_v = std::max(max_distance_v, G[v].distance);
                 final_direction_v = get_direction(v, G[v].parent, n);
                 v = G[v].parent;
+                COUNT(nca_regular_hops);
             }
         } else {
             // Walk u up the tree, using shortcuts if available
@@ -97,10 +101,12 @@ NCAResult max_dist_to_nca(const std::vector<Node>& G, long long u, long long v, 
                 max_distance_u = std::max(max_distance_u, G[u].out_low->value);
                 final_direction_u = G[u].out_low->direction;
                 u = G[u].out_low->target;
+                COUNT(nca_shortcut_hops);
             } else {
                 max_distance_u = std::max(max_distance_u, G[u].distance);
                 final_direction_u = get_direction(u, G[u].parent, n);
                 u = G[u].parent;
+                COUNT(nca_regular_hops);
             }
         }
     }
@@ -206,6 +212,7 @@ void extend_shortcuts_to(std::vector<Node>& G, std::vector<Shortcut*>& list, Sho
         shortcut->direction = followup_shortcut->direction;
         shortcut->target = followup_shortcut->target;
         add_to_incoming(G, shortcut);
+        COUNT(shortcuts_extended);
     }
 }
 

@@ -8,3 +8,4 @@ __pycache__
 analysis/output/
 /results_small_partial_experiment
 *.dSYM
+/extra

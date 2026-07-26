@@ -67,6 +67,9 @@ MatchingAndFrechetDistance bbms_dpp_instant(const Curve& p, const Curve& q) {
 
             // If B has no children, detach the dead path ending at B and extend shortcuts
             if (!has_children(G, B)) {
+                COUNT(dead_paths_pruned);
+                COUNT(dead_path_walk_steps);  // a single O(1) jump to dead_path_base
+
                 // Get the dead path base
                 Shortcut* deepest_shortcut  = get_deepest_shortcut(G, B);
                 long long dead_path_base = deepest_shortcut->target;

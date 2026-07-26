@@ -8,11 +8,13 @@
 //                          op-count pass. Deterministic, so only needs one run
 //                          per sample (see PLAN.md 5.2 for why these are kept separate).
 //
-// usage: runner <BBMSCore|BBMSInter|DijkstraPrims> <dataset_file> <sample_index>
+// usage: runner <BBMSCore|BBMSInter|BBMSDppInstant|BBMSDppStepwise|DijkstraPrims> <dataset_file> <sample_index>
 
 #include "common.h"
 #include "bbms_core.h"
 #include "bbms_inter.h"
+#include "bbms_dpp_instant.h"
+#include "bbms_dpp_stepwise.h"
 #include "dijkstra_prims.h"
 #include "counters.h"
 
@@ -54,9 +56,11 @@ static void load_sample(const std::string& path, int sample_index, Curve& p, Cur
 }
 
 static MatchingAndFrechetDistance run_algorithm(const std::string& algorithm, const Curve& p, const Curve& q) {
-    if (algorithm == "BBMSCore")      return bbms_core(p, q);
-    if (algorithm == "BBMSInter")     return bbms_inter(p, q);
-    if (algorithm == "DijkstraPrims") return dijkstra_prims(p, q);
+    if (algorithm == "BBMSCore")        return bbms_core(p, q);
+    if (algorithm == "BBMSInter")       return bbms_inter(p, q);
+    if (algorithm == "BBMSDppInstant")  return bbms_dpp_instant(p, q);
+    if (algorithm == "BBMSDppStepwise") return bbms_dpp_stepwise(p, q);
+    if (algorithm == "DijkstraPrims")   return dijkstra_prims(p, q);
     std::cerr << "unknown algorithm: " << algorithm << "\n";
     std::exit(1);
 }
@@ -155,7 +159,8 @@ static void run_op_counts(const std::string& algorithm, long long N, int sample_
         // m*n exactly -- known the instant the curves are loaded, not measured --
         // never m*n unless the run actually succeeded (see PLAN.md 4).
         long long m = (long long)p.size(), n = (long long)q.size();
-        if (algorithm == "BBMSCore" || algorithm == "BBMSInter") {
+        if (algorithm == "BBMSCore" || algorithm == "BBMSInter" ||
+            algorithm == "BBMSDppInstant" || algorithm == "BBMSDppStepwise") {
             cells_processed = m * n;
         } else {
             cells_processed = g_counters.heap_pops;

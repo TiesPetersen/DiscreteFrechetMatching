@@ -42,7 +42,7 @@ DATASETS   = ["worst-case", "best-case", "random"]
 GRID       = [500, 1000, 2000, 4000, 7000, 11000, 18000, 28000, 40000, 50000]
 K          = 5     # samples per (dataset, N), same for all three datasets
 R          = 3     # timing repeats per sample
-ALGORITHMS = ["BBMSCore", "BBMSInter", "DijkstraPrims"]
+ALGORITHMS = ["BBMSCore", "BBMSInter", "BBMSDppInstant", "BBMSDppStepwise", "DijkstraPrims"]
 
 TIMEOUT_S = 7200  # 2h -- set from the AWS calibration run (see PLAN.md 6). BBMSCore's
                   # true cost at N=11000 and BBMSInter/DijkstraPrims' at N=18000 all

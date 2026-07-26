@@ -6,6 +6,7 @@ Run from the project root:
     python3 datasets/generate_datasets.py
 """
 
+import hashlib
 import os
 import random
 
@@ -19,6 +20,12 @@ K = 5  # number of sample curve pairs per (dataset, N), same for all three datas
 
 OUTLIER_DISTANCE = 1000.0  # worst-case: fixed distance of the outlier point
 DISK_RADIUS = 1.0          # worst-case: radius of the disk the other points are drawn from
+
+
+def deterministic_seed(*parts):
+    """A per-sample seed that's reproducible across runs and machines."""
+    key = "|".join(str(part) for part in parts).encode()
+    return int(hashlib.sha256(key).hexdigest(), 16)
 
 
 def random_point_in_disk(rng, radius):
@@ -94,7 +101,7 @@ def main():
             samples = []
             for sample_idx in range(K):
                 # Deterministic per (dataset, N, sample, SEED) so results are reproducible.
-                seed = hash((dataset_name, n, sample_idx, SEED))
+                seed = deterministic_seed(dataset_name, n, sample_idx, SEED)
                 samples.append(generator(n, seed))
 
             write_dataset_file(out_path, samples)

@@ -28,6 +28,12 @@ echo "=== parent_trace_check ==="
 
 echo
 
+# Run the hand-counted check
+echo "=== hand_counted_check ==="
+./hand_counted_check.exe || status=1
+
+echo
+
 # Print the final status of the checks
 if [ "$status" -eq 0 ]; then
     echo "All checks passed."

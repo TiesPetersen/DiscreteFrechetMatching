@@ -45,7 +45,17 @@ parent_trace_traced.o: $(ALGO_DIR)/parent_trace.cpp
 parent_trace_check.exe: parent_trace_check.cpp $(TRACED_OBJS)
 	$(CXX) $(CXXFLAGS) -DTRACE_TEST -o $@ parent_trace_check.cpp $(TRACED_OBJS)
 
-all: dynamic_programming_check.exe matching_check.exe parent_trace_check.exe
+COUNTED_OBJS = $(ALGO_DIR)/BBMS/bbms_core_counted.o $(ALGO_DIR)/BBMS/bbms_inter_counted.o \
+               $(ALGO_DIR)/BBMS/bbms_dpp_instant_counted.o $(ALGO_DIR)/BBMS/bbms_dpp_stepwise_counted.o \
+               $(ALGO_DIR)/DP/dijkstra_prims_counted.o $(ALGO_DIR)/counters_counted.o
+
+$(COUNTED_OBJS):
+	$(MAKE) -C $(ALGO_DIR)
+
+hand_counted_check.exe: hand_counted_check.cpp $(COUNTED_OBJS)
+	$(CXX) $(CXXFLAGS) -DCOUNT_OPS -o $@ hand_counted_check.cpp $(COUNTED_OBJS)
+
+all: dynamic_programming_check.exe matching_check.exe parent_trace_check.exe hand_counted_check.exe
 
 clean:
 	rm -f *.o reference/*.o *.exe

@@ -1,0 +1,23 @@
+# p repeats its first point, q repeats its middle point -- both curves
+# contain a zero-length segment. Creates zero-distance edges at specific,
+# known spots in the grid, worth tracing carefully since a repeated point
+# means two different grid rows/columns share identical distances to the
+# same points in the other curve.
+
+algorithm BBMSDppStepwise
+p 4
+0 0
+0 0
+1.5 1.5
+2.5 2.5
+q 4
+0 0
+1.5 1.5
+1.5 1.5
+3.5 3.5
+expect nca_regular_hops 18
+expect nca_shortcut_hops 33
+expect shortcuts_written 24
+expect dead_paths_pruned 2
+expect shortcuts_extended 2
+expect dead_path_walk_steps 2

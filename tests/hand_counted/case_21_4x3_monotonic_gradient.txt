@@ -1,0 +1,19 @@
+# p is a straight horizontal line; q's points step away from it at
+# strictly increasing, deliberately non-tie-prone distances (5, 7, 11 --
+# spaced apart with primes to avoid accidental exact ties). A clean
+# baseline case with unambiguous parent selection throughout, in contrast
+# to the tie-heavy cases above.
+
+algorithm BBMSCore
+p 4
+0 0
+1 0
+2 0
+3 0
+q 3
+0 5
+1 7
+2 11
+expect nca_regular_hops 42
+expect nca_shortcut_hops 0
+expect shortcuts_written 0

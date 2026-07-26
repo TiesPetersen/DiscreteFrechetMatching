@@ -1,0 +1,21 @@
+# All 5 points of p are identical, while q's 4 points are spread out at
+# increasing distance. Because every p point is the same, the tie-break
+# rule fires constantly and resolves the same way every time, producing a
+# long, uniform, easy-to-hand-trace pattern despite the grid being one of
+# the larger ones in this set.
+
+algorithm BBMSInter
+p 5
+0 0
+0 0
+0 0
+0 0
+0 0
+q 4
+1.25 0
+2.5 0
+3.75 0
+5 0
+expect nca_regular_hops 14
+expect nca_shortcut_hops 60
+expect shortcuts_written 31

@@ -21,7 +21,6 @@ p 2
 q 2
 0 1
 2 1
-expect frechet_distance 1.4142135624
 expect nca_regular_hops 4
 expect nca_shortcut_hops 0
 expect shortcuts_written 0

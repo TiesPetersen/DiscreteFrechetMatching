@@ -1,0 +1,21 @@
+# The largest allowed grid, combined with the tight-cluster-plus-outlier
+# pattern from the 3x3_outlier case above. Likely the richest case in this
+# whole set for shortcut and dead-path activity, given both the maximum
+# grid size and the adversarial-style outlier.
+
+algorithm BBMSInter
+p 5
+0 0
+0.2 0.1
+0.1 0.3
+0.3 0.2
+0.15 0.15
+q 5
+0.05 0.05
+0.25 0.15
+0.15 0.25
+0.2 0.1
+20 20
+expect nca_regular_hops 38
+expect nca_shortcut_hops 51
+expect shortcuts_written 40

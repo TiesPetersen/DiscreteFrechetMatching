@@ -1,0 +1,17 @@
+# A narrow grid: p zigzags through 5 points, q has only 2. Narrow grids
+# are boundary-heavy relative to their interior, a useful contrast to the
+# roughly-square cases above.
+
+algorithm BBMSCore
+p 5
+0 0
+1 1
+2 0
+3 1
+4 0
+q 2
+0 1
+4 1
+expect nca_regular_hops 26
+expect nca_shortcut_hops 0
+expect shortcuts_written 0

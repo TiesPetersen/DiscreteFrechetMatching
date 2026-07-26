@@ -1,0 +1,15 @@
+# The smallest non-trivial grid, deliberately constructed so the single
+# interior cell's A-vs-C comparison is an exact tie: dist(p[0],q[1]) and
+# dist(p[1],q[0])) are both sqrt(2), so max_A_AC == max_C_AC exactly,
+# which the A > B > C tie-break resolves in favor of A.
+
+algorithm BBMSInter
+p 2
+0 0
+1 0
+q 2
+0 1
+1 1
+expect nca_regular_hops 4
+expect nca_shortcut_hops 0
+expect shortcuts_written 4

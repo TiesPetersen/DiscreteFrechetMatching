@@ -1,0 +1,29 @@
+# Same curve as case_57, run under BBMSDppInstant instead of BBMSInter. Compare
+# nca_shortcut_hops between the two case files: BBMSDppInstant needs fewer shortcut
+# hops (83 vs 98) to do the identical NCA queries, while nca_regular_hops stays
+# exactly the same (36) -- the gap is entirely attributable to BBMSDppInstant's
+# shortcuts reaching further per hop after 5 dead-path pruning events extended them,
+# versus BBMSInter's shortcuts, which are set once and never updated again.
+#
+# Cross-checked against the real binary before being written down here.
+
+algorithm BBMSDppInstant
+p 5
+1 1
+2 4
+4 4
+4 0
+0 1
+q 6
+0 4
+2 4
+4 0
+1 0
+0 3
+5 1
+expect nca_regular_hops 36
+expect nca_shortcut_hops 83
+expect shortcuts_written 46
+expect dead_paths_pruned 5
+expect shortcuts_extended 9
+expect dead_path_walk_steps 5

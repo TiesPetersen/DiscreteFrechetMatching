@@ -1,0 +1,21 @@
+# m=1: the bottom-row attach loop is empty, so only the left-column attach
+# loop runs, building a simple chain off the root. The main interior double
+# loop never runs (m=1), so there are no select_parent calls at all -- every
+# operation count should be 0, same as the 1x1 case, just with a longer
+# (but never-traversed-for-NCA) initial chain.
+
+algorithm BBMSDppInstant
+p 1
+0 0
+q 5
+1 0
+2 0
+3 0
+4 0
+5 0
+expect nca_regular_hops 0
+expect nca_shortcut_hops 0
+expect shortcuts_written 0
+expect dead_paths_pruned 0
+expect shortcuts_extended 0
+expect dead_path_walk_steps 0

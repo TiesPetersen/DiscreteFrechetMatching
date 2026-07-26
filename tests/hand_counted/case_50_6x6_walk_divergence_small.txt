@@ -1,0 +1,28 @@
+# Same curve as case_49, run under BBMSDppStepwise instead of BBMSDppInstant. Compare
+# dead_path_walk_steps between the two case files: stepwise pays 1 more total walk
+# step than instant across the same 4 pruning events, despite both agreeing exactly
+# on dead_paths_pruned and shortcuts_written.
+#
+# Cross-checked against the real binary before being written down here.
+
+algorithm BBMSDppStepwise
+p 6
+6 1
+2 1
+5 2
+2 0
+3 2
+3 1
+q 6
+1 5
+4 1
+1 5
+0 1
+4 0
+2 4
+expect nca_regular_hops 42
+expect nca_shortcut_hops 111
+expect shortcuts_written 58
+expect dead_paths_pruned 4
+expect shortcuts_extended 9
+expect dead_path_walk_steps 5

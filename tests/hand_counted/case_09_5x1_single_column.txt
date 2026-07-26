@@ -1,0 +1,19 @@
+# Mirror of the 1x5 case: n=1, so the left-column attach loop is empty and
+# only the bottom-row attach loop runs. Again no interior cells, so every
+# operation count should be 0.
+
+algorithm BBMSDppStepwise
+p 5
+0 0
+1 1
+2 2
+3 3
+4 4
+q 1
+0 0
+expect nca_regular_hops 0
+expect nca_shortcut_hops 0
+expect shortcuts_written 0
+expect dead_paths_pruned 0
+expect shortcuts_extended 0
+expect dead_path_walk_steps 0

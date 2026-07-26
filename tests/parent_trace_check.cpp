@@ -8,6 +8,7 @@
 #include "parent_trace.h"
 #include "utils.h"
 
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -30,8 +31,8 @@ std::vector<long long> traced_run(const Algorithm& algo, const Curve& p, const C
 } // namespace
 
 int main(int argc, char* argv[]) {
-    // Default to 200 trials if no argument is provided, otherwise use the first argument as the number of trials
-    long long num_trials = (argc > 1) ? std::atoll(argv[1]) : 200;
+    // Default to 500 trials if no argument is provided, otherwise use the first argument as the number of trials
+    long long num_trials = (argc > 1) ? std::atoll(argv[1]) : 500;
 
     std::vector<Algorithm> algorithms = {
         {"BBMSCore", bbms_core},
@@ -40,6 +41,9 @@ int main(int argc, char* argv[]) {
         {"BBMSDppStepwise", bbms_dpp_stepwise},
     };
 
+    auto start_time = std::chrono::steady_clock::now();
+
+    // Run the specified number of trials, generating random curves and checking each algorithm against the reference implementation  
     long long failures = 0;
     for (long long trial = 0; trial < num_trials; ++trial) {
         // Generate two random curves with lengths in [2, 1000] and coordinates in [0, 100)
@@ -74,8 +78,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    double elapsed_s = std::chrono::duration<double>(std::chrono::steady_clock::now() - start_time).count();
+
     // Print a summary of the test results and return an appropriate exit code
-    std::printf("%lld trials x %zu algorithms, %lld failure(s)\n",
-                 num_trials, algorithms.size(), failures);
+    std::printf("%lld trials x %zu algorithms, %lld failure(s)  (%.2fs)\n",
+                 num_trials, algorithms.size(), failures, elapsed_s);
     return failures == 0 ? 0 : 1;
 }

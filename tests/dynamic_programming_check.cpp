@@ -9,6 +9,7 @@
 #include "reference/dynamic_programming.h"
 #include "utils.h"
 
+#include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -93,6 +94,8 @@ int main(int argc, char* argv[]) {
         {"DijkstraPrims", dijkstra_prims},
     };
 
+    auto start_time = std::chrono::steady_clock::now();
+    
     // Run the specified number of trials, generating random curves and checking each algorithm against the reference implementation
     long long failures = 0;
     for (long long trial = 0; trial < num_trials; ++trial) {
@@ -108,8 +111,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    double elapsed_s = std::chrono::duration<double>(std::chrono::steady_clock::now() - start_time).count();
+
     // Print a summary of the test results and return an appropriate exit code
-    std::printf("%lld trials x %zu algorithms, %lld failure(s)\n",
-                 num_trials, algorithms.size(), failures);
+    std::printf("%lld trials x %zu algorithms, %lld failure(s)  (%.2fs)\n",
+                 num_trials, algorithms.size(), failures, elapsed_s);
     return failures == 0 ? 0 : 1;
 }

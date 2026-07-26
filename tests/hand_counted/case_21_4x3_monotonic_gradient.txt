@@ -1,9 +1,3 @@
-# p is a straight horizontal line; q's points step away from it at
-# strictly increasing, deliberately non-tie-prone distances (5, 7, 11 --
-# spaced apart with primes to avoid accidental exact ties). A clean
-# baseline case with unambiguous parent selection throughout, in contrast
-# to the tie-heavy cases above.
-
 algorithm BBMSCore
 p 4
 0 0

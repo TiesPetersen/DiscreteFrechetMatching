@@ -1,9 +1,3 @@
-# A tiny analogue of the real experiment's worst-case dataset: p and q are
-# both a tight cluster of points, except q's last point is a distant
-# outlier. Forces a long, lopsided NCA walk once the outlier enters the
-# picture, and gives shortcuts something real to skip over despite the
-# grid being tiny.
-
 algorithm BBMSCore
 p 3
 0 0

@@ -1,9 +1,3 @@
-# Deliberately mixes integer-valued and fractional coordinates within the
-# same curve (e.g. p's first and last points look like plain integers,
-# its middle point has a fractional value) -- checks that the file format
-# and parser handle a mix of representations on different lines, not just
-# a uniform choice of one or the other per case.
-
 algorithm BBMSDppInstant
 p 3
 0 0

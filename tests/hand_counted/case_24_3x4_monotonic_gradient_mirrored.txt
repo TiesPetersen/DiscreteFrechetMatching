@@ -1,7 +1,3 @@
-# The same idea as the 4x3 monotonic-gradient case with p and q's roles
-# swapped (and floating-point coordinates instead of integers), to see the
-# transposed grid shape and a different coordinate representation.
-
 algorithm BBMSDppStepwise
 p 3
 0 5.5

@@ -1,9 +1,3 @@
-# p repeats its first point, q repeats its middle point -- both curves
-# contain a zero-length segment. Creates zero-distance edges at specific,
-# known spots in the grid, worth tracing carefully since a repeated point
-# means two different grid rows/columns share identical distances to the
-# same points in the other curve.
-
 algorithm BBMSInter
 p 4
 0 0

@@ -1,14 +1,3 @@
-# Found by a random search specifically looking for curves where BBMSDppInstant and
-# BBMSDppStepwise disagree on dead_path_walk_steps despite building the identical tree
-# (dead_paths_pruned and shortcuts_written always match between them -- proven
-# elsewhere -- but the *cost* of locating each dead path base can differ: instant
-# always pays exactly 1 per event via its O(1) shortcut jump, stepwise pays one step
-# per intermediate node on its O(depth) walk). This is the smallest, cleanest example
-# found: only a +1 difference over 4 pruning events. See case_50 for the same curve
-# under BBMSDppStepwise.
-#
-# Cross-checked against the real binary before being written down here.
-
 algorithm BBMSDppInstant
 p 6
 6 1

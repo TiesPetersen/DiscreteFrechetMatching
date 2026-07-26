@@ -1,9 +1,3 @@
-# p and q are both alternating zigzags, offset so that dist(p[i],q[i])
-# alternates between two fixed values and several cross-terms repeat by
-# symmetry -- designed to stack up multiple ties within a single small
-# grid, worth checking carefully by hand rather than assuming which
-# comparisons actually tie.
-
 algorithm BBMSDppStepwise
 p 4
 0 0

@@ -1,8 +1,3 @@
-# Same curve as case_51, run under BBMSDppStepwise instead of BBMSDppInstant. Compare
-# dead_path_walk_steps between the two case files: exactly double case_51's value.
-#
-# Cross-checked against the real binary before being written down here.
-
 algorithm BBMSDppStepwise
 p 6
 0 3

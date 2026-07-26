@@ -1,8 +1,3 @@
-# The largest allowed grid, combined with the tight-cluster-plus-outlier
-# pattern from the 3x3_outlier case above. Likely the richest case in this
-# whole set for shortcut and dead-path activity, given both the maximum
-# grid size and the adversarial-style outlier.
-
 algorithm BBMSCore
 p 5
 0 0

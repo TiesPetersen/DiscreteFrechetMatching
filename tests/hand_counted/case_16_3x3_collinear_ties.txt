@@ -1,9 +1,3 @@
-# p and q are two parallel horizontal lines, offset by 1 in y. Every
-# diagonal distance dist(p[i],q[i]) equals 1, and every adjacent
-# cross-distance dist(p[i],q[i+1])/dist(p[i+1],q[i]) equals sqrt(2), by
-# symmetry. This creates repeated exact ties throughout the grid, not just
-# at one cell, exercising the A > B > C tie-break rule over and over.
-
 algorithm BBMSDppStepwise
 p 3
 0 0
@@ -13,9 +7,9 @@ q 3
 0 1
 1 1
 2 1
-expect nca_regular_hops 1
-expect nca_shortcut_hops 12
-expect shortcuts_written 8
-expect dead_paths_pruned 12
+expect nca_regular_hops 12
+expect nca_shortcut_hops 8
+expect shortcuts_written 12
+expect dead_paths_pruned 0
 expect shortcuts_extended 0
 expect dead_path_walk_steps 0

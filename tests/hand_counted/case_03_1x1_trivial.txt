@@ -1,8 +1,3 @@
-# The smallest possible grid: a single cell, no interior loop at all.
-# Neither the bottom-row nor left-column attach loops run (m=1, n=1 means
-# both ranges are empty), and the main double loop never runs either.
-# Every operation count should be exactly 0 for every BBMS algorithm.
-
 algorithm BBMSInter
 p 1
 0 0

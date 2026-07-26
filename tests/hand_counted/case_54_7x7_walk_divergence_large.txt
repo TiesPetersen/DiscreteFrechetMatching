@@ -1,7 +1,3 @@
-# Same curve as case_53, run under BBMSDppStepwise instead of BBMSDppInstant.
-#
-# Cross-checked against the real binary before being written down here.
-
 algorithm BBMSDppStepwise
 p 7
 0 3

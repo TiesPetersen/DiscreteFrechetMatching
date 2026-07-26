@@ -1,8 +1,3 @@
-# Both curves use negative integer coordinates, crossing through the
-# origin -- just to make sure negative and mixed-sign coordinates are
-# handled the same as positive ones (they should be, distances are
-# translation-invariant, but worth having a case that isn't all-positive).
-
 algorithm BBMSDppInstant
 p 4
 -2 -2

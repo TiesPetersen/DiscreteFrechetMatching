@@ -1,6 +1,7 @@
 """
-Reads a results folder (as produced by experiment/main.py or
-experiment/calibration/calibrate.py -- i.e. results/<dataset>/{timing_memory,
+Reads a results folder (as produced by experiment/main.py, against either its
+default results/ directory or a separate one used for a calibration pass --
+see experiment/AWS_RUN_README.md -- i.e. <folder>/<dataset>/{timing_memory,
 opcounts}.csv) and writes a single self-contained interactive HTML report.
 
 Two ways to slice the data, selected via tabs at the top:

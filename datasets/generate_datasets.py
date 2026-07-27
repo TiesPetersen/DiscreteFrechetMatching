@@ -15,7 +15,7 @@ DATASETS_DIR = os.path.join(PROJECT_ROOT, "datasets")
 
 SEED = 1234 # random seed for reproducibility of the datasets
 
-GRID = [500, 1000, 2000, 4000, 7000, 11000, 18000, 28000, 40000, 50000]
+GRID = [500, 830, 1400, 2300, 3900, 6500, 11000, 18000, 30000, 50000]
 K = 5  # number of sample curve pairs per (dataset, N), same for all three datasets
 
 OUTLIER_DISTANCE = 1000.0  # worst-case: fixed distance of the outlier point

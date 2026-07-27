@@ -48,7 +48,7 @@ The algorithms were first prototyped in Python (see the `outdated-experiments` b
     - `dynamic_programming_check`: checks every algorithm's distance and matching against an independent, deliberately naive O(mn) dynamic programming reference (`reference/`), on random curves.
     - `matching_check`: checks that all BBMS variants return byte-identical matchings on the same input.
     - `parent_trace_check`: checks that all BBMS variants make the identical parent choice at every grid cell, pinpointing the exact cell if one diverges.
-- `datasets/` -> generated curve-pair files consumed by the experiment, one file per `(dataset, N)`. Dataset kinds: `worst-case` (adversarial), `best-case` (near-identical curves), `random`, and `real-world` (planned, not yet populated). Includes `generate_datasets.py`.
+- `datasets/` -> generated curve-pair files consumed by the experiment, one file per `(dataset, N)`. Dataset kinds: `identical` (p == q), `random` (independent points), `outlier` (same distribution as `random`, but one point moved far away -- adversarial specifically for `DijkstraPrims`'s early termination, not for the BBMS family), and `real-world` (planned, not yet populated). Includes `generate_datasets.py`.
 - `experiment/` -> the experiment itself:
     - `runner.cpp`: runs one algorithm on one sample and prints one CSV line of results. Compiled twice — once plain (timing/memory), once with `-DCOUNT_OPS` (operation counts) — see `experiment/Makefile`.
     - `main.py`: the orchestrator that sweeps every `(dataset, N, sample, algorithm)` combination, handles resumability, timeouts, and per-algorithm failure walls, and writes results to `results/`.

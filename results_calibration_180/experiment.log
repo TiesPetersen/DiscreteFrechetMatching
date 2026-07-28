@@ -8877,3 +8877,1222 @@
 2026-07-28 13:27:06 CEST    BBMSInter: running...
 2026-07-28 13:31:07 CEST    BBMSInter: status=ok
 2026-07-28 13:31:07 CEST    BBMSDppInstant: running...
+2026-07-28 13:35:37 CEST    BBMSDppInstant: status=ok
+2026-07-28 13:35:37 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 13:35:37 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 13:35:37 CEST  cross-algorithm agreement: ok
+2026-07-28 13:35:37 CEST  sample=3
+2026-07-28 13:35:37 CEST  runtime/memory pass
+2026-07-28 13:35:37 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 13:35:37 CEST    repeat=0 BBMSInter: running...
+2026-07-28 13:39:15 CEST    repeat=0 BBMSInter: status=ok
+2026-07-28 13:39:15 CEST    repeat=0 BBMSDppInstant: running...
+2026-07-28 13:43:37 CEST    repeat=0 BBMSDppInstant: status=ok
+2026-07-28 13:43:37 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 13:43:37 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 13:43:37 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 13:43:37 CEST    repeat=1 BBMSInter: running...
+2026-07-28 13:47:15 CEST    repeat=1 BBMSInter: status=ok
+2026-07-28 13:47:15 CEST    repeat=1 BBMSDppInstant: running...
+2026-07-28 13:51:41 CEST    repeat=1 BBMSDppInstant: status=ok
+2026-07-28 13:51:41 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 13:51:41 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 13:51:41 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 13:51:41 CEST    repeat=2 BBMSInter: running...
+2026-07-28 13:55:17 CEST    repeat=2 BBMSInter: status=ok
+2026-07-28 13:55:17 CEST    repeat=2 BBMSDppInstant: running...
+2026-07-28 13:59:40 CEST    repeat=2 BBMSDppInstant: status=ok
+2026-07-28 13:59:40 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 13:59:40 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 13:59:40 CEST  op-count pass
+2026-07-28 13:59:40 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 13:59:40 CEST    BBMSInter: running...
+2026-07-28 14:03:18 CEST    BBMSInter: status=ok
+2026-07-28 14:03:18 CEST    BBMSDppInstant: running...
+2026-07-28 14:07:43 CEST    BBMSDppInstant: status=ok
+2026-07-28 14:07:43 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:07:43 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:07:43 CEST  cross-algorithm agreement: ok
+2026-07-28 14:07:43 CEST  sample=4
+2026-07-28 14:07:43 CEST  runtime/memory pass
+2026-07-28 14:07:43 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:07:43 CEST    repeat=0 BBMSInter: running...
+2026-07-28 14:11:37 CEST    repeat=0 BBMSInter: status=ok
+2026-07-28 14:11:37 CEST    repeat=0 BBMSDppInstant: running...
+2026-07-28 14:15:53 CEST    repeat=0 BBMSDppInstant: status=ok
+2026-07-28 14:15:53 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:15:53 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:15:53 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:15:53 CEST    repeat=1 BBMSInter: running...
+2026-07-28 14:19:45 CEST    repeat=1 BBMSInter: status=ok
+2026-07-28 14:19:45 CEST    repeat=1 BBMSDppInstant: running...
+2026-07-28 14:24:02 CEST    repeat=1 BBMSDppInstant: status=ok
+2026-07-28 14:24:02 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:24:02 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:24:02 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:24:02 CEST    repeat=2 BBMSInter: running...
+2026-07-28 14:28:01 CEST    repeat=2 BBMSInter: status=ok
+2026-07-28 14:28:01 CEST    repeat=2 BBMSDppInstant: running...
+2026-07-28 14:32:18 CEST    repeat=2 BBMSDppInstant: status=ok
+2026-07-28 14:32:18 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:32:18 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:32:18 CEST  op-count pass
+2026-07-28 14:32:18 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:32:18 CEST    BBMSInter: running...
+2026-07-28 14:36:18 CEST    BBMSInter: status=ok
+2026-07-28 14:36:18 CEST    BBMSDppInstant: running...
+2026-07-28 14:40:37 CEST    BBMSDppInstant: status=ok
+2026-07-28 14:40:37 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:40:37 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:40:37 CEST  cross-algorithm agreement: ok
+2026-07-28 14:40:37 CEST  --- N=30000 ---
+2026-07-28 14:40:37 CEST  sample=0
+2026-07-28 14:40:37 CEST  runtime/memory pass
+2026-07-28 14:40:37 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:40:37 CEST    repeat=0 BBMSInter: running...
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: status=timeout
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: running...
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: status=oom
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  --- N=50000 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (walled at N=30000)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  === dataset: outlier ===
+2026-07-28 14:45:39 CEST  --- N=500 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  --- N=830 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  --- N=1400 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  --- N=2300 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  --- N=3900 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  --- N=6500 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  --- N=11000 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=1
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=2
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=3
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  sample=4
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=0 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=1 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    repeat=2 DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  op-count pass
+2026-07-28 14:45:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    BBMSInter: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppInstant: SKIP (already completed)
+2026-07-28 14:45:39 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:45:39 CEST    DijkstraPrims: SKIP (already completed)
+2026-07-28 14:45:39 CEST  cross-algorithm agreement: ok
+2026-07-28 14:45:39 CEST  --- N=18000 ---
+2026-07-28 14:45:39 CEST  sample=0
+2026-07-28 14:45:39 CEST  runtime/memory pass
+2026-07-28 14:45:39 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:45:39 CEST    repeat=0 BBMSInter: running...
+2026-07-28 14:49:25 CEST    repeat=0 BBMSInter: status=ok
+2026-07-28 14:49:25 CEST    repeat=0 BBMSDppInstant: running...
+2026-07-28 14:53:42 CEST    repeat=0 BBMSDppInstant: status=ok
+2026-07-28 14:53:42 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 14:53:42 CEST    repeat=0 DijkstraPrims: running...
+2026-07-28 14:56:47 CEST    repeat=0 DijkstraPrims: status=ok
+2026-07-28 14:56:47 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 14:56:47 CEST    repeat=1 BBMSInter: running...
+2026-07-28 15:00:35 CEST    repeat=1 BBMSInter: status=ok
+2026-07-28 15:00:35 CEST    repeat=1 BBMSDppInstant: running...
+2026-07-28 15:04:53 CEST    repeat=1 BBMSDppInstant: status=ok
+2026-07-28 15:04:53 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 15:04:53 CEST    repeat=1 DijkstraPrims: running...
+2026-07-28 15:07:57 CEST    repeat=1 DijkstraPrims: status=ok
+2026-07-28 15:07:57 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 15:07:57 CEST    repeat=2 BBMSInter: running...
+2026-07-28 15:11:42 CEST    repeat=2 BBMSInter: status=ok
+2026-07-28 15:11:42 CEST    repeat=2 BBMSDppInstant: running...
+2026-07-28 15:16:00 CEST    repeat=2 BBMSDppInstant: status=ok
+2026-07-28 15:16:00 CEST    repeat=2 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 15:16:00 CEST    repeat=2 DijkstraPrims: running...
+2026-07-28 15:19:04 CEST    repeat=2 DijkstraPrims: status=ok
+2026-07-28 15:19:04 CEST  op-count pass
+2026-07-28 15:19:04 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 15:19:04 CEST    BBMSInter: running...
+2026-07-28 15:22:57 CEST    BBMSInter: status=ok
+2026-07-28 15:22:57 CEST    BBMSDppInstant: running...
+2026-07-28 15:27:19 CEST    BBMSDppInstant: status=ok
+2026-07-28 15:27:19 CEST    BBMSDppStepwise: SKIP (already completed)
+2026-07-28 15:27:19 CEST    DijkstraPrims: running...
+2026-07-28 15:30:22 CEST    DijkstraPrims: status=ok
+2026-07-28 15:30:22 CEST  cross-algorithm agreement: ok
+2026-07-28 15:30:22 CEST  sample=1
+2026-07-28 15:30:22 CEST  runtime/memory pass
+2026-07-28 15:30:22 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 15:30:22 CEST    repeat=0 BBMSInter: running...
+2026-07-28 15:34:39 CEST    repeat=0 BBMSInter: status=ok
+2026-07-28 15:34:39 CEST    repeat=0 BBMSDppInstant: running...
+2026-07-28 15:39:04 CEST    repeat=0 BBMSDppInstant: status=ok
+2026-07-28 15:39:04 CEST    repeat=0 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 15:39:04 CEST    repeat=0 DijkstraPrims: running...
+2026-07-28 15:42:10 CEST    repeat=0 DijkstraPrims: status=ok
+2026-07-28 15:42:10 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 15:42:10 CEST    repeat=1 BBMSInter: running...
+2026-07-28 15:46:26 CEST    repeat=1 BBMSInter: status=ok
+2026-07-28 15:46:26 CEST    repeat=1 BBMSDppInstant: running...
+2026-07-28 15:50:50 CEST    repeat=1 BBMSDppInstant: status=ok
+2026-07-28 15:50:50 CEST    repeat=1 BBMSDppStepwise: SKIP (already completed)
+2026-07-28 15:50:50 CEST    repeat=1 DijkstraPrims: running...
+2026-07-28 15:53:56 CEST    repeat=1 DijkstraPrims: status=ok
+2026-07-28 15:53:56 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 15:53:56 CEST    repeat=2 BBMSInter: running...
+2026-07-28 15:58:13 CEST    repeat=2 BBMSInter: status=ok
+2026-07-28 15:58:13 CEST    repeat=2 BBMSDppInstant: running...

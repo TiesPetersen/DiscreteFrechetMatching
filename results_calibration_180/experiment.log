@@ -7020,3 +7020,40 @@
 2026-07-28 11:17:03 CEST    repeat=0 BBMSDppStepwise: running...
 2026-07-28 11:19:39 CEST    repeat=0 BBMSDppStepwise: status=ok
 2026-07-28 11:19:39 CEST    repeat=0 DijkstraPrims: running...
+2026-07-28 11:22:14 CEST    repeat=0 DijkstraPrims: status=ok
+2026-07-28 11:22:14 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 11:22:14 CEST    repeat=1 BBMSInter: SKIP (walled at N=18000)
+2026-07-28 11:22:14 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=18000)
+2026-07-28 11:22:14 CEST    repeat=1 BBMSDppStepwise: running...
+2026-07-28 11:24:52 CEST    repeat=1 BBMSDppStepwise: status=ok
+2026-07-28 11:24:52 CEST    repeat=1 DijkstraPrims: running...
+2026-07-28 11:27:27 CEST    repeat=1 DijkstraPrims: status=ok
+2026-07-28 11:27:27 CEST    repeat=2 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 11:27:27 CEST    repeat=2 BBMSInter: SKIP (walled at N=18000)
+2026-07-28 11:27:27 CEST    repeat=2 BBMSDppInstant: SKIP (walled at N=18000)
+2026-07-28 11:27:27 CEST    repeat=2 BBMSDppStepwise: running...
+2026-07-28 11:30:04 CEST    repeat=2 BBMSDppStepwise: status=ok
+2026-07-28 11:30:04 CEST    repeat=2 DijkstraPrims: running...
+2026-07-28 11:32:39 CEST    repeat=2 DijkstraPrims: status=ok
+2026-07-28 11:32:39 CEST  op-count pass
+2026-07-28 11:32:39 CEST    BBMSCore: SKIP (walled at N=11000)
+2026-07-28 11:32:39 CEST    BBMSInter: SKIP (walled at N=18000)
+2026-07-28 11:32:39 CEST    BBMSDppInstant: SKIP (walled at N=18000)
+2026-07-28 11:32:39 CEST    BBMSDppStepwise: running...
+2026-07-28 11:35:19 CEST    BBMSDppStepwise: status=ok
+2026-07-28 11:35:19 CEST    DijkstraPrims: running...
+2026-07-28 11:37:52 CEST    DijkstraPrims: status=ok
+2026-07-28 11:37:52 CEST  cross-algorithm agreement: ok
+2026-07-28 11:37:52 CEST  sample=3
+2026-07-28 11:37:52 CEST  runtime/memory pass
+2026-07-28 11:37:52 CEST    repeat=0 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 11:37:52 CEST    repeat=0 BBMSInter: SKIP (walled at N=18000)
+2026-07-28 11:37:52 CEST    repeat=0 BBMSDppInstant: SKIP (walled at N=18000)
+2026-07-28 11:37:52 CEST    repeat=0 BBMSDppStepwise: running...
+2026-07-28 11:40:28 CEST    repeat=0 BBMSDppStepwise: status=ok
+2026-07-28 11:40:28 CEST    repeat=0 DijkstraPrims: running...
+2026-07-28 11:41:39 CEST    repeat=0 DijkstraPrims: status=ok
+2026-07-28 11:41:39 CEST    repeat=1 BBMSCore: SKIP (walled at N=11000)
+2026-07-28 11:41:39 CEST    repeat=1 BBMSInter: SKIP (walled at N=18000)
+2026-07-28 11:41:39 CEST    repeat=1 BBMSDppInstant: SKIP (walled at N=18000)
+2026-07-28 11:41:39 CEST    repeat=1 BBMSDppStepwise: running...

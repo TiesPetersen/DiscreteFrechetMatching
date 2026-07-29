@@ -1,8 +1,5 @@
 """
-Reads a results folder (as produced by experiment/main.py, against either its
-default results/ directory or a separate one used for a calibration pass --
-see experiment/AWS_RUN_README.md -- i.e. <folder>/<dataset>/{timing_memory,
-opcounts}.csv) and writes a single self-contained interactive HTML report.
+Reads a results folder and writes a single self-contained interactive HTML report.
 
 Two ways to slice the data, selected via tabs at the top:
   - By dataset: pick a dataset, click an attribute, see that attribute vs N
@@ -40,24 +37,9 @@ from collections import defaultdict
 
 import plotly.offline
 
-# Preferred ordering for algorithms we already know about, so existing runs
-# keep stable legend order/colors -- but this is a tie-breaker, not a filter:
-# discover_algorithms() below picks up whatever algorithm names actually
-# appear in the data, known or not, so adding a new algorithm to the
-# experiment (or removing one) needs no code change here.
-KNOWN_ALGORITHM_ORDER = ["BBMSCore", "BBMSInter", "DijkstraPrims"]
+# Preferred ordering for algorithms we already know about, so existing runs keep stable legend order/colors
+KNOWN_ALGORITHM_ORDER = ["BBMSCore", "BBMSInter", "BBMSDppInstant", "BBMSDppStepwise", "DijkstraPrims"]
 
-# Distinct hues (chosen for contrast against the dark plot background),
-# solid lines -- color is the primary way to tell traces apart. Marker shape
-# still varies too, as a free secondary cue (helps colorblind readers, no
-# cost to anyone else).
-#
-# Two entirely separate palettes for algorithms vs. datasets: the "by
-# dataset" view colors its lines by algorithm, and the "by algorithm" view
-# colors its lines by dataset -- if both drew from the same palette, the
-# same color would mean two different things depending on which tab you're
-# on (e.g. blue = BBMSCore in one view, blue = some dataset in the other),
-# which is exactly the confusing case to avoid.
 ALGORITHM_STYLE_PALETTE = [
     {"color": "#4E9BFF", "dash": "solid", "symbol": "circle"},
     {"color": "#FF8C42", "dash": "solid", "symbol": "square"},
@@ -75,14 +57,60 @@ DATASET_STYLE_PALETTE = [
     {"color": "#FFB56B", "dash": "solid", "symbol": "x"},
 ]
 
-# Identifier/grouping columns -- not something you'd plot on the y-axis.
-# `status` is used to filter to successful runs / find stop reasons, not
-# plotted itself.
 NON_ATTRIBUTE_COLUMNS = {"algorithm", "N", "sample", "repeat", "status"}
 
 PASSES = [("Timing & Memory", "timing_memory.csv"), ("Operation Counts", "opcounts.csv")]
 
-ZERO_EPSILON = 1e-12  # below this, a value counts as "structurally zero"
+# Plain-language, one-line explanation shown under each attribute's name in the
+# left-hand attribute list -- not every reader knows what e.g. "major_faults"
+# means, and the raw column name alone doesn't say.
+ATTRIBUTE_DESCRIPTIONS = {
+    "runtime_s": "How long the algorithm took to run, in seconds.",
+    "frechet_dist": "The computed distance between the two curves.",
+    "maxrss_before_mb": "Memory used right before the algorithm started, in MB.",
+    "maxrss_after_mb": "Memory used right after the algorithm finished, in MB.",
+    "minor_faults": "Times memory was loaded without needing the disk.",
+    "major_faults": "Times memory had to be loaded from disk.",
+    "block_input_ops": "Number of disk read operations.",
+    "block_output_ops": "Number of disk write operations.",
+    "voluntary_ctx_switches": "Times the program paused itself, e.g. to wait for something.",
+    "involuntary_ctx_switches": "Times the program was interrupted by the system.",
+    "user_time_s": "Time spent actually running the algorithm's own code.",
+    "sys_time_s": "Time spent on system-level tasks on the algorithm's behalf.",
+    "blocked_time_s": "Time spent waiting instead of actively running.",
+    "nca_regular_hops": "Steps taken walking up the tree one node at a time.",
+    "nca_shortcut_hops": "Steps taken jumping up the tree using a shortcut.",
+    "total_nca_steps": "Total steps taken walking up the tree (regular + shortcut).",
+    "shortcuts_written": "Number of shortcuts created during the run.",
+    "dead_paths_pruned": "Number of dead paths removed from the tree.",
+    "shortcuts_extended": "Number of existing shortcuts redirected further up the tree.",
+    "dead_path_walk_steps": "Steps taken walking up dead paths to remove shortcuts.",
+    "heap_pushes": "Number of grid cells added to the algorithm's heap.",
+    "heap_pops": "Number of grid cells taken off the heap to process.",
+    "cells_processed": "Number of grid cells the algorithm actually examined.",
+    "pct_cells_explored": "Percentage of the whole grid the algorithm actually examined.",
+}
+
+# Attributes worth flagging with a star as the headline metrics for their pass --
+# runtime_s and maxrss_after_mb for Timing & Memory, everything except
+# frechet_dist for Operation Counts (frechet_dist is a correctness cross-check,
+# not an efficiency metric).
+STARRED_TIMING_ATTRIBUTES = {"runtime_s", "maxrss_after_mb"}
+
+# Distinct marker shapes for a trace's *last* point when it stopped due to a
+# failure, so a line quietly ending isn't mistaken for "ran out of data" --
+# and so timeout vs oom (a real, different finding) is visible on the graph
+# itself, not just in the table underneath. Deliberately not any of the
+# shapes already used for trace identity in ALGORITHM_STYLE_PALETTE /
+# DATASET_STYLE_PALETTE, so it reads as "something different happened here"
+# at a glance.
+STATUS_MARKER_SYMBOLS = {
+    "timeout": "hourglass",
+    "oom": "hexagon",
+    "error": "asterisk",
+}
+
+ZERO_EPSILON = 1e-12
 
 
 def discover_datasets(results_root):
@@ -242,13 +270,32 @@ PLOT_GRID = "#2e2e2e"
 PLOT_FONT_FAMILY = "ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, 'Roboto Mono', monospace"
 
 
-def build_figure(attribute, series_by_trace, trace_order, style_map):
+def build_figure(attribute, series_by_trace, trace_order, style_map, stop_status_by_trace=None):
     """Plotly figure spec (JSON-serializable dict): one line per trace
     (algorithm or dataset, depending on which view this is for) that
     actually has nonzero data for this attribute, x=N, with an asymmetric
-    IQR error bar per point. Default x=log, y=linear -- the page's axis
+    IQR error bar per point. Default x=linear, y=linear -- the page's axis
     dropdowns can override either at render time. Each trace gets a distinct
-    color and marker shape."""
+    color and marker shape.
+
+    If `stop_status_by_trace` is given and a trace stopped on a failure
+    (timeout/oom/error), a small extra marker in that failure's distinct
+    shape (see STATUS_MARKER_SYMBOLS) is placed just to the right of its
+    last point -- otherwise a walled trace's line just quietly stops, which
+    reads as "ran out of data" rather than "this is where it broke down".
+    A separate marker-only trace rather than overriding the last point
+    itself, so it doesn't sit directly on top of (and obscure) real data.
+
+    The rightward offset is one fixed amount for the whole graph (a fraction
+    of this graph's own overall N range), not a per-trace percentage -- each
+    trace's last N differs (that's the whole point of a wall), so a
+    per-trace percentage would place every line's marker a different visual
+    distance from its line, which reads as uncalibrated/inconsistent rather
+    than as one deliberate offset applied uniformly."""
+    all_ns = sorted({n for points in series_by_trace.values()
+                      if points and not is_structurally_absent(points) for n in points})
+    x_offset = (all_ns[-1] - all_ns[0]) * 0.03 if len(all_ns) >= 2 else (all_ns[0] * 0.08 if all_ns else 1)
+
     data = []
     for name in trace_order:
         points = series_by_trace.get(name)
@@ -262,7 +309,8 @@ def build_figure(attribute, series_by_trace, trace_order, style_map):
             "mode": "lines+markers",
             "name": name,
             "line": {"color": style["color"], "dash": style["dash"]},
-            "marker": {"symbol": style["symbol"], "color": style["color"], "size": 7},
+            "marker": {"symbol": style["symbol"], "color": style["color"], "size": 7,
+                       "line": {"width": 0}},
             "error_y": {
                 "type": "data",
                 "symmetric": False,
@@ -274,12 +322,28 @@ def build_figure(attribute, series_by_trace, trace_order, style_map):
                 "arrayminus": [max(0.0, points[n]["mean"] - points[n]["q1"]) for n in ns],
             },
         })
+
+        stop = (stop_status_by_trace or {}).get(name)
+        wall_symbol = STATUS_MARKER_SYMBOLS.get(stop["state"]) if stop else None
+        if wall_symbol:
+            last_n, last_y = ns[-1], points[ns[-1]]["mean"]
+            data.append({
+                "x": [last_n + x_offset],
+                "y": [last_y],
+                "mode": "markers",
+                "name": f"{stop['state']} @ N={stop['at_n']}",
+                "showlegend": False,
+                "hoverinfo": "name",
+                "hoverlabel": {"namelength": -1},  # -1 = show the full name, don't truncate at 15 chars
+                "marker": {"symbol": wall_symbol, "color": style["color"], "size": 13,
+                           "line": {"width": 0}},
+            })
     layout = {
         "title": {"text": attribute, "font": {"color": PLOT_FG}},
         "paper_bgcolor": PLOT_BG,
         "plot_bgcolor": PLOT_BG,
         "font": {"color": PLOT_FG, "family": PLOT_FONT_FAMILY},
-        "xaxis": {"title": {"text": "N"}, "type": "log", "gridcolor": PLOT_GRID,
+        "xaxis": {"title": {"text": "N"}, "type": "linear", "gridcolor": PLOT_GRID,
                   "zerolinecolor": PLOT_GRID, "linecolor": PLOT_MUTED, "tickfont": {"color": PLOT_MUTED}},
         "yaxis": {"title": {"text": attribute}, "type": "linear", "gridcolor": PLOT_GRID,
                   "zerolinecolor": PLOT_GRID, "linecolor": PLOT_MUTED, "tickfont": {"color": PLOT_MUTED}},
@@ -316,7 +380,7 @@ def build_table(series_by_trace, stop_status_by_trace, trace_order):
                 cell[name] = {
                     "summary": f"{fmt(point['mean'])}  (n={point['count']})",
                     "detail": (f"IQR 25–75%: [{fmt(point['q1'])}, {fmt(point['q3'])}]"
-                               f"  ·  per-sample: {values_str}"),
+                               f"\nsamples: {values_str}"),
                 }
             else:
                 cell[name] = {"summary": "—", "detail": ""}
@@ -354,6 +418,22 @@ def build_report(results_root):
 
     for dataset in datasets:
         dataset_path = os.path.join(results_root, dataset)
+
+        # A wall is shared between the timing and op-count passes in main.py --
+        # once an algorithm fails at some N, the op-count pass never even
+        # attempts it, so opcounts.csv alone has no failing row to show for it
+        # (it just quietly stops with an all-"ok" history). Computing stop
+        # status separately per CSV would make Operation Counts charts think
+        # a walled algorithm "completed" -- computing it once from both CSVs
+        # combined reflects the actual shared-wall reality of the experiment.
+        combined_rows = []
+        for _, filename in PASSES:
+            combined_rows.extend(load_rows(os.path.join(dataset_path, filename)))
+        stop_status = compute_stop_status(combined_rows, algorithms)
+        for pass_name in dict(PASSES):
+            for algo in algorithms:
+                stop[pass_name][algo][dataset] = stop_status.get(algo, {"state": "no data", "at_n": None})
+
         for pass_name, filename in PASSES:
             rows = load_rows(os.path.join(dataset_path, filename))
             attrs = attribute_columns(rows)
@@ -363,10 +443,6 @@ def build_report(results_root):
             for a in attrs:
                 if a not in seen:
                     seen.append(a)
-
-            stop_status = compute_stop_status(rows, algorithms)
-            for algo in algorithms:
-                stop[pass_name][algo][dataset] = stop_status.get(algo, {"state": "no data", "at_n": None})
 
             for attr in attrs:
                 series = aggregate(rows, attr)
@@ -392,8 +468,8 @@ def build_report(results_root):
                 if not series_by_algo:
                     continue
                 present_attrs.append(attr)
-                figures[attr] = build_figure(attr, series_by_algo, algorithms, algorithm_styles)
                 stop_for_dataset = {algo: stop[pass_name][algo].get(dataset, default_stop) for algo in algorithms}
+                figures[attr] = build_figure(attr, series_by_algo, algorithms, algorithm_styles, stop_for_dataset)
                 tables[attr] = build_table(series_by_algo, stop_for_dataset, algorithms)
             if present_attrs:
                 by_dataset[dataset][pass_name] = {"attributes": present_attrs, "figures": figures, "tables": tables}
@@ -409,8 +485,8 @@ def build_report(results_root):
                 if not series_by_dataset or all_series_absent(series_by_dataset):
                     continue
                 present_attrs.append(attr)
-                figures[attr] = build_figure(attr, series_by_dataset, datasets, dataset_styles)
                 stop_for_algo = {ds: stop[pass_name][algo].get(ds, default_stop) for ds in datasets}
+                figures[attr] = build_figure(attr, series_by_dataset, datasets, dataset_styles, stop_for_algo)
                 tables[attr] = build_table(series_by_dataset, stop_for_algo, datasets)
             if present_attrs:
                 by_algorithm[algo][pass_name] = {"attributes": present_attrs, "figures": figures, "tables": tables}
@@ -422,7 +498,7 @@ PAGE_TEMPLATE = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Discrete Frechet Matching -- Experiment Results</title>
+<title>Experiment Results</title>
 <style>
   :root {
     --bg: #0a0a0a; --bg-panel: #101010; --fg: #f2f2f2; --muted: #888888;
@@ -460,6 +536,9 @@ PAGE_TEMPLATE = """<!doctype html>
   .attr-table tbody tr:hover { background: var(--row-hover); }
   .attr-table tbody tr.active { background: var(--row-active); font-weight: 700;
                                  border-left-color: var(--fg); }
+  .attr-cell { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .attr-description { color: var(--muted); font-size: 0.72rem; font-weight: 400; margin-top: 2px; }
+  .attr-star { color: #FFD23F; font-size: 0.9rem; flex: 0 0 auto; }
   .main-panel { flex: 1 1 560px; min-width: 360px; display: flex; flex-direction: column; gap: 16px; }
   .graph-panel { border: 1px solid var(--border); border-radius: 4px; padding: 12px;
                  overflow-x: auto; background: var(--bg-panel); }
@@ -469,6 +548,11 @@ PAGE_TEMPLATE = """<!doctype html>
   .axis-controls select { background: var(--bg); color: var(--fg); border: 1px solid var(--border);
                            font-family: inherit; font-size: 0.8rem; padding: 3px 6px; border-radius: 3px;
                            text-transform: none; letter-spacing: normal; }
+  .status-legend { margin-left: auto; display: flex; align-items: center; gap: 14px;
+                    text-transform: none; letter-spacing: normal; }
+  .status-legend-note { color: var(--muted); }
+  .status-legend-item { display: flex; align-items: center; gap: 5px; }
+  .status-marker { font-size: 0.95rem; }
   #graph { width: 100%; height: 480px; }
   .data-table-panel { border: 1px solid var(--border); border-radius: 4px; padding: 16px;
                        overflow-x: auto; background: var(--bg-panel); }
@@ -476,14 +560,14 @@ PAGE_TEMPLATE = """<!doctype html>
                           letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
   .data-table-panel table { font-size: 0.78rem; white-space: nowrap; }
   .cell-detail { color: var(--muted); font-size: 0.68rem; margin-top: 3px;
-                  white-space: normal; max-width: 260px; }
+                  white-space: pre-line; max-width: 260px; }
   .data-table-panel tr.stop-row td { border-top: 1px solid var(--border-strong); font-style: italic;
                                       color: var(--muted); }
 </style>
 </head>
 <body>
 <header>
-  <h1>Discrete Frechet Matching &mdash; Experiment Results</h1>
+  <h1>Experiment Results</h1>
   <div class="subtitle">Source: __RESULTS_ROOT__ &middot; click any attribute to plot it</div>
 </header>
 <div class="tab-bar" id="tab-bar"></div>
@@ -494,8 +578,8 @@ PAGE_TEMPLATE = """<!doctype html>
       <div class="axis-controls">
         <label>X axis:
           <select id="xaxis-type">
-            <option value="log" selected>log</option>
-            <option value="linear">linear</option>
+            <option value="linear" selected>linear</option>
+            <option value="log">log</option>
           </select>
         </label>
         <label>Y axis:
@@ -504,6 +588,12 @@ PAGE_TEMPLATE = """<!doctype html>
             <option value="log">log</option>
           </select>
         </label>
+        <div class="status-legend">
+          <span class="status-legend-note">Marker = the next attempted data point caused a:</span>
+          <span class="status-legend-item"><span class="status-marker">&#10710;</span> timeout</span>
+          <span class="status-legend-item"><span class="status-marker">&#11041;</span> oom</span>
+          <span class="status-legend-item"><span class="status-marker">*</span> error</span>
+        </div>
       </div>
       <div id="graph"></div>
     </div>
@@ -519,6 +609,8 @@ PAGE_TEMPLATE = """<!doctype html>
 const REPORT = __REPORT_JSON__;
 const ALGORITHMS = __ALGORITHMS_JSON__;
 const DATASETS = __DATASETS_JSON__;
+const ATTRIBUTE_DESCRIPTIONS = __ATTRIBUTE_DESCRIPTIONS_JSON__;
+const STARRED_TIMING_ATTRIBUTES = new Set(__STARRED_TIMING_ATTRIBUTES_JSON__);
 
 let currentView = null, currentKey = null, currentPass = null, currentAttribute = null;
 
@@ -566,10 +658,18 @@ function selectKey(view, key) {
   currentKey = key;
   renderTabBar();
   renderTables();
-  const passes = Object.keys(REPORT[view][key]);
-  if (passes.length) {
+  const passesData = REPORT[view][key];
+  const passes = Object.keys(passesData);
+  if (!passes.length) return;
+
+  // Keep the currently-selected pass/attribute if this dataset/algorithm still
+  // has it -- switching tabs is meant to compare the same metric across
+  // datasets/algorithms, not reset back to the first attribute every time.
+  if (currentPass && passesData[currentPass] && passesData[currentPass].attributes.includes(currentAttribute)) {
+    selectAttribute(currentPass, currentAttribute);
+  } else {
     const firstPass = passes[0];
-    selectAttribute(firstPass, REPORT[view][key][firstPass].attributes[0]);
+    selectAttribute(firstPass, passesData[firstPass].attributes[0]);
   }
 }
 
@@ -590,7 +690,36 @@ function renderTables() {
     passesData[passName].attributes.forEach(attr => {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.textContent = attr;
+      td.className = 'attr-cell';
+
+      const text = document.createElement('div');
+      const name = document.createElement('div');
+      name.className = 'attr-name';
+      name.textContent = attr;
+      text.appendChild(name);
+      const desc = ATTRIBUTE_DESCRIPTIONS[attr];
+      if (desc) {
+        const description = document.createElement('div');
+        description.className = 'attr-description';
+        description.textContent = desc;
+        text.appendChild(description);
+      }
+      td.appendChild(text);
+
+      // Starred: the headline metric for its pass -- runtime_s/maxrss_after_mb
+      // for Timing & Memory, everything except frechet_dist (a correctness
+      // cross-check, not an efficiency metric) for Operation Counts.
+      const starred = passName === 'Operation Counts'
+        ? attr !== 'frechet_dist'
+        : STARRED_TIMING_ATTRIBUTES.has(attr);
+      if (starred) {
+        const star = document.createElement('span');
+        star.className = 'attr-star';
+        star.textContent = '★';
+        star.title = 'Key efficiency metric';
+        td.appendChild(star);
+      }
+
       tr.appendChild(td);
       tr.dataset.pass = passName;
       tr.dataset.attr = attr;
@@ -631,14 +760,16 @@ function renderDataTable() {
   const fig = REPORT[currentView][currentKey][currentPass].figures[currentAttribute];
   const columns = columnsFor(currentView);
   document.getElementById('data-table-title').textContent =
-    currentAttribute + ' -- ' + currentKey + ' (' + currentPass + ')';
+    currentAttribute + ' - ' + currentKey + ' (' + currentPass + ')';
 
   // Colors come straight from this attribute's own plotted traces, not a
   // fixed per-name mapping -- a column whose trace was left off the graph
   // (nothing to do for this attribute) falls back to the muted grey rather
   // than implying it's plotted when it isn't.
   const colorByColumn = {};
-  fig.data.forEach(t => { colorByColumn[t.name] = t.line.color; });
+  // marker.color (not line.color): every trace has a marker, but the small
+  // wall-status marker traces (see build_figure) have no line at all.
+  fig.data.forEach(t => { colorByColumn[t.name] = t.marker.color; });
 
   const table = document.createElement('table');
   const thead = document.createElement('thead');
@@ -721,6 +852,8 @@ def render_html(report, datasets, algorithms, results_root):
     html = html.replace("__REPORT_JSON__", json.dumps(report))
     html = html.replace("__ALGORITHMS_JSON__", json.dumps(algorithms))
     html = html.replace("__DATASETS_JSON__", json.dumps(datasets))
+    html = html.replace("__ATTRIBUTE_DESCRIPTIONS_JSON__", json.dumps(ATTRIBUTE_DESCRIPTIONS))
+    html = html.replace("__STARRED_TIMING_ATTRIBUTES_JSON__", json.dumps(sorted(STARRED_TIMING_ATTRIBUTES)))
     return html
 
 

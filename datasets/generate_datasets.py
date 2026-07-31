@@ -99,6 +99,7 @@ def write_dataset_file(path, samples):
 def main():
     for dataset_name, generator in GENERATORS.items():
         out_dir = os.path.join(DATASETS_DIR, dataset_name)
+        os.makedirs(out_dir, exist_ok=True)
         k = K_OVERRIDES.get(dataset_name, K)
         for n in GRID:
             out_path = os.path.join(out_dir, f"N_{n}.txt")

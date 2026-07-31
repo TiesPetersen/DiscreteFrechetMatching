@@ -41,19 +41,12 @@ sudo dnf install -y gcc-c++ make python3 tmux
 cd experiment && make && cd ..
 ```
 
-## 5. Seed the reused timing data
+`results_calibration_300/{identical,random,outlier}/timing_memory.csv` are
+already checked into this branch (copied from `results_calibration_180`, no
+`opcounts.csv` — that's the pass being redone). `alternating` gets nothing
+pre-seeded, so it runs completely fresh.
 
-```bash
-mkdir -p results_calibration_300/identical results_calibration_300/random results_calibration_300/outlier
-cp results_calibration_180/identical/timing_memory.csv results_calibration_300/identical/
-cp results_calibration_180/random/timing_memory.csv   results_calibration_300/random/
-cp results_calibration_180/outlier/timing_memory.csv  results_calibration_300/outlier/
-```
-
-Don't copy `opcounts.csv` — that's the pass being redone. `alternating` gets
-nothing pre-copied, so it runs completely fresh.
-
-## 6. Run it in tmux (survives an SSH disconnect)
+## 5. Run it in tmux (survives an SSH disconnect)
 
 ```bash
 tmux new -s frechet
@@ -89,7 +82,7 @@ instrumentation adds a little overhead specifically for DijkstraPrims —
 worth watching for `alternating`, given its queue can hold millions of
 entries.
 
-## 7. Push results back
+## 6. Push results back
 
 ```bash
 git add results_calibration_300/

@@ -1,5 +1,5 @@
 """
-Generates the identical, random, and outlier curve datasets used by the main
+Generates the identical, random, outlier and alternating curve datasets used by the main
 experiment. One file per (dataset, N), each containing K sample curve pairs.
 
 Run from the project root:
@@ -20,8 +20,9 @@ K = 5  # default number of sample curve pairs per (dataset, N)
 K_OVERRIDES = {
     "random": 10,
 }
-
-OUTLIER_DISTANCE = 1000.0  # outlier: fixed distance of the outlier point
+OUTLIER_DISTANCE = 1000.0  # for outlier/alternating: fixed distance of the outlier point(s)
+ANCHOR_DISTANCE = 100.0    # for alternating: p[0]
+BARRIER_DISTANCE = 200.0   # for alternating: q's odd indices
 
 
 def deterministic_seed(*parts):
@@ -36,11 +37,7 @@ def random_point(rng, scale=10.0):
 
 
 def generate_outlier(n, seed):
-    """p: n random points, same distribution as identical/random. q: the same, but
-    its last point is a distant outlier. This is the adversarial construction meant
-    to defeat DijkstraPrims' sparse pruning: every cell outside the last column is
-    cheap, so it must exhaust almost the entire grid before it can ever pop a cell
-    in the one expensive column, defeating its early termination."""
+    """p: n random points, same distribution as identical/random. q: the same, but its last point is a distant outlier."""
     rng = random.Random(seed)
     p = [random_point(rng) for _ in range(n)]
     q = [random_point(rng) for _ in range(n - 1)]
@@ -49,8 +46,7 @@ def generate_outlier(n, seed):
 
 
 def generate_identical(n, seed):
-    """p: n random points. q: identical to p. The Fréchet distance is always 0,
-    achieved by matching each point to itself along the diagonal."""
+    """p: n random points. q: identical to p."""
     rng = random.Random(seed)
     p = [random_point(rng) for _ in range(n)]
     q = list(p)
@@ -58,10 +54,24 @@ def generate_identical(n, seed):
 
 
 def generate_random(n, seed):
-    """p and q: independent random points, unrelated to each other."""
+    """p and q: independent random points."""
     rng = random.Random(seed)
     p = [random_point(rng) for _ in range(n)]
     q = [random_point(rng) for _ in range(n)]
+    return p, q
+
+
+def generate_alternating(n, seed):
+    """p: an anchor point + random points + an outlier. q: alternates random point / a fixed "wall" point, ending in an opposite-signed outlier."""
+    rng = random.Random(seed)
+    p = [(ANCHOR_DISTANCE, 0.0)] + [random_point(rng) for _ in range(n - 2)] + [(OUTLIER_DISTANCE, 0.0)]
+    q = []
+    for j in range(n - 1):
+        if j % 2 == 0:
+            q.append(random_point(rng))
+        else:
+            q.append((BARRIER_DISTANCE, 0.0))
+    q.append((-OUTLIER_DISTANCE, 0.0))
     return p, q
 
 
@@ -69,11 +79,12 @@ GENERATORS = {
     "outlier": generate_outlier,
     "identical": generate_identical,
     "random": generate_random,
+    "alternating": generate_alternating,
 }
 
 
 def write_dataset_file(path, samples):
-    """samples: list of (p, q) curve pairs. See PSEUDOCODE.md for the file format."""
+    """samples: list of (p, q) curve pairs."""
     with open(path, "w") as f:
         f.write(f"{len(samples)}\n")
         for p, q in samples:

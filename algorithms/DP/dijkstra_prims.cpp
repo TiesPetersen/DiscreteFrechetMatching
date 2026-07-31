@@ -22,6 +22,7 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
     double initial_distance = dist(p[0], q[0]);
     pq.push({initial_distance, 0, 0});
     COUNT(heap_pushes);
+    COUNT_MAX(max_heap_size, pq.size());
     prev[0] = -1;
     double frechet = initial_distance;
 
@@ -29,6 +30,7 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
         // Get the cell with the smallest distance from the priority queue
         auto [current_distance, i, j] = pq.top(); pq.pop();
         COUNT(heap_pops);
+        COUNT_ADD(sum_heap_size, pq.size());
         frechet = std::max(frechet, current_distance);
 
         // If we reached the last cell, we can stop
@@ -52,6 +54,7 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
             prev[idx] = (long long) i * n + j;
             pq.push({dist(p[ni], q[nj]), ni, nj});
             COUNT(heap_pushes);
+            COUNT_MAX(max_heap_size, pq.size());
         }
     }
 

@@ -148,6 +148,7 @@ static void run_op_counts(const std::string& algorithm, long long N, int sample_
     double frechet = -1;
     long long total_nca_steps = -1, cells_processed = -1;
     double pct_cells_explored = -1;
+    double avg_heap_size = -1;
 
     g_counters = Counters{};
     try {
@@ -166,6 +167,14 @@ static void run_op_counts(const std::string& algorithm, long long N, int sample_
             cells_processed = g_counters.heap_pops;
         }
         pct_cells_explored = 100.0 * (double)cells_processed / (double)(m * n);
+
+        // avg_heap_size: sum_heap_size is sampled once per pop (see dijkstra_prims.cpp),
+        // so dividing by heap_pops gives the average queue size across those samples.
+        // Stays -1 (not 0) for BBMS algorithms, where heap_pops is always 0 -- "never
+        // measured" and "measured as zero" shouldn't look the same.
+        if (g_counters.heap_pops > 0) {
+            avg_heap_size = (double)g_counters.sum_heap_size / (double)g_counters.heap_pops;
+        }
     } catch (const std::bad_alloc&) {
         status = "oom";
     } catch (...) {
@@ -178,6 +187,7 @@ static void run_op_counts(const std::string& algorithm, long long N, int sample_
                << g_counters.dead_paths_pruned << "," << g_counters.shortcuts_extended << ","
                << g_counters.dead_path_walk_steps << ","
                << g_counters.heap_pushes << "," << g_counters.heap_pops << ","
+               << g_counters.max_heap_size << "," << avg_heap_size << ","
                << cells_processed << "," << pct_cells_explored << "," << status << "\n";
 }
 

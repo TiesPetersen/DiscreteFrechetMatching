@@ -87,6 +87,8 @@ ATTRIBUTE_DESCRIPTIONS = {
     "dead_path_walk_steps": "Steps taken walking up dead paths to remove shortcuts.",
     "heap_pushes": "Number of grid cells added to the algorithm's heap.",
     "heap_pops": "Number of grid cells taken off the heap to process.",
+    "max_heap_size": "The largest the heap ever got during the run.",
+    "avg_heap_size": "The heap's typical size while cells were being processed.",
     "cells_processed": "Number of grid cells the algorithm actually examined.",
     "pct_cells_explored": "Percentage of the whole grid the algorithm actually examined.",
 }

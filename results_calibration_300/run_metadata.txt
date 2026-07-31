@@ -1,0 +1,8 @@
+date: 2026-07-31T15:31:23Z
+hostname: ip-172-31-9-90.eu-central-1.compute.internal
+uname: Linux ip-172-31-9-90.eu-central-1.compute.internal 6.18.38-76.139.amzn2023.x86_64 #2 SMP PREEMPT_DYNAMIC Fri Jul 24 13:38:05 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+nproc: 4
+               total        used        free      shared  buff/cache   available
+Mem:           124Gi       386Mi       123Gi       0.0Ki       1.2Gi       123Gi
+Swap:             0B          0B          0B
+ulimit -v (KB): 117755625

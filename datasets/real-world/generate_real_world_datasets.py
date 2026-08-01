@@ -17,18 +17,20 @@ memory on them; that's an expected, reportable outcome, not something to avoid
 (see external_datasets/PILOT_FINDINGS -- ../../external_datasets/pilot.py's run
 that established the sample sizes below).
 
-Sample sizes (curves per dataset; OV is used whole, not sampled) were chosen to
-fit a 24-hour AWS run, estimated from real per-pair cost measured in that pilot
-run applied to the actual sampled curves (see the conversation this was built
-from): Pigeons curves are ~100x more expensive per typical pair (median length
-7,464) than Drifter (716) or Geolife (506) and already produced genuine 120s
-timeouts on pairs a fraction of that median size, but it's also the dataset
-with the most interesting finding (real animal-movement curves triggering the
-same BBMSCore/BBMSInter blowup the synthetic `alternating` dataset was
-hand-engineered to cause) -- so its time budget (~14h) is weighted higher than
-its per-pair cost alone would justify, at the expense of a much smaller sample
-(21 pairs) than Drifter (cheapest, zero timeouts observed across its whole
-range) gets for a similar time budget (1,326 pairs).
+Sample sizes (curves per dataset; OV is used whole, not sampled) were
+rebalanced after a first AWS run showed Drifter (cheap, zero timeouts, 1,326
+pairs) was oversized well past the point of adding confidence -- a few hundred
+pairs tells the same story -- while Pigeons (21 pairs) was undersized for its
+failure rate specifically to be trustworthy, being the one dataset where
+real animal-movement curves reproduce the same BBMSCore/BBMSInter blowup the
+synthetic `alternating` dataset was hand-engineered to cause. Pigeons pairs
+are also ~100x more expensive per typical pair (median length 7,464) than
+Drifter (716) or Geolife (506) and already produced genuine 120s timeouts on
+pairs a fraction of that median size, so growing it further costs steeply:
+each extra curve adds a full new row of expensive pairs, not just one pair.
+Drifter was cut to 300 pairs (~0.8h) to free up time, letting Pigeons grow to
+36 pairs (~16.7h, up from 21) while keeping total runtime roughly where it
+was (~22h).
 
 Expects the raw downloads to already exist under external_datasets/ at the repo
 root (see the conversation this was built from / README for download sources --
@@ -52,9 +54,9 @@ SEED = 42069  # same convention as datasets/synthetic/generate_datasets.py
 # Curves to sample per dataset; all C(K, 2) pairs among them are used. OV has no
 # entry -- it's a fixed, pre-paired benchmark (110 pairs), used in full.
 SAMPLE_SIZES = {
-    "drifter": 52,
+    "drifter": 25,
     "geolife": 22,
-    "pigeons": 7,
+    "pigeons": 9,
 }
 
 METERS_PER_DEG = 111_320.0

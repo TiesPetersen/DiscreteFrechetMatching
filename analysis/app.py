@@ -293,9 +293,18 @@ def build_figure(attribute, series_by_trace, trace_order, style_map, stop_status
     trace's last N differs (that's the whole point of a wall), so a
     per-trace percentage would place every line's marker a different visual
     distance from its line, which reads as uncalibrated/inconsistent rather
-    than as one deliberate offset applied uniformly."""
+    than as one deliberate offset applied uniformly.
+
+    -1 is runner.cpp's "not measured" sentinel (e.g. avg_heap_size for BBMS
+    algorithms, which never pop the heap) -- distinct from a real 0, so those
+    points are left out of the plotted line entirely rather than drawn as
+    data. The table (build_table) still shows them -- it works from the same
+    unfiltered series_by_trace, so the raw -1 stays visible there."""
+    def plotted_ns(points):
+        return sorted(n for n in points if points[n]["mean"] != -1)
+
     all_ns = sorted({n for points in series_by_trace.values()
-                      if points and not is_structurally_absent(points) for n in points})
+                      if points and not is_structurally_absent(points) for n in plotted_ns(points)})
     x_offset = (all_ns[-1] - all_ns[0]) * 0.03 if len(all_ns) >= 2 else (all_ns[0] * 0.08 if all_ns else 1)
 
     data = []
@@ -303,7 +312,9 @@ def build_figure(attribute, series_by_trace, trace_order, style_map, stop_status
         points = series_by_trace.get(name)
         if not points or is_structurally_absent(points):
             continue
-        ns = sorted(points)
+        ns = plotted_ns(points)
+        if not ns:
+            continue
         style = style_map.get(name, ALGORITHM_STYLE_PALETTE[0])
         data.append({
             "x": ns,

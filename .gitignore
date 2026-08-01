@@ -9,3 +9,4 @@ analysis/output/
 /results_small_partial_experiment
 *.dSYM
 /extra
+/external_datasets

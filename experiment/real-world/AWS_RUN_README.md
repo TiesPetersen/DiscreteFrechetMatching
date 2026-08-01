@@ -57,6 +57,7 @@ orchestrator) — same build regardless of which experiment you're running.
 ```bash
 tmux new -s frechet
 ulimit -v $(( $(free -k | awk '/^Mem:/{print $2}') * 90 / 100 ))
+mkdir -p results_real_world
 {
   echo "date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "hostname: $(hostname)"
@@ -64,14 +65,12 @@ ulimit -v $(( $(free -k | awk '/^Mem:/{print $2}') * 90 / 100 ))
   echo "nproc: $(nproc)"
   free -h
   echo "ulimit -v (KB): $(ulimit -v)"
-} > /tmp/run_metadata.txt
+} > results_real_world/run_metadata.txt
 python3 -c "
 import sys; sys.path.insert(0, 'experiment/real-world')
 import main as m
 m.main()
 "
-mkdir -p results_real_world
-mv /tmp/run_metadata.txt results_real_world/run_metadata.txt
 ```
 
 `RESULTS_DIR` (`results_real_world`) and `TIMEOUT` (300s, applied to *both*

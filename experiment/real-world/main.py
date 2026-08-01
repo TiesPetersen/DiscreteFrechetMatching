@@ -11,14 +11,15 @@ pairs having independent, unequal lengths (m != n) with no shared "N" grid:
    pair) is attempted independently; timeouts/OOM are expected, reportable
    outcomes here, not something to avoid.
 
-2. The op-count pass is timeout-bounded here (the synthetic experiment leaves
-   it uncapped, since op counts are deterministic and BBMS work is always
-   exactly m*n regardless of input). Real curves have shown far worse
-   per-cell behavior than synthetic ones for BBMSCore/BBMSInter (see the pilot
-   in external_datasets/pilot.py -- e.g. a 120s timeout on a Pigeons pair at
-   just ~7.2M cells, a size that takes ~4s on synthetic data), so leaving this
-   pass uncapped risked one pathological pair stalling the whole run
-   indefinitely. Both passes share TIMEOUT here.
+2. The op-count pass is uncapped, same as the synthetic experiment, but is
+   only ever attempted for an (algorithm, pair) that already succeeded on
+   every timing-pass repeat -- mirroring the synthetic experiment's actual
+   behavior (its op-count pass is uncapped too, but its wall mechanism means
+   it's only ever reached for N values where timing already proved the run
+   finishes). A timing-pass failure here means we already know that
+   (algorithm, pair) is too expensive, so op-count is skipped for it entirely
+   rather than re-confirming that uncapped -- there's no per-pair wall to rely
+   on (see point 1), so this check is done directly per pair instead.
 
 3. Schema: "N"/"sample" are replaced with "pair_index"/"m"/"n"/"cells" --
    runner.cpp itself only ever reports a single N (= p.size()), hard-assuming
@@ -51,7 +52,7 @@ LOG_PATH     = os.path.join(RESULTS_DIR, "experiment.log")
 
 REPEAT     = 3     # timing repeats per pair, same as the synthetic experiment
 ALGORITHMS = ["BBMSCore", "BBMSInter", "BBMSDppInstant", "BBMSDppStepwise", "DijkstraPrims"]
-TIMEOUT    = 300   # seconds -- applies to BOTH passes here, see module docstring point 2
+TIMEOUT    = 300   # seconds -- timing pass only; op-count is uncapped, see module docstring point 2
 
 FAILURE_STATUSES = {"timeout", "oom"}
 
@@ -162,11 +163,15 @@ def append_row(csv_path, fieldnames, row):
 
 
 def load_existing_results(dataset_names):
-    """Reconstructs the completed-row sets for both passes and a cache of every
-    existing op-count row -- no wall state here, see module docstring point 1."""
+    """Reconstructs the completed-row sets for both passes, a cache of every
+    existing op-count row, and timing_failed -- the (dataset, algorithm,
+    pair_index) triples where at least one timing repeat failed, used to skip
+    the op-count pass for them (see module docstring point 2). No N-ordered
+    wall state here, see module docstring point 1."""
     done_timing = set()
     done_opcount = set()
     opcount_rows = {}
+    timing_failed = set()
 
     for dataset in dataset_names:
         timing_csv = os.path.join(RESULTS_DIR, dataset, "timing_memory.csv")
@@ -174,6 +179,8 @@ def load_existing_results(dataset_names):
             with open(timing_csv, newline="") as f:
                 for row in csv.DictReader(f):
                     done_timing.add((dataset, row["algorithm"], row["pair_index"], row["repeat"]))
+                    if row["status"] in FAILURE_STATUSES:
+                        timing_failed.add((dataset, row["algorithm"], row["pair_index"]))
 
         opcount_csv = os.path.join(RESULTS_DIR, dataset, "opcounts.csv")
         if os.path.exists(opcount_csv):
@@ -183,7 +190,7 @@ def load_existing_results(dataset_names):
                     done_opcount.add(key)
                     opcount_rows[key] = row
 
-    return done_timing, done_opcount, opcount_rows
+    return done_timing, done_opcount, opcount_rows, timing_failed
 
 
 def run_and_classify(cmd, runner_fieldnames, own_fieldnames, extra, timeout):
@@ -247,8 +254,9 @@ def main():
     for name in datasets:
         os.makedirs(os.path.join(RESULTS_DIR, name), exist_ok=True)
 
-    done_timing, done_opcount, opcount_rows = load_existing_results(datasets.keys())
-    log(f"Existing results: {len(done_timing)} timing row(s), {len(done_opcount)} op-count row(s)")
+    done_timing, done_opcount, opcount_rows, timing_failed = load_existing_results(datasets.keys())
+    log(f"Existing results: {len(done_timing)} timing row(s), {len(done_opcount)} op-count row(s), "
+        f"{len(timing_failed)} algorithm/pair combo(s) already known to fail timing")
 
     for dataset in sorted(datasets):
         pairs = datasets[dataset]
@@ -276,6 +284,8 @@ def main():
                     log(f"  repeat={repeat} {algorithm}: status={status}")
                     append_row(timing_csv, TIMING_FIELDS, row)
                     done_timing.add(key)
+                    if status in FAILURE_STATUSES:
+                        timing_failed.add((dataset, algorithm, str(pair_index)))
 
             log("op-count pass")
             for algorithm in ALGORITHMS:
@@ -283,11 +293,14 @@ def main():
                 if key in done_opcount:
                     log(f"  {algorithm}: SKIP (already completed)")
                     continue
+                if key in timing_failed:
+                    log(f"  {algorithm}: SKIP (timing pass already failed for this pair)")
+                    continue
 
                 log(f"  {algorithm}: running...")
                 cmd = [RUNNER_COUNTED, algorithm, part_path, str(local_index)]
                 extra = {"algorithm": algorithm, **extra_base}
-                row, status = run_and_classify(cmd, RUNNER_OPCOUNT_FIELDS, OPCOUNT_FIELDS, extra, timeout=TIMEOUT)
+                row, status = run_and_classify(cmd, RUNNER_OPCOUNT_FIELDS, OPCOUNT_FIELDS, extra, timeout=None)
 
                 log(f"  {algorithm}: status={status}")
                 append_row(opcount_csv, OPCOUNT_FIELDS, row)

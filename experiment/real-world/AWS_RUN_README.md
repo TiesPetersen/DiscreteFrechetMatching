@@ -73,11 +73,14 @@ m.main()
 "
 ```
 
-`RESULTS_DIR` (`results_real_world`) and `TIMEOUT` (300s, applied to *both*
-passes here — unlike the synthetic experiment, which leaves the op-count pass
-uncapped) already default correctly in `experiment/real-world/main.py`, so
-there's nothing to override before calling `m.main()` the way the synthetic
-README overrides `RESULTS_DIR`/`TIMEOUT` explicitly.
+`RESULTS_DIR` (`results_real_world`) and `TIMEOUT` (300s, timing pass only)
+already default correctly in `experiment/real-world/main.py`, so there's
+nothing to override before calling `m.main()` the way the synthetic README
+overrides `RESULTS_DIR`/`TIMEOUT` explicitly. The op-count pass is uncapped,
+same as the synthetic experiment, but only ever attempted for an
+(algorithm, pair) that already succeeded on every timing repeat — a timing
+failure means op-count is skipped for that pair/algorithm entirely, since
+it's already known to be too expensive.
 
 Detach with `Ctrl-b d`, reattach with `tmux attach -t frechet`. Resumable:
 Ctrl-C or a dropped connection is safe, just rerun the same command to

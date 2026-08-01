@@ -253,30 +253,87 @@ def build_figure(attribute, points_by_trace, trace_order, style_map, rows_by_tra
     return {"data": data, "layout": layout}
 
 
+def build_box_figure(attribute, points_by_trace, trace_order, style_map, group_label):
+    """One box trace per algorithm/dataset, x-axis = trace name (categorical)
+    instead of cells -- shows the same ok-pair values as build_figure's
+    scatter, but grouped into a per-trace distribution (median + IQR box)
+    with every individual point overlaid and jittered, so the spread across
+    algorithms/datasets is comparable independent of pair size. Only ok pairs
+    have a value to plot here at all; failures are already covered by the
+    marker traces in build_figure, so this chart doesn't repeat them."""
+    data = []
+    for name in trace_order:
+        points = points_by_trace.get(name, [])
+        if not points or is_structurally_absent(points):
+            continue
+        style = style_map.get(name, ALGORITHM_STYLE_PALETTE[0])
+        ys = [v for _, v in points]
+        data.append({
+            "type": "box", "y": ys, "name": name,
+            "boxpoints": "all", "jitter": 0.4, "pointpos": 0,
+            "marker": {"color": style["color"], "size": 4, "opacity": 0.6},
+            "line": {"color": style["color"]},
+            "fillcolor": "rgba(0,0,0,0)",
+        })
+
+    layout = {
+        "title": {"text": f"{attribute} by {group_label}", "font": {"color": PLOT_FG}},
+        "paper_bgcolor": PLOT_BG,
+        "plot_bgcolor": PLOT_BG,
+        "font": {"color": PLOT_FG, "family": PLOT_FONT_FAMILY},
+        "showlegend": False,
+        "xaxis": {"type": "category", "gridcolor": PLOT_GRID,
+                  "zerolinecolor": PLOT_GRID, "linecolor": PLOT_MUTED, "tickfont": {"color": PLOT_MUTED}},
+        "yaxis": {"title": {"text": attribute}, "type": "linear", "gridcolor": PLOT_GRID,
+                  "zerolinecolor": PLOT_GRID, "linecolor": PLOT_MUTED, "tickfont": {"color": PLOT_MUTED}},
+        "margin": {"t": 48, "r": 24, "b": 48, "l": 64},
+    }
+    return {"data": data, "layout": layout}
+
+
 def fmt(value):
     return f"{value:.4g}"
+
+
+def cell(value, note=None):
+    return {"value": value, "note": note}
 
 
 def build_table(points_by_trace, counts_by_trace, trace_order):
     """One column per trace (algorithm/dataset), rows = ok/timeout/oom/error
     counts followed by mean/median/IQR/min/max among the ok pairs -- a compact
     summary rather than a per-N breakdown, since there's no grouping key
-    smaller than "every pair" to build rows from."""
+    smaller than "every pair" to build rows from.
+
+    Each cell is {value, note}: `max` gets a note when this trace also has
+    timeouts or OOMs, since neither produces a value at all -- the true max
+    (whatever that pair would have reached) is unknown and could be higher,
+    so the displayed max is a lower bound on the real one, not the real one."""
     stat_rows = ["ok", "timeout", "oom", "error", "mean", "median", "IQR 25-75%", "min", "max"]
     table = {"stat": stat_rows}
     for name in trace_order:
         points = points_by_trace.get(name, [])
         counts = counts_by_trace.get(name, {})
         values = [v for _, v in points]
-        col = [str(counts.get("ok", 0)), str(counts.get("timeout", 0)),
-               str(counts.get("oom", 0)), str(counts.get("error", 0))]
+        n_timeout = counts.get("timeout", 0)
+        n_oom = counts.get("oom", 0)
+        col = [cell(str(counts.get("ok", 0))), cell(str(n_timeout)),
+               cell(str(n_oom)), cell(str(counts.get("error", 0)))]
         if values:
             q1, q3 = (statistics.quantiles(values, n=4, method="inclusive")[0],
                       statistics.quantiles(values, n=4, method="inclusive")[2]) if len(values) >= 2 else (values[0], values[0])
-            col += [fmt(sum(values) / len(values)), fmt(statistics.median(values)),
-                    f"[{fmt(q1)}, {fmt(q3)}]", fmt(min(values)), fmt(max(values))]
+            reasons = []
+            if n_timeout > 0:
+                reasons.append(f"{n_timeout} timed out")
+            if n_oom > 0:
+                reasons.append(f"{n_oom} ran out of memory")
+            max_note = (f"not accurate: {', '.join(reasons)}, true max may be higher"
+                        if reasons else None)
+            col += [cell(fmt(sum(values) / len(values))), cell(fmt(statistics.median(values))),
+                    cell(f"[{fmt(q1)}, {fmt(q3)}]"), cell(fmt(min(values))),
+                    cell(fmt(max(values)), max_note)]
         else:
-            col += ["—"] * 5
+            col += [cell("—")] * 5
         table[name] = col
     return table
 
@@ -321,16 +378,18 @@ def build_report(results_root):
                 rows_by_algo[row["algorithm"]].append(row)
             counts_by_algo = status_counts(rows, algorithms)
 
-            figures, tables, present_attrs = {}, {}, []
+            figures, box_figures, tables, present_attrs = {}, {}, {}, []
             for attr in attrs:
                 points_by_algo = {algo: aggregate_by_pair(rows_by_algo.get(algo, []), attr) for algo in algorithms}
                 if all_series_absent(points_by_algo):
                     continue
                 present_attrs.append(attr)
                 figures[attr] = build_figure(attr, points_by_algo, algorithms, default_style_algo, rows_by_algo)
+                box_figures[attr] = build_box_figure(attr, points_by_algo, algorithms, default_style_algo, "algorithm")
                 tables[attr] = build_table(points_by_algo, counts_by_algo, algorithms)
             if present_attrs:
-                by_dataset[dataset][pass_name] = {"attributes": present_attrs, "figures": figures, "tables": tables}
+                by_dataset[dataset][pass_name] = {"attributes": present_attrs, "figures": figures,
+                                                    "box_figures": box_figures, "tables": tables}
 
     # --- By algorithm: one point-set per dataset, for a fixed algorithm ---
     by_algorithm = {}
@@ -342,16 +401,18 @@ def build_report(results_root):
                 rows_by_dataset[dataset] = [r for r in raw_rows[pass_name][dataset] if r["algorithm"] == algo]
             counts_by_dataset = {ds: status_counts(rows, [algo])[algo] for ds, rows in rows_by_dataset.items()}
 
-            figures, tables, present_attrs = {}, {}, []
+            figures, box_figures, tables, present_attrs = {}, {}, {}, []
             for attr in attrs:
                 points_by_ds = {ds: aggregate_by_pair(rows_by_dataset[ds], attr) for ds in datasets}
                 if all_series_absent(points_by_ds):
                     continue
                 present_attrs.append(attr)
                 figures[attr] = build_figure(attr, points_by_ds, datasets, default_style_ds, rows_by_dataset)
+                box_figures[attr] = build_box_figure(attr, points_by_ds, datasets, default_style_ds, "dataset")
                 tables[attr] = build_table(points_by_ds, counts_by_dataset, datasets)
             if present_attrs:
-                by_algorithm[algo][pass_name] = {"attributes": present_attrs, "figures": figures, "tables": tables}
+                by_algorithm[algo][pass_name] = {"attributes": present_attrs, "figures": figures,
+                                                   "box_figures": box_figures, "tables": tables}
 
     return {"by_dataset": by_dataset, "by_algorithm": by_algorithm}, datasets, algorithms
 
@@ -415,7 +476,9 @@ PAGE_TEMPLATE = """<!doctype html>
   .status-legend-note { color: var(--muted); }
   .status-legend-item { display: flex; align-items: center; gap: 5px; }
   .status-marker { font-size: 0.95rem; }
+  .cell-note { color: var(--muted); font-size: 0.68rem; margin-top: 3px; white-space: normal; }
   #graph { width: 100%; height: 480px; }
+  #graph-box { width: 100%; height: 420px; }
   .data-table-panel { border: 1px solid var(--border); border-radius: 4px; padding: 16px;
                        overflow-x: auto; background: var(--bg-panel); }
   .data-table-panel h3 { margin: 0 0 10px; font-size: 0.78rem; text-transform: uppercase;
@@ -454,6 +517,9 @@ PAGE_TEMPLATE = """<!doctype html>
         </div>
       </div>
       <div id="graph"></div>
+    </div>
+    <div class="graph-panel">
+      <div id="graph-box"></div>
     </div>
     <div class="data-table-panel">
       <h3 id="data-table-title"></h3>
@@ -599,12 +665,19 @@ function currentAxisTypes() {
 }
 
 function plotCurrent() {
-  const fig = REPORT[currentView][currentKey][currentPass].figures[currentAttribute];
+  const passData = REPORT[currentView][currentKey][currentPass];
   const axes = currentAxisTypes();
+
+  const fig = passData.figures[currentAttribute];
   const layout = JSON.parse(JSON.stringify(fig.layout));
   layout.xaxis.type = axes.x;
   layout.yaxis.type = axes.y;
   Plotly.newPlot('graph', fig.data, layout, {responsive: true});
+
+  const boxFig = passData.box_figures[currentAttribute];
+  const boxLayout = JSON.parse(JSON.stringify(boxFig.layout));
+  boxLayout.yaxis.type = axes.y;
+  Plotly.newPlot('graph-box', boxFig.data, boxLayout, {responsive: true});
 }
 
 function renderDataTable() {
@@ -637,7 +710,16 @@ function renderDataTable() {
     tr.appendChild(tdStat);
     columns.forEach(col => {
       const td = document.createElement('td');
-      td.textContent = info[col][i];
+      const c = info[col][i];
+      const value = document.createElement('div');
+      value.textContent = c.value;
+      td.appendChild(value);
+      if (c.note) {
+        const note = document.createElement('div');
+        note.className = 'cell-note';
+        note.textContent = c.note;
+        td.appendChild(note);
+      }
       tr.appendChild(td);
     });
     tbody.appendChild(tr);

@@ -1,5 +1,5 @@
 """
-Samples curve pairs from the raw external datasets (OV, Geolife, Pigeons, Drifter)
+Samples curve pairs from the raw external datasets (Geolife, Pigeons, Drifter)
 into the plain-text curve-pair format experiment/runner.cpp reads -- one file per
 dataset, containing every sampled pair (see write_pairs() for the exact format).
 
@@ -17,7 +17,7 @@ memory on them; that's an expected, reportable outcome, not something to avoid
 (see external_datasets/PILOT_FINDINGS -- ../../external_datasets/pilot.py's run
 that established the sample sizes below).
 
-Sample sizes (curves per dataset; OV is used whole, not sampled) were
+Sample sizes (curves per dataset) were
 rebalanced after a first AWS run showed Drifter (cheap, zero timeouts, 1,326
 pairs) was oversized well past the point of adding confidence -- a few hundred
 pairs tells the same story -- while Pigeons (21 pairs) was undersized for its
@@ -34,8 +34,8 @@ was (~22h).
 
 Expects the raw downloads to already exist under external_datasets/ at the repo
 root (see the conversation this was built from / README for download sources --
-OV via the frog paper's Zenodo supplement, Geolife via Microsoft's download page,
-Pigeons via Movebank, Drifter via NOAA's GDP six-hourly interpolated dataset).
+Geolife via Microsoft's download page, Pigeons via Movebank, Drifter via NOAA's
+GDP six-hourly interpolated dataset).
 
 Run from the project root:
     python3 datasets/real-world/generate_real_world_datasets.py
@@ -51,8 +51,7 @@ OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 SEED = 42069  # same convention as datasets/synthetic/generate_datasets.py
 
-# Curves to sample per dataset; all C(K, 2) pairs among them are used. OV has no
-# entry -- it's a fixed, pre-paired benchmark (110 pairs), used in full.
+# Curves to sample per dataset; all C(K, 2) pairs among them are used.
 SAMPLE_SIZES = {
     "drifter": 25,
     "geolife": 22,
@@ -111,28 +110,6 @@ def write_pairs(out_dir, pairs):
             f.write(f"{len(part)}\n")
             f.writelines(part)
     return len(parts)
-
-
-# --- OV: already-paired, plain x/y text files, no projection, no sampling ---
-
-def load_ov_curve(path):
-    pts = []
-    with open(path) as f:
-        for line in f:
-            x, y = map(float, line.split())
-            pts.append((x, y))
-    return pts
-
-
-def ov_all_pairs():
-    ov_dir = f"{EXTERNAL_DIR}/OV"
-    ids = sorted({fn.rsplit(".", 1)[0] for fn in os.listdir(ov_dir) if fn.endswith(".curveA")})
-    pairs = []
-    for stem in ids:
-        p = load_ov_curve(f"{ov_dir}/{stem}.curveA")
-        q = load_ov_curve(f"{ov_dir}/{stem}.curveB")
-        pairs.append((p, q))
-    return pairs
 
 
 # --- Geolife: .plt files, 6-line header, "lat,lon,alt,_,days,date,time" ---
@@ -214,11 +191,6 @@ def sample_and_pair(curve_loaders, k, seed):
 
 def main():
     report = {}
-
-    # OV: used whole, no sampling
-    ov_pairs = ov_all_pairs()
-    n_parts = write_pairs(f"{OUTPUT_DIR}/ov", ov_pairs)
-    report["ov"] = (len(ov_pairs) * 2, len(ov_pairs), n_parts)
 
     # Geolife
     paths = geolife_curve_paths()

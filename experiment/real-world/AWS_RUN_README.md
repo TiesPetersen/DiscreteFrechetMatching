@@ -1,10 +1,9 @@
 # Running the real-world experiment on an AWS machine
 
-A full, fresh run of all four real-world datasets (`ov`, `geolife`, `pigeons`,
-`drifter`) — 1,688 pairs total, sized to fit roughly a 24-hour run (estimated
-~21.3h from real per-pair cost measured in a local pilot: Geolife ~4.8h,
-Pigeons ~11.7h despite being by far the smallest pair count, Drifter ~4.8h, OV
-negligible).
+A full, fresh run of all three real-world datasets (`geolife`, `pigeons`,
+`drifter`) — 567 pairs total, sized to fit roughly a 24-hour run (estimated
+~22h from real per-pair cost measured in a local pilot: Geolife ~4.8h, Pigeons
+~16.7h despite being by far the smallest pair count, Drifter ~0.8h).
 
 Unlike the synthetic experiment, `datasets/real-world/*/part_*.txt` are
 pre-generated and checked into the repo — no raw data or `netCDF4` needed on
@@ -12,10 +11,14 @@ this machine, just `git clone`. The generator (`generate_real_world_datasets.py`
 only needs to be re-run if you want to resample; that script's own docstring
 covers its `external_datasets/` raw-data requirements separately.
 
-**Expect a lot of `timeout`/`oom` rows in the results, especially for
-`BBMSCore`/`BBMSInter` on `pigeons`.** Sampling was deliberately fair and
-unfiltered by curve length, so a meaningful fraction of pairs are expected to
-fail outright — that's real data, not something to debug.
+**Expect a lot of `timeout`/`oom` rows in the results on `pigeons`.** Sampling
+was deliberately fair and unfiltered by curve length, so a meaningful fraction
+of pairs are expected to fail outright — that's real data, not something to
+debug. In the completed run, `BBMSCore` failed almost entirely there (timeout
+on all but 1 of 36 pairs); `BBMSInter` timed out on some; `BBMSDppInstant`/
+`BBMSDppStepwise` hit a mix of timeout and genuine `oom` (the only algorithms
+that ran out of memory anywhere in this experiment); `DijkstraPrims` completed
+every single pair.
 
 ## 1. Install git (not present by default on Amazon Linux)
 
@@ -90,9 +93,9 @@ continue — it skips whatever's already in `results_real_world/`.
 tail -f results_real_world/experiment.log   # watch progress
 ```
 
-Datasets run in alphabetical order (`drifter`, `geolife`, `ov`, `pigeons`) —
-`pigeons` runs last and is the single biggest time sink (~11.7h of the ~21.3h
-total) despite having the fewest pairs (21), so most of the wall-clock budget
+Datasets run in alphabetical order (`drifter`, `geolife`, `pigeons`) —
+`pigeons` runs last and is the single biggest time sink (~16.7h of the ~22h
+total) despite having the fewest pairs (36), so most of the wall-clock budget
 is actually spent at the very end, not spread evenly across the run.
 
 ## 6. Push results back

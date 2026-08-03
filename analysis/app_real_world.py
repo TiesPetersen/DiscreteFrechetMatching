@@ -299,43 +299,152 @@ def cell(value, note=None):
     return {"value": value, "note": note}
 
 
-def build_table(points_by_trace, counts_by_trace, trace_order):
+# Must match experiment/real-world/main.py's TIMEOUT -- a timeout means the
+# true value is known to exceed this exact threshold, which is a stronger,
+# more precise claim than "at least as big as whatever happened to succeed".
+TIMEOUT_SECONDS = 300
+
+
+def distribution_stats(values, n_timeout=0, n_oom=0, timeout_bound=None):
+    """{mean, median, iqr, min, max} as {value, note} cells from a list of
+    numeric values -- shared by build_table and the overview tab's tables.
+
+    When there were timeouts or OOMs, the failed runs produced no value at
+    all, so `max` understates the truth. If `timeout_bound` is given and a
+    timeout occurred, max is shown as ">{timeout_bound}" -- e.g. ">300" for
+    runtime_s, since a timeout is a precise, known lower bound on the true
+    value. Otherwise (OOM only, or an attribute with no fixed threshold like
+    memory), max is shown as ">{observed max}" -- weaker, since there's no
+    universal ceiling to cite the way there is for a timeout, but still
+    flags that the true value is understated rather than exact."""
+    reasons = []
+    if n_timeout > 0:
+        reasons.append(f"{n_timeout} timed out")
+    if n_oom > 0:
+        reasons.append(f"{n_oom} ran out of memory")
+    max_note = f"not accurate: {', '.join(reasons)}, true stats may be higher" if reasons else None
+
+    if n_timeout > 0 and timeout_bound is not None:
+        max_cell = cell(f">{fmt(timeout_bound)}", max_note)
+    elif values and reasons:
+        max_cell = cell(f">{fmt(max(values))}", max_note)
+    elif values:
+        max_cell = cell(fmt(max(values)))
+    else:
+        max_cell = cell("—")
+
+    if not values:
+        return {"mean": cell("—"), "median": cell("—"), "iqr": cell("—"), "min": cell("—"), "max": max_cell}
+
+    q1, q3 = (statistics.quantiles(values, n=4, method="inclusive")[0],
+              statistics.quantiles(values, n=4, method="inclusive")[2]) if len(values) >= 2 else (values[0], values[0])
+    return {
+        "mean": cell(fmt(sum(values) / len(values))),
+        "median": cell(fmt(statistics.median(values))),
+        "iqr": cell(f"[{fmt(q1)}, {fmt(q3)}]"),
+        "min": cell(fmt(min(values))),
+        "max": max_cell,
+    }
+
+
+def build_table(points_by_trace, counts_by_trace, trace_order, attribute):
     """One column per trace (algorithm/dataset), rows = ok/timeout/oom/error
     counts followed by mean/median/IQR/min/max among the ok pairs -- a compact
     summary rather than a per-N breakdown, since there's no grouping key
-    smaller than "every pair" to build rows from.
-
-    Each cell is {value, note}: `max` gets a note when this trace also has
-    timeouts or OOMs, since neither produces a value at all -- the true max
-    (whatever that pair would have reached) is unknown and could be higher,
-    so the displayed max is a lower bound on the real one, not the real one."""
-    stat_rows = ["ok", "timeout", "oom", "error", "mean", "median", "IQR 25-75%", "min", "max"]
+    smaller than "every pair" to build rows from."""
+    stat_rows = ["ok", "timeout", "oom", "error", "mean", "median", "IQR 25-75%", "min", "max", "note"]
     table = {"stat": stat_rows}
+    timeout_bound = TIMEOUT_SECONDS if attribute == "runtime_s" else None
     for name in trace_order:
         points = points_by_trace.get(name, [])
         counts = counts_by_trace.get(name, {})
         values = [v for _, v in points]
-        n_timeout = counts.get("timeout", 0)
-        n_oom = counts.get("oom", 0)
-        col = [cell(str(counts.get("ok", 0))), cell(str(n_timeout)),
-               cell(str(n_oom)), cell(str(counts.get("error", 0)))]
-        if values:
-            q1, q3 = (statistics.quantiles(values, n=4, method="inclusive")[0],
-                      statistics.quantiles(values, n=4, method="inclusive")[2]) if len(values) >= 2 else (values[0], values[0])
-            reasons = []
-            if n_timeout > 0:
-                reasons.append(f"{n_timeout} timed out")
-            if n_oom > 0:
-                reasons.append(f"{n_oom} ran out of memory")
-            max_note = (f"not accurate: {', '.join(reasons)}, true max may be higher"
-                        if reasons else None)
-            col += [cell(fmt(sum(values) / len(values))), cell(fmt(statistics.median(values))),
-                    cell(f"[{fmt(q1)}, {fmt(q3)}]"), cell(fmt(min(values))),
-                    cell(fmt(max(values)), max_note)]
-        else:
-            col += [cell("—")] * 5
-        table[name] = col
+        d = distribution_stats(values, counts.get("timeout", 0), counts.get("oom", 0), timeout_bound)
+        table[name] = [cell(str(counts.get("ok", 0))), cell(str(counts.get("timeout", 0))),
+                        cell(str(counts.get("oom", 0))), cell(str(counts.get("error", 0))),
+                        d["mean"], d["median"], d["iqr"], d["min"],
+                        cell(d["max"]["value"]), cell(d["max"]["note"] or "")]
     return table
+
+
+def dataset_curve_stats(rows):
+    """Reconstructs per-curve length stats from the pair-level m/n columns --
+    every sampled curve appears in the same number of pairs (all-pairs
+    sampling), so the *set* of distinct m/n values recovers the curve-length
+    distribution without needing to know which underlying curve each value
+    came from (assumes no two distinct sampled curves share an exact point
+    count, which holds in practice for real trajectory data)."""
+    pair_indices = set()
+    lengths = set()
+    for row in rows:
+        pair_indices.add(row["pair_index"])
+        lengths.add(int(row["m"]))
+        lengths.add(int(row["n"]))
+    lengths = sorted(lengths)
+    n = len(lengths)
+    return {
+        "curves": n,
+        "pairs": len(pair_indices),
+        "mean_points": sum(lengths) / n if n else 0,
+        "median_points": statistics.median(lengths) if n else 0,
+        "min_points": lengths[0] if n else 0,
+        "max_points": lengths[-1] if n else 0,
+    }
+
+
+def build_dataset_overview_table(datasets, raw_rows_timing):
+    stat_rows = ["curves", "pairs", "mean number of points", "median number of points",
+                 "min number of points", "max number of points"]
+    table = {"stat": stat_rows}
+    for ds in datasets:
+        s = dataset_curve_stats(raw_rows_timing[ds])
+        table[ds] = [cell(str(s["curves"])), cell(str(s["pairs"])),
+                     cell(fmt(s["mean_points"])), cell(fmt(s["median_points"])),
+                     cell(str(s["min_points"])), cell(str(s["max_points"]))]
+    return table
+
+
+def build_overview_stat_table(rows, algorithms, attribute):
+    """Algorithm-rows x stat-columns summary for one attribute (runtime_s or
+    maxrss_after_mb) -- the overview tab's orientation, better suited to a
+    compact whole-experiment glance than build_table's stat-rows x
+    trace-columns (built for click-through comparison of one attribute across
+    many traces, not two fixed attributes across few algorithms at once)."""
+    stat_cols = ["runs", "timeouts", "ooms", "mean", "median", "IQR 25-75%", "min", "max", "note"]
+    table = {"algorithm": list(algorithms), "cols": stat_cols}
+    for col in stat_cols:
+        table[col] = []
+    timeout_bound = TIMEOUT_SECONDS if attribute == "runtime_s" else None
+    for algo in algorithms:
+        algo_rows = [r for r in rows if r["algorithm"] == algo]
+        counts = status_counts(algo_rows, [algo])[algo]
+        values = [v for _, v in aggregate_by_pair(algo_rows, attribute)]
+        d = distribution_stats(values, counts.get("timeout", 0), counts.get("oom", 0), timeout_bound)
+        table["runs"].append(cell(str(counts.get("ok", 0))))
+        table["timeouts"].append(cell(str(counts.get("timeout", 0))))
+        table["ooms"].append(cell(str(counts.get("oom", 0))))
+        table["mean"].append(d["mean"])
+        table["median"].append(d["median"])
+        table["IQR 25-75%"].append(d["iqr"])
+        table["min"].append(d["min"])
+        table["max"].append(cell(d["max"]["value"]))  # note moved to its own column below
+        table["note"].append(cell(d["max"]["note"] or ""))
+    return table
+
+
+def build_overview(datasets, algorithms, raw_rows_timing):
+    """The Overall tab's data: one dataset-summary table (curve/pair counts
+    and length distribution), plus a runtime and a memory algorithm-summary
+    table per dataset."""
+    dataset_table = build_dataset_overview_table(datasets, raw_rows_timing)
+    per_dataset = {}
+    for ds in datasets:
+        rows = raw_rows_timing[ds]
+        per_dataset[ds] = {
+            "runtime": build_overview_stat_table(rows, algorithms, "runtime_s"),
+            "memory": build_overview_stat_table(rows, algorithms, "maxrss_after_mb"),
+        }
+    return {"dataset_table": dataset_table, "per_dataset": per_dataset}
 
 
 def build_report(results_root):
@@ -386,7 +495,7 @@ def build_report(results_root):
                 present_attrs.append(attr)
                 figures[attr] = build_figure(attr, points_by_algo, algorithms, default_style_algo, rows_by_algo)
                 box_figures[attr] = build_box_figure(attr, points_by_algo, algorithms, default_style_algo, "algorithm")
-                tables[attr] = build_table(points_by_algo, counts_by_algo, algorithms)
+                tables[attr] = build_table(points_by_algo, counts_by_algo, algorithms, attr)
             if present_attrs:
                 by_dataset[dataset][pass_name] = {"attributes": present_attrs, "figures": figures,
                                                     "box_figures": box_figures, "tables": tables}
@@ -409,12 +518,14 @@ def build_report(results_root):
                 present_attrs.append(attr)
                 figures[attr] = build_figure(attr, points_by_ds, datasets, default_style_ds, rows_by_dataset)
                 box_figures[attr] = build_box_figure(attr, points_by_ds, datasets, default_style_ds, "dataset")
-                tables[attr] = build_table(points_by_ds, counts_by_dataset, datasets)
+                tables[attr] = build_table(points_by_ds, counts_by_dataset, datasets, attr)
             if present_attrs:
                 by_algorithm[algo][pass_name] = {"attributes": present_attrs, "figures": figures,
                                                    "box_figures": box_figures, "tables": tables}
 
-    return {"by_dataset": by_dataset, "by_algorithm": by_algorithm}, datasets, algorithms
+    overview = build_overview(datasets, algorithms, raw_rows["Timing & Memory"])
+
+    return {"by_dataset": by_dataset, "by_algorithm": by_algorithm, "overview": overview}, datasets, algorithms
 
 
 PAGE_TEMPLATE = """<!doctype html>
@@ -476,7 +587,8 @@ PAGE_TEMPLATE = """<!doctype html>
   .status-legend-note { color: var(--muted); }
   .status-legend-item { display: flex; align-items: center; gap: 5px; }
   .status-marker { font-size: 0.95rem; }
-  .cell-note { color: var(--muted); font-size: 0.68rem; margin-top: 3px; white-space: normal; }
+  .cell-note { color: #FFA500; font-size: 0.68rem; margin-top: 3px; white-space: normal; }
+  .best-value { color: #5FD068; font-weight: 700; }
   #graph { width: 100%; height: 480px; }
   #graph-box { width: 100%; height: 420px; }
   .data-table-panel { border: 1px solid var(--border); border-radius: 4px; padding: 16px;
@@ -484,6 +596,18 @@ PAGE_TEMPLATE = """<!doctype html>
   .data-table-panel h3 { margin: 0 0 10px; font-size: 0.78rem; text-transform: uppercase;
                           letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
   .data-table-panel table { font-size: 0.78rem; white-space: nowrap; }
+  .overview-panel { padding: 24px; display: flex; flex-direction: column; gap: 28px; }
+  .overview-panel > .overview-dataset-pair + .overview-dataset-pair { margin-top: 32px;
+                                                                        padding-top: 32px;
+                                                                        border-top: 1px solid var(--border-strong); }
+  .overview-section h2 { font-size: 0.85rem; margin: 0 0 4px; }
+  .overview-section .overview-subtitle { color: var(--muted); font-size: 0.72rem; margin: 0 0 10px;
+                                           text-transform: uppercase; letter-spacing: 0.05em; }
+  .overview-table-wrap { border: 1px solid var(--border); border-radius: 4px; padding: 16px;
+                          overflow-x: auto; background: var(--bg-panel); }
+  .overview-table-wrap table { font-size: 0.8rem; white-space: nowrap; }
+  .overview-dataset-pair { display: flex; gap: 20px; flex-wrap: wrap; }
+  .overview-dataset-pair .overview-table-wrap { flex: 1 1 420px; }
 </style>
 </head>
 <body>
@@ -492,7 +616,8 @@ PAGE_TEMPLATE = """<!doctype html>
   <div class="subtitle">Source: __RESULTS_ROOT__ &middot; each point is one curve pair &middot; click any attribute to plot it</div>
 </header>
 <div class="tab-bar" id="tab-bar"></div>
-<div class="layout">
+<div class="overview-panel" id="overview-panel"></div>
+<div class="layout" id="layout">
   <div class="tables" id="tables"></div>
   <div class="main-panel">
     <div class="graph-panel">
@@ -533,6 +658,8 @@ PAGE_TEMPLATE = """<!doctype html>
 const REPORT = __REPORT_JSON__;
 const ALGORITHMS = __ALGORITHMS_JSON__;
 const DATASETS = __DATASETS_JSON__;
+const ALGORITHM_COLORS = __ALGORITHM_COLORS_JSON__;
+const DATASET_COLORS = __DATASET_COLORS_JSON__;
 const ATTRIBUTE_DESCRIPTIONS = __ATTRIBUTE_DESCRIPTIONS_JSON__;
 const STARRED_TIMING_ATTRIBUTES = new Set(__STARRED_TIMING_ATTRIBUTES_JSON__);
 
@@ -545,6 +672,18 @@ function columnsFor(view) {
 function renderTabBar() {
   const bar = document.getElementById('tab-bar');
   bar.innerHTML = '';
+
+  const overallGroup = document.createElement('div');
+  overallGroup.className = 'tab-group';
+  const overallBtn = document.createElement('button');
+  overallBtn.textContent = 'Overall';
+  overallBtn.className = (currentView === 'overview') ? 'active' : '';
+  overallBtn.onclick = () => selectOverview();
+  overallGroup.appendChild(overallBtn);
+  bar.appendChild(overallGroup);
+  const overallSep = document.createElement('div');
+  overallSep.className = 'tab-sep';
+  bar.appendChild(overallSep);
 
   const dsGroup = document.createElement('div');
   dsGroup.className = 'tab-group';
@@ -577,10 +716,147 @@ function makeTabButton(view, key) {
   return btn;
 }
 
+function selectOverview() {
+  currentView = 'overview';
+  currentKey = null;
+  renderTabBar();
+  document.getElementById('layout').style.display = 'none';
+  document.getElementById('overview-panel').style.display = 'flex';
+  renderOverview();
+}
+
+// Which stat columns get a "best value" highlight, and in which direction --
+// only single-number, unambiguously-better-in-one-direction columns qualify.
+// "IQR 25-75%" is a range, not a single number, so it's left out; "runs"
+// (successful runs) is the one column where higher is better, everything
+// else here is a cost/failure count where lower is better.
+const BEST_DIRECTION = {
+  runs: 'max', timeouts: 'min', ooms: 'min',
+  mean: 'min', median: 'min', min: 'min', max: 'min',
+};
+
+function renderStatTable(container, title, subtitle, headerCol, rowLabels, columns, dataByCol,
+                          highlightBest, rowColorMap, colColorMap) {
+  const block = document.createElement('div');
+  block.className = 'overview-section';
+  const h2 = document.createElement('h2');
+  if (typeof title === 'string') {
+    h2.textContent = title;
+  } else {
+    // title = {coloredText, color, rest} -- e.g. the dataset name (colored to
+    // match its graph trace color) followed by plain ": runtime_s" etc.
+    const span = document.createElement('span');
+    span.textContent = title.coloredText;
+    span.style.color = title.color;
+    h2.appendChild(span);
+    h2.appendChild(document.createTextNode(title.rest));
+  }
+  block.appendChild(h2);
+  if (subtitle) {
+    const sub = document.createElement('div');
+    sub.className = 'overview-subtitle';
+    sub.textContent = subtitle;
+    block.appendChild(sub);
+  }
+  const wrap = document.createElement('div');
+  wrap.className = 'overview-table-wrap';
+  const table = document.createElement('table');
+
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  [headerCol, ...columns].forEach(h => {
+    const th = document.createElement('th');
+    th.textContent = h;
+    if (colColorMap && colColorMap[h]) th.style.color = colColorMap[h];
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  // Best (displayed/rounded) value per column -- compared against below rather
+  // than tracking a single winning row, so every row tied for best gets
+  // highlighted, not just whichever one happened to come first.
+  const bestValue = {};
+  if (highlightBest) {
+    columns.forEach(col => {
+      const direction = BEST_DIRECTION[col];
+      if (!direction) return;
+      let bestV = null;
+      dataByCol[col].forEach(c => {
+        const v = parseFloat(c.value);
+        if (Number.isNaN(v)) return;
+        if (bestV === null || (direction === 'min' ? v < bestV : v > bestV)) {
+          bestV = v;
+        }
+      });
+      bestValue[col] = bestV;
+    });
+  }
+
+  const tbody = document.createElement('tbody');
+  rowLabels.forEach((label, i) => {
+    const tr = document.createElement('tr');
+    const tdLabel = document.createElement('td');
+    tdLabel.textContent = label;
+    if (rowColorMap && rowColorMap[label]) tdLabel.style.color = rowColorMap[label];
+    tr.appendChild(tdLabel);
+    columns.forEach(col => {
+      const td = document.createElement('td');
+      const c = dataByCol[col][i];
+      const value = document.createElement('div');
+      value.textContent = c.value;
+      // The "note" column holds the same timeout/OOM caveat text that shows
+      // as a sub-note elsewhere -- styled the same way (small, orange) here
+      // even though it's this cell's main value, not a note on another cell.
+      if (col === 'note') {
+        value.className = 'cell-note';
+      } else if (bestValue[col] !== undefined && bestValue[col] !== null && parseFloat(c.value) === bestValue[col]) {
+        value.className = 'best-value';
+      }
+      td.appendChild(value);
+      if (c.note) {
+        const note = document.createElement('div');
+        note.className = 'cell-note';
+        note.textContent = c.note;
+        td.appendChild(note);
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  block.appendChild(wrap);
+  container.appendChild(block);
+}
+
+function renderOverview() {
+  const container = document.getElementById('overview-panel');
+  container.innerHTML = '';
+
+  const dt = REPORT.overview.dataset_table;
+  renderStatTable(container, 'Datasets', 'curve and pair counts, point-count distribution per dataset',
+                   'stat', dt.stat, DATASETS, dt, false, null, DATASET_COLORS);
+
+  DATASETS.forEach(ds => {
+    const section = document.createElement('div');
+    section.className = 'overview-dataset-pair';
+    const rt = REPORT.overview.per_dataset[ds].runtime;
+    const mem = REPORT.overview.per_dataset[ds].memory;
+    const runtimeTitle = {coloredText: ds, color: DATASET_COLORS[ds], rest: ': runtime_s'};
+    const memTitle = {coloredText: ds, color: DATASET_COLORS[ds], rest: ': maxrss_after_mb'};
+    renderStatTable(section, runtimeTitle, null, 'algorithm', rt.algorithm, rt.cols, rt, true, ALGORITHM_COLORS);
+    renderStatTable(section, memTitle, null, 'algorithm', mem.algorithm, mem.cols, mem, true, ALGORITHM_COLORS);
+    container.appendChild(section);
+  });
+}
+
 function selectKey(view, key) {
   currentView = view;
   currentKey = key;
   renderTabBar();
+  document.getElementById('overview-panel').style.display = 'none';
+  document.getElementById('layout').style.display = 'flex';
   renderTables();
   const passesData = REPORT[view][key];
   const passes = Object.keys(passesData);
@@ -713,6 +989,7 @@ function renderDataTable() {
       const c = info[col][i];
       const value = document.createElement('div');
       value.textContent = c.value;
+      if (statName === 'note') value.className = 'cell-note';
       td.appendChild(value);
       if (c.note) {
         const note = document.createElement('div');
@@ -742,7 +1019,7 @@ function selectAttribute(passName, attr) {
 document.getElementById('xaxis-type').addEventListener('change', plotCurrent);
 document.getElementById('yaxis-type').addEventListener('change', plotCurrent);
 
-selectKey('by_dataset', DATASETS[0]);
+selectOverview();
 </script>
 </body>
 </html>
@@ -750,12 +1027,20 @@ selectKey('by_dataset', DATASETS[0]);
 
 
 def render_html(report, datasets, algorithms, results_root):
+    # Same color assignment build_report used for the figures -- recomputed
+    # here (rather than threaded through the report dict) so the overview
+    # tab's dataset/algorithm name labels match the graphs' trace colors.
+    algo_colors = {name: style["color"] for name, style in assign_styles(algorithms, ALGORITHM_STYLE_PALETTE).items()}
+    dataset_colors = {name: style["color"] for name, style in assign_styles(datasets, DATASET_STYLE_PALETTE).items()}
+
     html = PAGE_TEMPLATE
     html = html.replace("__RESULTS_ROOT__", results_root)
     html = html.replace("__PLOTLY_JS__", plotly.offline.get_plotlyjs())
     html = html.replace("__REPORT_JSON__", json.dumps(report))
     html = html.replace("__ALGORITHMS_JSON__", json.dumps(algorithms))
     html = html.replace("__DATASETS_JSON__", json.dumps(datasets))
+    html = html.replace("__ALGORITHM_COLORS_JSON__", json.dumps(algo_colors))
+    html = html.replace("__DATASET_COLORS_JSON__", json.dumps(dataset_colors))
     html = html.replace("__ATTRIBUTE_DESCRIPTIONS_JSON__", json.dumps(ATTRIBUTE_DESCRIPTIONS))
     html = html.replace("__STARRED_TIMING_ATTRIBUTES_JSON__", json.dumps(sorted(STARRED_TIMING_ATTRIBUTES)))
     return html

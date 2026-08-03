@@ -511,7 +511,7 @@ PAGE_TEMPLATE = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Experiment Results</title>
+<title>Synthetic Experiment Results</title>
 <style>
   :root {
     --bg: #0a0a0a; --bg-panel: #101010; --fg: #f2f2f2; --muted: #888888;
@@ -580,7 +580,7 @@ PAGE_TEMPLATE = """<!doctype html>
 </head>
 <body>
 <header>
-  <h1>Experiment Results</h1>
+  <h1>Synthetic Experiment Results</h1>
   <div class="subtitle">Source: __RESULTS_ROOT__ &middot; click any attribute to plot it</div>
 </header>
 <div class="tab-bar" id="tab-bar"></div>

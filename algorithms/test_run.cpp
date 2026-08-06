@@ -1,6 +1,7 @@
 #include "bbms_dpp_stepwise.h"
 #include "bbms_dpp_stepwise_improved.h"
 #include "bbms_dpp_stepwise_lists.h"
+#include "dijkstra_prims.h"
 
 #include <iostream>
 #include <string>
@@ -50,31 +51,44 @@ void run(const Curve& p, const Curve& q, int its, MatchingAndFrechetDistance(*al
     std::cout << "   " << runtime_s << " s" << std::endl;
 }
 
-void run_dataset(std::string dataset, int num) {
-    int ITS = 2;
+void run_dataset(std::string dataset, int num, int iterations) {
     std::cout << "Running " << dataset << ", index = " << num << std::endl;
-    std::cout << "   total times over " << ITS << " iterations" << std::endl;
+    std::cout << "   total times over " << iterations << " iterations" << std::endl;
     Curve p, q;
     load_sample("../../../datasets/" + dataset + ".txt", num, p, q);
 
-    std::cout << " : bbms_dpp_stepwise" << std::endl;
-    run(p, q, ITS, bbms_dpp_stepwise);
+    std::cout << " : dijkstra_prims" << std::endl;
+    run(p, q, iterations, dijkstra_prims);
+
+    //std::cout << " : dijkstra_prims (rev)" << std::endl;
+    //run(q, p, iterations, dijkstra_prims);
+
+    //std::cout << " : bbms_dpp_stepwise" << std::endl;
+    //run(p, q, iterations, bbms_dpp_stepwise);
+
+    //std::cout << " : bbms_dpp_stepwise (rev)" << std::endl;
+    //run(q, p, iterations, bbms_dpp_stepwise);
 
     std::cout << " : bbms_dpp_stepwise_improved" << std::endl;
-    run(p, q, ITS, bbms_dpp_stepwise_improved);
+    run(p, q, iterations, bbms_dpp_stepwise_improved);
+
+    //std::cout << " : bbms_dpp_stepwise_improved (rev)" << std::endl;
+    //run(q, p, iterations, bbms_dpp_stepwise_improved);
 
     //std::cout << "bbms_dpp_stepwise_lists" << std::endl;
-    //run(p, q, ITS, bbms_dpp_stepwise_lists);
+    //run(p, q, iterations, bbms_dpp_stepwise_lists);
 
     std::cout << std::endl;
 }
 
 int main(int argc, char* argv[]) {
 
-    run_dataset("random/N_2300", 0);
-    run_dataset("identical/N_2300", 0);
-    run_dataset("outlier/N_2300", 0);
-    run_dataset("alternating/N_2300", 0);
+    int iterations = 3;
+
+    run_dataset("random/N_2300", 0, iterations);
+    run_dataset("identical/N_2300", 0, iterations);
+    run_dataset("outlier/N_2300", 0, iterations);
+    run_dataset("alternating/N_2300", 0, iterations);
 
     return 0;
 }

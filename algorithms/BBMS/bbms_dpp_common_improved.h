@@ -31,30 +31,6 @@ namespace {
 		std::vector<Shortcut*> in_right;        // incoming shortcuts from right children
 	};
 
-	struct NCAResult {
-		double max_distance_u;  // max distance on u's side to NCA(u,v)
-		double max_distance_v;  // max distance on v's side to NCA(u,v)
-		long long nca;          // index of nearest common ancestor of u and v
-		Direction direction_u;  // direction of last step in the shortcut from u to NCA(u,v)
-		Direction direction_v;  // direction of last step in the shortcut from v to NCA(u,v)
-	};
-
-	// All pairwise NCA results needed by update_shortcuts, including directions.
-	// e.g. max_A_AB = max dist on A's side to NCA(A,B); max_B_AB = max dist on B's side to NCA(A,B).
-	struct SelectResult {
-		long long parent;
-		double max_A_AB, max_B_AB; long long nca_AB; Direction dir_A_AB, dir_B_AB;
-		double max_B_BC, max_C_BC; long long nca_BC; Direction dir_B_BC, dir_C_BC;
-		double max_A_AC, max_C_AC; long long nca_AC; Direction dir_A_AC, dir_C_AC;
-	};
-
-	// Get direction of the step from child to parent in the tree.
-	// Diagonal steps always have shortcuts set, so get_direction is never called for them.
-	Direction get_direction(long long child, long long parent, long long n) {
-		if (child == parent + n) return Direction::LEFT;
-		return Direction::DOWN;
-	}
-
 	// Allocate a new shortcut from the pool and return a pointer to it.
 	// The pool is a deque, so pointers remain valid even if the deque is resized.
 	Shortcut* allocate_shortcut(std::deque<Shortcut>& pool, long long target, double value, Direction direction) {
@@ -77,9 +53,8 @@ namespace {
 		else G[parent].child_right = true;
 	}
 
-	NCAResult max_dist_to_nca(const std::vector<Node>& G, long long u, long long v, long long n) {
+	bool max_dist_to_nca_u_atmost_v(const std::vector<Node>& G, long long u, long long v) {
 		double max_distance_u = -INF, max_distance_v = -INF;
-		Direction final_direction_u = Direction::DOWN, final_direction_v = Direction::DOWN;
 
 		// Walk u and v up the tree until they meet at their NCA, using shortcuts where available
 		while (u != v) {
@@ -87,13 +62,11 @@ namespace {
 				// Walk v up the tree, using shortcuts if available
 				if (G[v].out_high != nullptr) {
 					max_distance_v = std::max(max_distance_v, G[v].out_high->value);
-					final_direction_v = G[v].out_high->direction;
 					v = G[v].out_high->target;
 					COUNT(nca_shortcut_hops);
 				}
 				else {
 					max_distance_v = std::max(max_distance_v, G[v].distance);
-					final_direction_v = get_direction(v, G[v].parent, n);
 					v = G[v].parent;
 					COUNT(nca_regular_hops);
 				}
@@ -102,46 +75,43 @@ namespace {
 				// Walk u up the tree, using shortcuts if available
 				if (G[u].out_low != nullptr) {
 					max_distance_u = std::max(max_distance_u, G[u].out_low->value);
-					final_direction_u = G[u].out_low->direction;
 					u = G[u].out_low->target;
 					COUNT(nca_shortcut_hops);
 				}
 				else {
 					max_distance_u = std::max(max_distance_u, G[u].distance);
-					final_direction_u = get_direction(u, G[u].parent, n);
 					u = G[u].parent;
 					COUNT(nca_regular_hops);
 				}
 			}
 		}
 
-		return { max_distance_u, max_distance_v, u, final_direction_u, final_direction_v };
+		return max_distance_u <= max_distance_v;
 	}
 
 	// Select parent among A, B, C that has the lowest maximum distance to NCA.
 	// Break ties by preferring A > B > C.
 	long long select_parent(const std::vector<Node>& G, long long A, long long B, long long C, long long n) {
-		// Check pair A, B
-		auto [max_A_AB, max_B_AB, nca_AB, dir_A_AB, dir_B_AB] = max_dist_to_nca(G, A, B, n);
-
-		if (max_A_AB <= max_B_AB) {
-			// Check pair A, C
-			auto [max_A_AC, max_C_AC, nca_AC, dir_A_AC, dir_C_AC] = max_dist_to_nca(G, A, C, n);
-			if (max_A_AC <= max_C_AC) {
+		
+		if (max_dist_to_nca_u_atmost_v(G,A,B)) {
+			// A <= B
+			if (max_dist_to_nca_u_atmost_v(G, A, C)) {
+				// A <= C
 				return A;
 			}
 			else {
+				// C < A
 				return C;
 			}
 		}
 		else {
-
-			// Check pair B, C
-			auto [max_B_BC, max_C_BC, nca_BC, dir_B_BC, dir_C_BC] = max_dist_to_nca(G, B, C, n);
-			if (max_B_BC <= max_C_BC) {
+			// B < A
+			if (max_dist_to_nca_u_atmost_v(G, B, C)) {
+				// B <= C
 				return B;
 			}
 			else {
+				// C < B
 				return C;
 			}
 		}
@@ -154,18 +124,22 @@ namespace {
 
 	// Get the deepest shortcut from a node, if any.
 	Shortcut* get_deepest_shortcut(const std::vector<Node>& G, long long index) {
-		Shortcut* best = nullptr;
-		int max_depth = -1;
 
-		// Check both the low and high shortcuts for the deepest one
-		for (Shortcut* shortcut : { G[index].out_low, G[index].out_high }) {
-			if (shortcut != nullptr && G[shortcut->target].depth > max_depth) {
-				best = shortcut;
-				max_depth = G[shortcut->target].depth;
-			}
+		Shortcut* out_low = G[index].out_low;
+		Shortcut* out_high = G[index].out_high;
+
+		if (out_low == nullptr) {
+			return out_high;
 		}
-
-		return best;
+		else if (out_high == nullptr) {
+			return out_low;
+		}
+		else if (G[out_low->target].depth > G[out_high->target].depth) {
+			return out_low;
+		}
+		else {
+			return out_high;
+		}
 	}
 
 	// Remove a shortcut from a list of shortcuts.
@@ -283,32 +257,6 @@ namespace {
 			return G[dead_path_base].out_low;
 		}
 	}
-
-	//// Adjust the NCA results in SelectResult if the dead path base node was one of the NCAs, updating it to point to the follow-up shortcut.
-	//void adjust_ncas(SelectResult& select_results, long long dead_path_base, Shortcut* followup_shortcut) {
-	//    if (followup_shortcut == nullptr) return;
-	//    if (select_results.nca_AB == dead_path_base) {
-	//        select_results.nca_AB   = followup_shortcut->target;
-	//        select_results.max_A_AB = std::max(select_results.max_A_AB, followup_shortcut->value);
-	//        select_results.max_B_AB = std::max(select_results.max_B_AB, followup_shortcut->value);
-	//        select_results.dir_A_AB = followup_shortcut->direction;
-	//        select_results.dir_B_AB = followup_shortcut->direction;
-	//    }
-	//    if (select_results.nca_BC == dead_path_base) {
-	//        select_results.nca_BC   = followup_shortcut->target;
-	//        select_results.max_B_BC = std::max(select_results.max_B_BC, followup_shortcut->value);
-	//        select_results.max_C_BC = std::max(select_results.max_C_BC, followup_shortcut->value);
-	//        select_results.dir_B_BC = followup_shortcut->direction;
-	//        select_results.dir_C_BC = followup_shortcut->direction;
-	//    }
-	//    if (select_results.nca_AC == dead_path_base) {
-	//        select_results.nca_AC   = followup_shortcut->target;
-	//        select_results.max_A_AC = std::max(select_results.max_A_AC, followup_shortcut->value);
-	//        select_results.max_C_AC = std::max(select_results.max_C_AC, followup_shortcut->value);
-	//        select_results.dir_A_AC = followup_shortcut->direction;
-	//        select_results.dir_C_AC = followup_shortcut->direction;
-	//    }
-	//}
 
 	// Update shortcuts on A, C, D after attaching D to its parent, based on the selected parent and NCA results.
 	void update_shortcuts(std::deque<Shortcut>& pool, std::vector<Node>& G, long long A, long long B, long long C, long long D, long long parent_D) {

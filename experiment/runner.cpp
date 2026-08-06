@@ -22,7 +22,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <sys/resource.h>
+//#include <sys/resource.h>
 
 // Reads sample number `sample_index` out of a dataset file. See PSEUDOCODE.md for
 // the file format. Earlier samples are parsed and discarded rather than skipped
@@ -78,7 +78,7 @@ static double maxrss_to_mb(long raw) {
 }
 
 static double timeval_diff_s(const struct timeval& a, const struct timeval& b) {
-    return (a.tv_sec - b.tv_sec) + (a.tv_usec - b.tv_usec) / 1e6;
+    return 0; // (a.tv_sec - b.tv_sec) + (a.tv_usec - b.tv_usec) / 1e6;
 }
 
 // Times one algorithm call and measures its memory/fault/context-switch behavior via
@@ -96,29 +96,29 @@ static void run_timing_and_memory(const std::string& algorithm, long long N, int
     double user_time_s = -1, sys_time_s = -1, blocked_time_s = -1;
 
     try {
-        struct rusage before{}, after{};
-        getrusage(RUSAGE_SELF, &before);
+        //struct rusage before{}, after{};
+        //getrusage(RUSAGE_SELF, &before);
 
         auto t0 = std::chrono::steady_clock::now();
         MatchingAndFrechetDistance result = run_algorithm(algorithm, p, q);
         auto t1 = std::chrono::steady_clock::now();
 
-        getrusage(RUSAGE_SELF, &after);
+        //getrusage(RUSAGE_SELF, &after);
 
         runtime_s = std::chrono::duration<double>(t1 - t0).count();
         frechet   = result.frechet_distance;
 
-        maxrss_before_mb   = maxrss_to_mb(before.ru_maxrss);
-        maxrss_after_mb    = maxrss_to_mb(after.ru_maxrss);
-        minor_faults       = after.ru_minflt  - before.ru_minflt;
-        major_faults       = after.ru_majflt  - before.ru_majflt;
-        block_input_ops    = after.ru_inblock - before.ru_inblock;
-        block_output_ops   = after.ru_oublock - before.ru_oublock;
-        voluntary_ctx_sw   = after.ru_nvcsw   - before.ru_nvcsw;
-        involuntary_ctx_sw = after.ru_nivcsw  - before.ru_nivcsw;
-        user_time_s        = timeval_diff_s(after.ru_utime, before.ru_utime);
-        sys_time_s          = timeval_diff_s(after.ru_stime, before.ru_stime);
-        blocked_time_s      = runtime_s - (user_time_s + sys_time_s);
+        //maxrss_before_mb   = maxrss_to_mb(before.ru_maxrss);
+        //maxrss_after_mb    = maxrss_to_mb(after.ru_maxrss);
+        //minor_faults       = after.ru_minflt  - before.ru_minflt;
+        //major_faults       = after.ru_majflt  - before.ru_majflt;
+        //block_input_ops    = after.ru_inblock - before.ru_inblock;
+        //block_output_ops   = after.ru_oublock - before.ru_oublock;
+        //voluntary_ctx_sw   = after.ru_nvcsw   - before.ru_nvcsw;
+        //involuntary_ctx_sw = after.ru_nivcsw  - before.ru_nivcsw;
+        //user_time_s        = timeval_diff_s(after.ru_utime, before.ru_utime);
+        //sys_time_s          = timeval_diff_s(after.ru_stime, before.ru_stime);
+        //blocked_time_s      = runtime_s - (user_time_s + sys_time_s);
     } catch (const std::bad_alloc&) {
         // Secondary OOM path only -- on Linux, an OOM is more likely to kill this
         // process outright than to raise bad_alloc. main.py detects that case by

@@ -16,7 +16,7 @@ struct Shortcut {
 };
 
 struct Node {
-    double distance = 0.0;                  // distance from p[i] to q[j]
+    double distance = 0.0;                  // squared distance from p[i] to q[j]
     long long parent = -2;                  // index of parent, -1 = root, -2 = no parent/unattached
     int depth  = -1;                        // depth in the tree, root has depth 0
     bool child_upper = false;               // true if the node has a child in the upper direction

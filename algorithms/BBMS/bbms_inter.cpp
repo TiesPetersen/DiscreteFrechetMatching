@@ -12,7 +12,7 @@ struct Shortcut {
 };
 
 struct Node {
-    double distance = 0.0;      // distance from p[i] to q[j]
+    double distance = 0.0;      // squared distance from p[i] to q[j]
     long long parent = -2;      // index of parent, -1 = root, -2 = no parent/unattached
     int depth = -1;             // depth in the tree, root has depth 0
     Shortcut low = {-1, 0.0};   // lower shortcut
@@ -167,7 +167,7 @@ MatchingAndFrechetDistance bbms_inter(const Curve& p, const Curve& q) {
     std::vector<Node> G(m * n);
     for (long long i = 0; i < m; ++i)
         for (long long j = 0; j < n; ++j)
-            G[i * n + j].distance = dist(p[i], q[j]);
+            G[i * n + j].distance = squared_dist(p[i], q[j]);
 
     // Setup root node
     G[0].parent = -1;

@@ -22,7 +22,7 @@ MatchingAndFrechetDistance bbms_dpp_stepwise(const Curve& p, const Curve& q) {
     std::vector<Node> G(m * n);
     for (long long i = 0; i < m; ++i)
         for (long long j = 0; j < n; ++j)
-            G[i * n + j].distance = dist(p[i], q[j]);
+            G[i * n + j].distance = squared_dist(p[i], q[j]);
 
     // Setup root node
     G[0].parent = -1;

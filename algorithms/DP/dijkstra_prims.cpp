@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cassert>
 #include <unordered_map>
+#include <cmath>
 
 MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
     long long m = (long long) p.size(), n = (long long) q.size();
@@ -19,7 +20,7 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
     std::priority_queue<T, std::vector<T>, std::greater<T>> pq;
 
     // Start from the first cell (0, 0)
-    double initial_distance = dist(p[0], q[0]);
+    double initial_distance = squared_dist(p[0], q[0]);
     pq.push({initial_distance, 0, 0});
     COUNT(heap_pushes);
     COUNT_MAX(max_heap_size, pq.size());
@@ -52,7 +53,7 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
 
             // Add the neighbor to the priority queue
             prev[idx] = (long long) i * n + j;
-            pq.push({dist(p[ni], q[nj]), ni, nj});
+            pq.push({squared_dist(p[ni], q[nj]), ni, nj});
             COUNT(heap_pushes);
             COUNT_MAX(max_heap_size, pq.size());
         }
@@ -66,5 +67,6 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
     // Reverse the matching to get it in the correct order
     std::reverse(matching.begin(), matching.end());
 
-    return {matching, frechet};
+    // Distances were squared; report the real one
+    return {matching, std::sqrt(frechet)};
 }

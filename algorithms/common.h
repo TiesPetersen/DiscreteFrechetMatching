@@ -23,15 +23,22 @@ struct Point { double x, y; };
 using Curve = std::vector<Point>;
 
 
-// Compute Euclidean distance between two points
-inline double dist(const Point& a, const Point& b) {
+// Squared Euclidean distance between two points. The algorithms only compare
+// distances, so they use this and take one sqrt on the reported value.
+inline double squared_dist(const Point& a, const Point& b) {
     double dx = a.x - b.x, dy = a.y - b.y;
-    return std::sqrt(dx * dx + dy * dy);
+    return dx * dx + dy * dy;
+}
+
+// Euclidean distance between two points (used by the tests and their reference)
+inline double dist(const Point& a, const Point& b) {
+    return std::sqrt(squared_dist(a, b));
 }
 
 
 // Extract the matching and maximum distance from the graph G.
-// Node must have a `parent` (long long) and `distance` (double) field.
+// Node must have a `parent` (long long) and `distance` (double, squared) field.
+// Returns the real (not squared) maximum distance.
 template <typename Node>
 MatchingAndFrechetDistance extract_matching(const std::vector<Node>& G, long long m, long long n) {
     Matching matching;
@@ -46,5 +53,5 @@ MatchingAndFrechetDistance extract_matching(const std::vector<Node>& G, long lon
     // Reverse to get matching in order from (0,0) to (m-1,n-1)
     std::reverse(matching.begin(), matching.end());
 
-    return {matching, max_distance};
+    return {matching, std::sqrt(max_distance)};
 }

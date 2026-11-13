@@ -45,7 +45,7 @@ MatchingAndFrechetDistance bbms_dpp_stepwise_lean(const Curve& p, const Curve& q
             long long D = i * n + j;            // current
 
             // Select parent for D and attach it
-            long long parent_D = select_parent(G, A, B, C);
+            long long parent_D = select_parent(G, pool, A, B, C);
             attach(G, parent_D, D, n);
             TRACE_PARENT(parent_D);
 
@@ -54,28 +54,28 @@ MatchingAndFrechetDistance bbms_dpp_stepwise_lean(const Curve& p, const Curve& q
                 COUNT(dead_paths_pruned);
 
                 // Get the dead path base
-                Shortcut* deepest_shortcut = get_deepest_shortcut(G, B);
-                long long dead_path_base   = deepest_shortcut->target;
-                Direction final_direction  = deepest_shortcut->direction;
+                ShortcutId deepest_shortcut = get_deepest_shortcut(G, pool, B);
+                long long dead_path_base    = pool[deepest_shortcut].target;
+                Direction final_direction   = pool[deepest_shortcut].direction;
 
                 // Walk the tree path from B to dead_path_base, removing outgoing shortcuts at each step.
                 long long X = B;
                 while (X != dead_path_base) {
                     long long parent = G[X].parent;
-                    remove_from_incoming(G, G[X].out_low);
-                    remove_from_incoming(G, G[X].out_high);
+                    remove_from_incoming(G, pool, G[X].out_low);
+                    remove_from_incoming(G, pool, G[X].out_high);
 
                     // X is dead and its shortcuts are in no list now, so they can be reused
                     free_shortcut(pool, G[X].out_low);
                     free_shortcut(pool, G[X].out_high);
-                    G[X].out_low = G[X].out_high = nullptr;
+                    G[X].out_low = G[X].out_high = NONE;
                     clear_child_flag(G, parent, X, n);
                     X = parent;
                     COUNT(dead_path_walk_steps);
                 }
 
                 // Extend shortcuts from the dead path base to the followup shortcut
-                extend_shortcuts(G, dead_path_base, final_direction);
+                extend_shortcuts(G, pool, dead_path_base, final_direction);
             }
 
             // Update shortcuts on A, C, D after attaching D to its parent

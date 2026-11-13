@@ -6,26 +6,26 @@ namespace {
 
 // Free every shortcut in a list and empty the list. Only called for lists that hold
 // shortcuts of dead nodes: those that enter the dead path base from the dead side.
-void free_list_entries(ShortcutStore& pool, Shortcut*& list) {
-    Shortcut* shortcut = list;
-    list = nullptr;
-    while (shortcut != nullptr) {
-        Shortcut* next = shortcut->next;
-        free_shortcut(pool, shortcut);
-        shortcut = next;
+void free_list_entries(ShortcutStore& pool, ShortcutId& list) {
+    ShortcutId id = list;
+    list = NONE;
+    while (id != NONE) {
+        ShortcutId next = pool[id].next;
+        free_shortcut(pool, id);
+        id = next;
     }
 }
 
 // Detach a dead path from the tree, removing all incoming shortcuts to the dead node and clearing the child flags of its parent.
 void detach_dead_path(ShortcutStore& pool, std::vector<Node>& G, long long B, long long dead_path_base, Direction final_direction) {
     // Remove all incoming shortcuts starting from B
-    remove_from_incoming(G, G[B].out_high);
-    remove_from_incoming(G, G[B].out_low);
+    remove_from_incoming(G, pool, G[B].out_high);
+    remove_from_incoming(G, pool, G[B].out_low);
 
     // B is dead and its shortcuts are in no list now, so they can be reused
     free_shortcut(pool, G[B].out_high);
     free_shortcut(pool, G[B].out_low);
-    G[B].out_high = G[B].out_low = nullptr;
+    G[B].out_high = G[B].out_low = NONE;
 
     // Clear shortcuts and child flags of the dead path base node based on the final direction
     switch (final_direction) {
@@ -78,7 +78,7 @@ MatchingAndFrechetDistance bbms_dpp_instant_lean(const Curve& p, const Curve& q)
             long long D = i * n + j;            // current
 
             // Select parent for D and attach it
-            long long parent_D = select_parent(G, A, B, C);
+            long long parent_D = select_parent(G, pool, A, B, C);
             attach(G, parent_D, D, n);
             TRACE_PARENT(parent_D);
 
@@ -88,15 +88,15 @@ MatchingAndFrechetDistance bbms_dpp_instant_lean(const Curve& p, const Curve& q)
                 COUNT(dead_path_walk_steps);  // a single O(1) jump to dead_path_base
 
                 // Get the dead path base
-                Shortcut* deepest_shortcut  = get_deepest_shortcut(G, B);
-                long long dead_path_base = deepest_shortcut->target;
+                ShortcutId deepest_shortcut = get_deepest_shortcut(G, pool, B);
+                long long dead_path_base = pool[deepest_shortcut].target;
 
                 // Detach the dead path ending at B
-                Direction final_direction = deepest_shortcut->direction;
+                Direction final_direction = pool[deepest_shortcut].direction;
                 detach_dead_path(pool, G, B, dead_path_base, final_direction);
 
                 // Extend shortcuts from the dead path base to the followup shortcut
-                extend_shortcuts(G, dead_path_base, final_direction);
+                extend_shortcuts(G, pool, dead_path_base, final_direction);
             }
 
             // Update shortcuts on A, C, D after attaching D to its parent

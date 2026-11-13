@@ -21,6 +21,9 @@ ORACLE_OBJS = $(ALGO_OBJS) reference/dynamic_programming.o
 dynamic_programming_check.exe: dynamic_programming_check.cpp $(ORACLE_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ dynamic_programming_check.cpp $(ORACLE_OBJS)
 
+local_correctness_check.exe: local_correctness_check.cpp $(ALGO_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ local_correctness_check.cpp $(ALGO_OBJS)
+
 BBMS_OBJS = $(ALGO_DIR)/BBMS/bbms_core.o $(ALGO_DIR)/BBMS/bbms_inter.o $(ALGO_DIR)/counters.o \
             $(ALGO_DIR)/BBMS/bbms_dpp_instant.o $(ALGO_DIR)/BBMS/bbms_dpp_stepwise.o
 
@@ -57,7 +60,7 @@ $(COUNTED_OBJS): algorithms ;
 hand_counted_check.exe: hand_counted_check.cpp $(COUNTED_OBJS)
 	$(CXX) $(CXXFLAGS) -DCOUNT_OPS -o $@ hand_counted_check.cpp $(COUNTED_OBJS)
 
-all: dynamic_programming_check.exe matching_check.exe parent_trace_check.exe hand_counted_check.exe
+all: dynamic_programming_check.exe matching_check.exe parent_trace_check.exe hand_counted_check.exe local_correctness_check.exe
 
 clean:
 	rm -f *.o *.d reference/*.o reference/*.d *.exe

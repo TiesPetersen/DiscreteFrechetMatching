@@ -34,6 +34,12 @@ echo "=== hand_counted_check ==="
 
 echo
 
+# Run the local correctness check
+echo "=== local_correctness_check ==="
+./local_correctness_check.exe || status=1
+
+echo
+
 # Print the final status of the checks
 if [ "$status" -eq 0 ]; then
     echo "All checks passed."

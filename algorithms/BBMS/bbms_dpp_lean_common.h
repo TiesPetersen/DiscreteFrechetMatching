@@ -130,7 +130,8 @@ void remove_from_incoming(std::vector<Node>& G, Shortcut* shortcut) {
 
     // Walk the list, keeping the link that points at the current entry
     Shortcut** link = &incoming(G[shortcut->target], shortcut->direction);
-    while (*link != nullptr && *link != shortcut) link = &(*link)->next;
+    while (*link != nullptr && *link != shortcut) { link = &(*link)->next; COUNT(list_search_steps); }
+    if (*link != nullptr) COUNT(list_search_steps);
 
     // Unlink the shortcut if it was found
     if (*link == shortcut) {
@@ -163,6 +164,18 @@ void extend_shortcuts_to(std::vector<Node>& G, Shortcut*& list, Shortcut* follow
     // Take the whole list off the node first; this clears it
     Shortcut* shortcut = list;
     list = nullptr;
+
+    // Reverse it, so the oldest shortcut comes first. Adding them oldest first leaves the newest
+    // at the front of the new list, in the same order as the vector version. A removal then finds
+    // its shortcut after the same number of steps as before, which is one step in practice.
+    Shortcut* reversed = nullptr;
+    while (shortcut != nullptr) {
+        Shortcut* next = shortcut->next;
+        shortcut->next = reversed;
+        reversed = shortcut;
+        shortcut = next;
+    }
+    shortcut = reversed;
 
     // Redirect each shortcut and add it to the list of its new target
     while (shortcut != nullptr) {

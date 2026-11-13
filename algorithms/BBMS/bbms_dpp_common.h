@@ -121,6 +121,7 @@ Shortcut* get_deepest_shortcut(const std::vector<Node>& G, long long index) {
 // so search from the back: O(1) then, instead of a scan over the whole list.
 void remove_from(std::vector<Shortcut*>& list, Shortcut* shortcut) {
     auto it = std::find(list.rbegin(), list.rend(), shortcut);
+    COUNT_ADD(list_search_steps, (it == list.rend() ? list.size() : (it - list.rbegin()) + 1));
     if (it != list.rend()) list.erase(std::next(it).base());
 }
 

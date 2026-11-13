@@ -13,6 +13,8 @@ struct Counters {
     long long dead_path_walk_steps = 0; // BBMSDppInstant, BBMSDppStepwise -- cost of locating the dead path base per
                                          // event: always +1 for BBMSDppInstant (a single O(1) jump via an existing
                                          // shortcut), +1 per intermediate node for BBMSDppStepwise's O(depth) walk
+    long long list_search_steps   = 0;  // BBMSDppInstant, BBMSDppStepwise (and Lean) -- list entries looked at when
+                                         // removing a shortcut from an incoming list; 1 per removal when the shortcut is found first
     long long heap_pushes         = 0;  // DijkstraPrims
     long long heap_pops           = 0;  // DijkstraPrims
     long long max_heap_size       = 0;  // DijkstraPrims -- peak pq.size(), sampled after every push

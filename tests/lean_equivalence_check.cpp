@@ -2,7 +2,8 @@
 //
 // Checks that the lean memory layout does not change the algorithm. Each lean DPP variant
 // must make the same parent choice at every cell as its current version, return the same
-// matching and distance, and produce the same operation counts.
+// matching and distance, and produce the same operation counts, including the number of
+// list entries looked at when removing shortcuts.
 // Inputs: random curves, random curves with many ties, and the first pair of each synthetic
 // dataset at N=500.
 
@@ -59,6 +60,7 @@ std::string counter_differences(const Counters& a, const Counters& b) {
     check("dead_paths_pruned", a.dead_paths_pruned, b.dead_paths_pruned);
     check("shortcuts_extended", a.shortcuts_extended, b.shortcuts_extended);
     check("dead_path_walk_steps", a.dead_path_walk_steps, b.dead_path_walk_steps);
+    check("list_search_steps", a.list_search_steps, b.list_search_steps);
     return out;
 }
 

@@ -48,11 +48,10 @@ MatchingAndFrechetDistance dijkstra_prims(const Curve& p, const Curve& q) {
             // Calculate the index of the neighbor
             long long idx = (long long) ni * n + nj;
 
-            // Check if we have already visited this cell
-            if (prev.count(idx)) continue;
+            // Record the parent, unless the cell was already seen (one hash lookup)
+            if (!prev.try_emplace(idx, (long long) i * n + j).second) continue;
 
             // Add the neighbor to the priority queue
-            prev[idx] = (long long) i * n + j;
             pq.push({squared_dist(p[ni], q[nj]), ni, nj});
             COUNT(heap_pushes);
             COUNT_MAX(max_heap_size, pq.size());

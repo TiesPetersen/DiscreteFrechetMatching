@@ -15,6 +15,8 @@
 #include "bbms_inter.h"
 #include "bbms_dpp_instant.h"
 #include "bbms_dpp_stepwise.h"
+#include "bbms_dpp_instant_lean.h"
+#include "bbms_dpp_stepwise_lean.h"
 #include "dijkstra_prims.h"
 #include "counters.h"
 
@@ -61,6 +63,8 @@ static MatchingAndFrechetDistance run_algorithm(const std::string& algorithm, co
     if (algorithm == "BBMSInter")       return bbms_inter(p, q);
     if (algorithm == "BBMSDppInstant")  return bbms_dpp_instant(p, q);
     if (algorithm == "BBMSDppStepwise") return bbms_dpp_stepwise(p, q);
+    if (algorithm == "BBMSDppInstantLean")  return bbms_dpp_instant_lean(p, q);
+    if (algorithm == "BBMSDppStepwiseLean") return bbms_dpp_stepwise_lean(p, q);
     if (algorithm == "DijkstraPrims")   return dijkstra_prims(p, q);
     std::cerr << "unknown algorithm: " << algorithm << "\n";
     std::exit(1);
@@ -162,7 +166,8 @@ static void run_op_counts(const std::string& algorithm, long long N, int sample_
         // never m*n unless the run actually succeeded (see PLAN.md 4).
         long long m = (long long)p.size(), n = (long long)q.size();
         if (algorithm == "BBMSCore" || algorithm == "BBMSInter" ||
-            algorithm == "BBMSDppInstant" || algorithm == "BBMSDppStepwise") {
+            algorithm == "BBMSDppInstant" || algorithm == "BBMSDppStepwise" ||
+            algorithm == "BBMSDppInstantLean" || algorithm == "BBMSDppStepwiseLean") {
             cells_processed = m * n;
         } else {
             cells_processed = g_counters.heap_pops;

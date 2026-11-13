@@ -1,3 +1,4 @@
+# 2026-11-13: NCA hop counts updated for two NCA queries per cell (was three). Cross-checked with an independent Python count.
 algorithm BBMSCore
 p 5
 0 0
@@ -11,6 +12,6 @@ q 5
 0.15 0.25
 0.2 0.1
 20 20
-expect nca_regular_hops 126
+expect nca_regular_hops 84
 expect nca_shortcut_hops 0
 expect shortcuts_written 0

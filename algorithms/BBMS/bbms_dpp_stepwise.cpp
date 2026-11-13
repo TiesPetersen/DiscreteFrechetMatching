@@ -44,10 +44,10 @@ MatchingAndFrechetDistance bbms_dpp_stepwise(const Curve& p, const Curve& q) {
             long long C = i * n + (j - 1);      // below
             long long D = i * n + j;            // current
 
-            // Select parent for D and get all NCA results needed for updating shortcuts
-            SelectResult sr = select_parent(G, A, B, C, n);
-            attach(G, sr.parent, D, n);
-            TRACE_PARENT(sr.parent);
+            // Select parent for D and attach it
+            long long parent_D = select_parent(G, A, B, C);
+            attach(G, parent_D, D, n);
+            TRACE_PARENT(parent_D);
 
             // If B has no children, walk the dead path ending at B step by step and remove shortcuts, then extend appropriate shortcuts
             if (!has_children(G, B)) {
@@ -70,14 +70,11 @@ MatchingAndFrechetDistance bbms_dpp_stepwise(const Curve& p, const Curve& q) {
                 }
 
                 // Extend shortcuts from the dead path base to the followup shortcut
-                Shortcut* followup = extend_shortcuts(G, dead_path_base, final_direction);
-
-                // Change NCA info since NCAs may have changed due to the dead path removal
-                adjust_ncas(sr, dead_path_base, followup);
+                extend_shortcuts(G, dead_path_base, final_direction);
             }
 
             // Update shortcuts on A, C, D after attaching D to its parent
-            update_shortcuts(pool, G, A, B, C, D, sr);
+            update_shortcuts(pool, G, A, B, C, D, parent_D);
         }
     }
 

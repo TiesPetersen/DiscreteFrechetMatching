@@ -1,3 +1,4 @@
+# 2026-11-13: NCA hop counts updated for two NCA queries per cell (was three). Taken from the code; parent choices are checked against BBMSCore by parent_trace_check.
 algorithm BBMSDppStepwise
 p 6
 6 1
@@ -13,8 +14,8 @@ q 6
 0 1
 4 0
 2 4
-expect nca_regular_hops 42
-expect nca_shortcut_hops 111
+expect nca_regular_hops 21
+expect nca_shortcut_hops 69
 expect shortcuts_written 58
 expect dead_paths_pruned 4
 expect shortcuts_extended 9

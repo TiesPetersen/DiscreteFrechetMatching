@@ -31,24 +31,16 @@ std::pair<double,double> max_distance_to_nca(const std::vector<Node>& G, long lo
 }
 
 // Select parent among A, B, C that has the lowest maximum distance to NCA.
-// Break ties by preferring A > B > C.
+// Break ties by preferring A > B > C. Two NCA queries are enough:
+// the first decides between A and B, the second compares the winner with C.
 long long select_parent(const std::vector<Node>& G, long long A, long long B, long long C) {
-    // Check pair A, B
     auto [max_A_AB, max_B_AB] = max_distance_to_nca(G, A, B);
-
-    // Check pair B, C
+    if (max_A_AB <= max_B_AB) {
+        auto [max_A_AC, max_C_AC] = max_distance_to_nca(G, A, C);
+        return max_A_AC <= max_C_AC ? A : C;
+    }
     auto [max_B_BC, max_C_BC] = max_distance_to_nca(G, B, C);
-
-    // Check pair A, C
-    auto [max_A_AC, max_C_AC] = max_distance_to_nca(G, A, C);
-
-    // Select parent with lowest maximum distance to NCA, breaking ties by A > B > C
-    bool A_over_B = (max_A_AB <= max_B_AB);
-    bool B_over_C = (max_B_BC <= max_C_BC);
-    bool A_over_C = (max_A_AC <= max_C_AC);
-    if (A_over_B && A_over_C) return A;
-    if (!A_over_B && B_over_C) return B;
-    return C;
+    return max_B_BC <= max_C_BC ? B : C;
 }
 
 // Attach child to parent in G, updating child's depth and parent index.

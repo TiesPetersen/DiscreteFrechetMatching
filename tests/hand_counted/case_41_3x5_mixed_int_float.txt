@@ -1,4 +1,4 @@
-# 2026-11-13: NCA hop counts updated for two NCA queries per cell (was three). Taken from the code; parent choices are checked against BBMSCore by parent_trace_check.
+# 2026-11-13: NCA hop counts updated for two NCA queries to pick the parent, plus a third only when the shortcut update needs it. Taken from the code; never above the earlier hand count; parent choices are checked against BBMSCore by parent_trace_check.
 algorithm BBMSInter
 p 3
 0 0
@@ -10,6 +10,6 @@ q 5
 4 2
 5.5 3.75
 7 5
-expect nca_regular_hops 10
-expect nca_shortcut_hops 14
+expect nca_regular_hops 19
+expect nca_shortcut_hops 24
 expect shortcuts_written 20

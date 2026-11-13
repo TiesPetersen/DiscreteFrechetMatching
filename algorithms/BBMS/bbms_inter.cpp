@@ -19,9 +19,26 @@ struct Node {
     Shortcut high = {-1, 0.0};  // upper shortcut
 };
 
-// True if the max distance on u's side to NCA(u,v) is at most the max distance on v's side.
-// The NCA's own distance is not included. Walks u and v up using shortcuts where available.
-bool u_side_at_most_v_side(const std::vector<Node>& G, long long u, long long v) {
+struct NCAResult { 
+    double max_distance_u;  // max distance on u's side to NCA(u,v)
+    double max_distance_v;  // max distance on v's side to NCA(u,v)
+    long long nca;          // index of nearest common ancestor of u and v
+};
+
+// All pairwise NCA results needed by update_shortcuts.
+// e.g. max_A_AB = max dist on A's side to NCA(A,B); max_B_AB = max dist on B's side to NCA(A,B).
+struct SelectResult {
+    long long parent;                               // selected parent for D
+    double max_A_AB, max_B_AB; long long nca_AB;    // pair A, B stats
+    double max_B_BC, max_C_BC; long long nca_BC;    // pair B, C stats (only if has_BC)
+    double max_A_AC, max_C_AC; long long nca_AC;    // pair A, C stats (only if has_AC)
+    bool has_BC, has_AC;                            // which of the two optional pairs were queried
+};
+
+// Get maximum distance from u and v to their nearest common ancestor (NCA) in G, and the index of the NCA.
+// The NCA's own distance is not included in the max-distance calculation. 
+// Walks u and v up to their NCA using shortcuts where available.
+NCAResult max_distance_to_nca(const std::vector<Node>& G, long long u, long long v) {
     double max_distance_u = -INF, max_distance_v = -INF;
 
     // Walk the deeper node up the tree, until both nodes meet
@@ -51,15 +68,50 @@ bool u_side_at_most_v_side(const std::vector<Node>& G, long long u, long long v)
         }
     }
 
-    return max_distance_u <= max_distance_v;
+    return {max_distance_u, max_distance_v, u};
 }
 
 // Select parent among A, B, C that has the lowest maximum distance to NCA.
 // Break ties by preferring A > B > C. Two NCA queries are enough:
 // the first decides between A and B, the second compares the winner with C.
-long long select_parent(const std::vector<Node>& G, long long A, long long B, long long C) {
-    if (u_side_at_most_v_side(G, A, B)) return u_side_at_most_v_side(G, A, C) ? A : C;
-    return u_side_at_most_v_side(G, B, C) ? B : C;
+SelectResult select_parent(const std::vector<Node>& G, long long A, long long B, long long C) {
+    SelectResult r{};
+
+    // Check pair A, B
+    auto [max_A_AB, max_B_AB, nca_AB] = max_distance_to_nca(G, A, B);
+    r.max_A_AB = max_A_AB; r.max_B_AB = max_B_AB; r.nca_AB = nca_AB;
+
+    if (max_A_AB <= max_B_AB) {
+        // A beats B, so compare A with C
+        auto [max_A_AC, max_C_AC, nca_AC] = max_distance_to_nca(G, A, C);
+        r.max_A_AC = max_A_AC; r.max_C_AC = max_C_AC; r.nca_AC = nca_AC; r.has_AC = true;
+        r.parent = (max_A_AC <= max_C_AC) ? A : C;
+    } else {
+        // B beats A, so compare B with C
+        auto [max_B_BC, max_C_BC, nca_BC] = max_distance_to_nca(G, B, C);
+        r.max_B_BC = max_B_BC; r.max_C_BC = max_C_BC; r.nca_BC = nca_BC; r.has_BC = true;
+        r.parent = (max_B_BC <= max_C_BC) ? B : C;
+    }
+    return r;
+}
+
+// Run the third NCA query only when update_shortcuts needs it.
+// Without dead path pruning, shortcuts must point to a freshly queried NCA to stay as long as possible.
+void complete_for_shortcuts(const std::vector<Node>& G, long long A, long long B, long long C, SelectResult& r) {
+    bool AB = (G[A].parent == B);
+    bool BC = (G[C].parent == B);
+
+    // Pair A, C is used whenever A or C hangs directly from B
+    if (!r.has_AC && (AB || BC)) {
+        auto [max_A_AC, max_C_AC, nca_AC] = max_distance_to_nca(G, A, C);
+        r.max_A_AC = max_A_AC; r.max_C_AC = max_C_AC; r.nca_AC = nca_AC; r.has_AC = true;
+    }
+
+    // Pair B, C is used when D hangs from C and neither A nor C hangs from B
+    if (!r.has_BC && r.parent == C && !AB && !BC) {
+        auto [max_B_BC, max_C_BC, nca_BC] = max_distance_to_nca(G, B, C);
+        r.max_B_BC = max_B_BC; r.max_C_BC = max_C_BC; r.nca_BC = nca_BC; r.has_BC = true;
+    }
 }
 
 // Attach child to parent in g, updating child's depth and parent index.
@@ -68,70 +120,56 @@ void attach(std::vector<Node>& G, long long parent, long long child) {
     G[child].depth  = G[parent].depth + 1;
 }
 
-// Set a shortcut directly.
-void set_shortcut(Shortcut& shortcut, long long target, double value) {
-    shortcut = { target, value };
-    COUNT(shortcuts_written);
-}
-
-// Set x's shortcut (low or high) to continue its parent's shortcut one step further.
-// It gets the same target and value a fresh NCA query would give, without the query.
-void set_extending_shortcut(std::vector<Node>& G, long long x, bool is_low) {
-    const Shortcut& extend = is_low ? G[G[x].parent].low : G[G[x].parent].high;
-    set_shortcut(is_low ? G[x].low : G[x].high, extend.target, std::max(G[x].distance, extend.value));
-}
-
 // Set shortcuts on A, C, D after attaching D to its parent.
-// A's and C's shortcuts are set before D's, because D's may extend them.
-void update_shortcuts(std::vector<Node>& G, long long A, long long B, long long C, long long D, long long parent_D) {
+void update_shortcuts(std::vector<Node>& G, long long A, long long B, long long C, long long D, const SelectResult& select_results) {
     bool AB = (G[A].parent == B);
     bool BC = (G[C].parent == B);
 
-    if (parent_D == A) {
+    if (select_results.parent == A) {
         if (AB && BC) {
-            set_shortcut(G[A].low, B, G[A].distance);
-            set_shortcut(G[C].high, B, G[C].distance);
-            set_shortcut(G[D].low, B, std::max(G[A].distance, G[D].distance));
+            G[A].low  = { B, G[A].distance };                                      COUNT(shortcuts_written);
+            G[C].high = { B, G[C].distance };                                      COUNT(shortcuts_written);
+            G[D].low  = { B, std::max(G[A].distance, G[D].distance) };             COUNT(shortcuts_written);
         } else if (AB) {
-            set_extending_shortcut(G, A, true);
-            set_extending_shortcut(G, D, true);
+            G[A].low  = { select_results.nca_AC, select_results.max_A_AC };                                COUNT(shortcuts_written);
+            G[D].low  = { select_results.nca_AC, std::max(select_results.max_A_AC, G[D].distance) };       COUNT(shortcuts_written);
         } else if (BC) {
-            set_extending_shortcut(G, C, false);
-            set_extending_shortcut(G, D, true);
+            G[C].high = { select_results.nca_AC, select_results.max_C_AC };                                COUNT(shortcuts_written);
+            G[D].low  = { select_results.nca_AC, std::max(select_results.max_A_AC, G[D].distance) };       COUNT(shortcuts_written);
         } else {
-            set_extending_shortcut(G, D, true);
+            G[D].low  = { select_results.nca_AB, std::max(select_results.max_A_AB, G[D].distance) };       COUNT(shortcuts_written);
         }
-    } else if (parent_D == B) {
+    } else if (select_results.parent == B) {
         if (AB && BC) {
-            set_shortcut(G[A].low, B, G[A].distance);
-            set_shortcut(G[C].high, B, G[C].distance);
-            set_shortcut(G[D].high, B, G[D].distance);
-            set_shortcut(G[D].low, B, G[D].distance);
+            G[A].low  = { B, G[A].distance };                                      COUNT(shortcuts_written);
+            G[C].high = { B, G[C].distance };                                      COUNT(shortcuts_written);
+            G[D].high = { B, G[D].distance };                                      COUNT(shortcuts_written);
+            G[D].low  = { B, G[D].distance };                                      COUNT(shortcuts_written);
         } else if (AB) {
-            set_shortcut(G[A].low, B, G[A].distance);
-            set_shortcut(G[D].high, B, G[D].distance);
-            set_extending_shortcut(G, D, true);
+            G[A].low  = { B, G[A].distance };                                      COUNT(shortcuts_written);
+            G[D].high = { B, G[D].distance };                                      COUNT(shortcuts_written);
+            G[D].low  = { select_results.nca_AC, std::max(select_results.max_B_BC, G[D].distance) };       COUNT(shortcuts_written);
         } else if (BC) {
-            set_shortcut(G[C].high, B, G[C].distance);
-            set_extending_shortcut(G, D, false);
-            set_shortcut(G[D].low, B, G[D].distance);
+            G[C].high = { B, G[C].distance };                                      COUNT(shortcuts_written);
+            G[D].high = { select_results.nca_AC, std::max(select_results.max_B_AB, G[D].distance) };       COUNT(shortcuts_written);
+            G[D].low  = { B, G[D].distance };                                      COUNT(shortcuts_written);
         } else {
-            set_extending_shortcut(G, D, false);
-            set_extending_shortcut(G, D, true);
+            G[D].high = { select_results.nca_AB, std::max(select_results.max_B_AB, G[D].distance) };       COUNT(shortcuts_written);
+            G[D].low  = { select_results.nca_BC, std::max(select_results.max_B_BC, G[D].distance) };       COUNT(shortcuts_written);
         }
-    } else { // parent_D == C
+    } else if (select_results.parent == C) {
         if (AB && BC) {
-            set_shortcut(G[A].low, B, G[A].distance);
-            set_shortcut(G[C].high, B, G[C].distance);
-            set_shortcut(G[D].high, B, std::max(G[C].distance, G[D].distance));
+            G[A].low  = { B, G[A].distance };                                      COUNT(shortcuts_written);
+            G[C].high = { B, G[C].distance };                                      COUNT(shortcuts_written);
+            G[D].high = { B, std::max(G[C].distance, G[D].distance) };             COUNT(shortcuts_written);
         } else if (AB) {
-            set_extending_shortcut(G, A, true);
-            set_extending_shortcut(G, D, false);
+            G[A].low  = { select_results.nca_AC, select_results.max_A_AC };                                COUNT(shortcuts_written);
+            G[D].high = { select_results.nca_AC, std::max(select_results.max_C_AC, G[D].distance) };       COUNT(shortcuts_written);
         } else if (BC) {
-            set_extending_shortcut(G, C, false);
-            set_extending_shortcut(G, D, false);
+            G[C].high = { select_results.nca_AC, select_results.max_C_AC };                                COUNT(shortcuts_written);
+            G[D].high = { select_results.nca_AC, std::max(select_results.max_C_AC, G[D].distance) };       COUNT(shortcuts_written);
         } else {
-            set_extending_shortcut(G, D, false);
+            G[D].high = { select_results.nca_BC, std::max(select_results.max_C_BC, G[D].distance) };       COUNT(shortcuts_written);
         }
     }
 }
@@ -166,13 +204,14 @@ MatchingAndFrechetDistance bbms_inter(const Curve& p, const Curve& q) {
             long long C = i * n + (j - 1);        // below
             long long D = i * n + j;              // current
 
-            // Select parent for D and attach it
-            long long parent_D = select_parent(G, A, B, C);
-            attach(G, parent_D, D);
-            TRACE_PARENT(parent_D);
+            // Select parent for D and get all NCA results needed for shortcut updates
+            SelectResult select_results = select_parent(G, A, B, C);
+            complete_for_shortcuts(G, A, B, C, select_results);
+            attach(G, select_results.parent, D);
+            TRACE_PARENT(select_results.parent);
 
             // Update shortcuts on A, C, D after attaching D to its parent
-            update_shortcuts(G, A, B, C, D, parent_D);
+            update_shortcuts(G, A, B, C, D, select_results);
         }
     }
 

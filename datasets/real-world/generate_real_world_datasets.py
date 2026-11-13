@@ -1,5 +1,6 @@
 """
-Samples curve pairs from the raw external datasets (Geolife, Pigeons, Drifter)
+Samples curve pairs from the raw external datasets (Geolife, Pigeons, Drifter, plus
+Pigeons with repeated points removed)
 into the plain-text curve-pair format experiment/runner.cpp reads -- one file per
 dataset, containing every sampled pair (see write_pairs() for the exact format).
 
@@ -61,14 +62,48 @@ SAMPLE_SIZES = {
 METERS_PER_DEG = 111_320.0
 
 
-def project(points):
-    """points: list of (lon, lat). Returns list of (x, y) in meters, flat
-    equirectangular projection centered on this curve's own mean latitude --
-    exact projection choice doesn't matter for algorithm cost/behavior, only
-    for the distance *values*, so this doesn't need to be precise."""
-    mean_lat = sum(lat for _, lat in points) / len(points)
-    scale_lon = METERS_PER_DEG * math.cos(math.radians(mean_lat))
-    return [(lon * scale_lon, lat * METERS_PER_DEG) for lon, lat in points]
+def unwrap(points):
+    """points: list of (lon, lat). Makes longitudes continuous: a step across the
+    date line (for example 179.9 to -179.9) becomes a small step instead of a jump
+    of almost 360 degrees."""
+    out = []
+    for lon, lat in points:
+        if out:
+            previous = out[-1][0]
+            lon += 360.0 * round((previous - lon) / 360.0)
+        out.append((lon, lat))
+    return out
+
+
+def project_pair(p, q):
+    """p, q: lists of (lon, lat), already unwrapped. Returns both curves in metres,
+    in one shared flat (equirectangular) projection centred on the mean of all
+    points of the pair.
+
+    Both curves must use the same reference. Projecting each curve with its own
+    reference latitude shifts the two curves against each other, which changes
+    the distance values, and so the algorithms' cost (13 Nov 2026 audit)."""
+    # Move q by whole turns of 360 degrees so it sits next to p, not across the date line
+    mean_lon_p = sum(lon for lon, _ in p) / len(p)
+    mean_lon_q = sum(lon for lon, _ in q) / len(q)
+    shift = 360.0 * round((mean_lon_p - mean_lon_q) / 360.0)
+    q = [(lon + shift, lat) for lon, lat in q]
+
+    # One reference point and one longitude scale for both curves
+    both = p + q
+    ref_lon = sum(lon for lon, _ in both) / len(both)
+    ref_lat = sum(lat for _, lat in both) / len(both)
+    scale_lon = METERS_PER_DEG * math.cos(math.radians(ref_lat))
+
+    def project(points):
+        return [((lon - ref_lon) * scale_lon, (lat - ref_lat) * METERS_PER_DEG) for lon, lat in points]
+
+    return project(p), project(q)
+
+
+def drop_repeated_points(points):
+    """Removes each point that is identical to the point before it."""
+    return [point for k, point in enumerate(points) if k == 0 or point != points[k - 1]]
 
 
 # GitHub hard-rejects any single file over 100MB. Long real-world curves (unlike
@@ -123,7 +158,7 @@ def load_geolife_curve(path):
             parts = line.split(",")
             lat, lon = float(parts[0]), float(parts[1])
             pts.append((lon, lat))
-    return project(pts)
+    return unwrap(pts)
 
 
 def geolife_curve_paths():
@@ -161,7 +196,7 @@ def load_drifter_curve(path):
     lons = ds.variables["longitude"][0, :]
     lats = ds.variables["latitude"][0, :]
     ds.close()
-    return project(list(zip(lons.tolist(), lats.tolist())))
+    return unwrap(list(zip(lons.tolist(), lats.tolist())))
 
 
 def drifter_curve_paths():
@@ -172,6 +207,29 @@ def drifter_curve_paths():
             if fn.endswith(".nc"):
                 paths.append(f"{year_dir}/{fn}")
     return paths
+
+
+def median_cell(points, size=10):
+    """The size x size degree cell that holds the curve's median position."""
+    lons = sorted(lon for lon, _ in points)
+    lats = sorted(lat for _, lat in points)
+    median_lon, median_lat = lons[len(lons) // 2], lats[len(lats) // 2]
+    median_lon = (median_lon + 180.0) % 360.0 - 180.0
+    return (math.floor(median_lat / size) * size, math.floor(median_lon / size) * size)
+
+
+def densest_region(paths):
+    """Keeps only the drifter curves whose median position lies in the 10 x 10
+    degree cell that holds the most curves. Random buoys from the whole world
+    are mostly in different oceans (median Frechet distance about 11,000 km in
+    the first run), so a pair says little about matching two related curves.
+    Buoys in one region overlap and drift through the same currents."""
+    cells = {path: median_cell(load_drifter_curve(path)) for path in paths}
+    counts = {}
+    for cell in cells.values():
+        counts[cell] = counts.get(cell, 0) + 1
+    best = max(sorted(counts), key=lambda cell: counts[cell])
+    return best, [path for path in paths if cells[path] == best]
 
 
 def sample_and_pair(curve_loaders, k, seed):
@@ -189,6 +247,11 @@ def sample_and_pair(curve_loaders, k, seed):
     return len(loaded), pairs
 
 
+def project_pairs(pairs):
+    """Projects every (p, q) pair of lon/lat curves into one shared frame per pair."""
+    return [project_pair(p, q) for p, q in pairs]
+
+
 def main():
     report = {}
 
@@ -196,26 +259,34 @@ def main():
     paths = geolife_curve_paths()
     loaders = [(lambda p=p: load_geolife_curve(p)) for p in paths]
     k, pairs = sample_and_pair(loaders, SAMPLE_SIZES["geolife"], SEED)
-    n_parts = write_pairs(f"{OUTPUT_DIR}/geolife", pairs)
+    n_parts = write_pairs(f"{OUTPUT_DIR}/geolife", project_pairs(pairs))
     report["geolife"] = (k, len(pairs), n_parts)
 
     # Pigeons
     groups = load_pigeon_curves()
-    loaders = [(lambda pts=pts: project(pts)) for pts in groups.values()]
+    loaders = [(lambda pts=pts: unwrap(pts)) for pts in groups.values()]
     k, pairs = sample_and_pair(loaders, SAMPLE_SIZES["pigeons"], SEED)
-    n_parts = write_pairs(f"{OUTPUT_DIR}/pigeons", pairs)
+    n_parts = write_pairs(f"{OUTPUT_DIR}/pigeons", project_pairs(pairs))
     report["pigeons"] = (k, len(pairs), n_parts)
 
-    # Drifter
-    paths = drifter_curve_paths()
+    # Pigeons without repeated points: the same pairs, with every point that equals
+    # the point before it removed. Most pigeon points are repeats (61 to 91 % in
+    # most curves), which creates many exact ties; this control shows their effect.
+    deduplicated = [(drop_repeated_points(p), drop_repeated_points(q)) for p, q in pairs]
+    n_parts = write_pairs(f"{OUTPUT_DIR}/pigeons_dedup", project_pairs(deduplicated))
+    report["pigeons_dedup"] = (k, len(deduplicated), n_parts)
+
+    # Drifter: curves from one region only
+    region, paths = densest_region(drifter_curve_paths())
+    print(f"drifter region: lat {region[0]} to {region[0] + 10}, lon {region[1]} to {region[1] + 10}, {len(paths)} curves")
     loaders = [(lambda p=p: load_drifter_curve(p)) for p in paths]
     k, pairs = sample_and_pair(loaders, SAMPLE_SIZES["drifter"], SEED)
-    n_parts = write_pairs(f"{OUTPUT_DIR}/drifter", pairs)
+    n_parts = write_pairs(f"{OUTPUT_DIR}/drifter", project_pairs(pairs))
     report["drifter"] = (k, len(pairs), n_parts)
 
     print("dataset    curves sampled   pairs written   part files")
     for name, (k, n_pairs, n_parts) in report.items():
-        print(f"{name:10s} {k:14d}   {n_pairs:13d}   {n_parts:10d}")
+        print(f"{name:13s} {k:11d}   {n_pairs:13d}   {n_parts:10d}")
 
 
 if __name__ == "__main__":

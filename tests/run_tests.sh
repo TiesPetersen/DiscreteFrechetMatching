@@ -40,6 +40,12 @@ echo "=== local_correctness_check ==="
 
 echo
 
+# Run the lean layout equivalence check
+echo "=== lean_equivalence_check ==="
+./lean_equivalence_check.exe || status=1
+
+echo
+
 # Print the final status of the checks
 if [ "$status" -eq 0 ]; then
     echo "All checks passed."

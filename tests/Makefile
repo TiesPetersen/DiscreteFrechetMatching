@@ -60,7 +60,18 @@ $(COUNTED_OBJS): algorithms ;
 hand_counted_check.exe: hand_counted_check.cpp $(COUNTED_OBJS)
 	$(CXX) $(CXXFLAGS) -DCOUNT_OPS -o $@ hand_counted_check.cpp $(COUNTED_OBJS)
 
-all: dynamic_programming_check.exe matching_check.exe parent_trace_check.exe hand_counted_check.exe local_correctness_check.exe
+# Lean layout check: current and lean DPP variants, built with both parent tracing and op counting
+LEAN_SRCS = $(ALGO_DIR)/BBMS/bbms_dpp_instant.cpp $(ALGO_DIR)/BBMS/bbms_dpp_stepwise.cpp \
+            $(ALGO_DIR)/BBMS/bbms_dpp_instant_lean.cpp $(ALGO_DIR)/BBMS/bbms_dpp_stepwise_lean.cpp \
+            $(ALGO_DIR)/counters.cpp $(ALGO_DIR)/parent_trace.cpp
+
+# The sources are compiled straight into the test, so list their shared headers explicitly
+LEAN_HEADERS = $(ALGO_DIR)/BBMS/bbms_dpp_common.h $(ALGO_DIR)/BBMS/bbms_dpp_lean_common.h $(ALGO_DIR)/common.h
+
+lean_equivalence_check.exe: lean_equivalence_check.cpp $(LEAN_SRCS) $(LEAN_HEADERS)
+	$(CXX) $(CXXFLAGS) -DTRACE_TEST -DCOUNT_OPS -o $@ lean_equivalence_check.cpp $(LEAN_SRCS)
+
+all: dynamic_programming_check.exe matching_check.exe parent_trace_check.exe hand_counted_check.exe local_correctness_check.exe lean_equivalence_check.exe
 
 clean:
 	rm -f *.o *.d reference/*.o reference/*.d *.exe

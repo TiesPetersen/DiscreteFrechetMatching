@@ -20,6 +20,7 @@
 
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <sys/resource.h>
@@ -129,7 +130,7 @@ static void run_timing_and_memory(const std::string& algorithm, long long N, int
     }
 
     std::cout << algorithm << "," << N << "," << sample_index << ","
-               << runtime_s << "," << frechet << ","
+               << runtime_s << "," << std::setprecision(17) << frechet << std::setprecision(6) << ","
                << maxrss_before_mb << "," << maxrss_after_mb << ","
                << minor_faults << "," << major_faults << ","
                << block_input_ops << "," << block_output_ops << ","
@@ -181,7 +182,7 @@ static void run_op_counts(const std::string& algorithm, long long N, int sample_
         status = "error";
     }
 
-    std::cout << algorithm << "," << N << "," << sample_index << "," << frechet << ","
+    std::cout << algorithm << "," << N << "," << sample_index << "," << std::setprecision(17) << frechet << std::setprecision(6) << ","
                << g_counters.nca_regular_hops << "," << g_counters.nca_shortcut_hops << ","
                << total_nca_steps << "," << g_counters.shortcuts_written << ","
                << g_counters.dead_paths_pruned << "," << g_counters.shortcuts_extended << ","

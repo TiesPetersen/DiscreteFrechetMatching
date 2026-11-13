@@ -117,9 +117,11 @@ Shortcut* get_deepest_shortcut(const std::vector<Node>& G, long long index) {
 }
 
 // Remove a shortcut from a list of shortcuts.
+// The lists behave like stacks (the shortcut to remove is the last one in all tests),
+// so search from the back: O(1) then, instead of a scan over the whole list.
 void remove_from(std::vector<Shortcut*>& list, Shortcut* shortcut) {
-    auto it = std::find(list.begin(), list.end(), shortcut);
-    if (it != list.end()) list.erase(it);
+    auto it = std::find(list.rbegin(), list.rend(), shortcut);
+    if (it != list.rend()) list.erase(std::next(it).base());
 }
 
 // Remove a shortcut from the incoming lists of its target node.

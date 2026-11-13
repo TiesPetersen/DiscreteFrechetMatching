@@ -34,7 +34,7 @@ MatchingAndFrechetDistance bbms_dpp_stepwise_lean(const Curve& p, const Curve& q
     // Attach left column to root
     for (long long j = 1; j < n; ++j) attach(G, j-1, j, n);
 
-    std::deque<Shortcut> pool;
+    ShortcutStore pool;
 
     // Attach interior nodes to parent with lowest max-dist path to NCA, while updating shortcuts and removing dead paths
     for (long long i = 1; i < m; ++i) {
@@ -64,6 +64,11 @@ MatchingAndFrechetDistance bbms_dpp_stepwise_lean(const Curve& p, const Curve& q
                     long long parent = G[X].parent;
                     remove_from_incoming(G, G[X].out_low);
                     remove_from_incoming(G, G[X].out_high);
+
+                    // X is dead and its shortcuts are in no list now, so they can be reused
+                    free_shortcut(pool, G[X].out_low);
+                    free_shortcut(pool, G[X].out_high);
+                    G[X].out_low = G[X].out_high = nullptr;
                     clear_child_flag(G, parent, X, n);
                     X = parent;
                     COUNT(dead_path_walk_steps);

@@ -12,9 +12,34 @@ enum class Direction { DOWN, DIAG_UPPER, DIAG_LOWER, LEFT };
 struct Shortcut {
     long long target;               // -1 = absent
     double value;                   // max distance to NCA
-    Shortcut* next = nullptr;       // next shortcut in the same incoming list of the target
+    Shortcut* next = nullptr;       // next shortcut in the same incoming list of the target, or in the free list
     Direction direction;            // direction of the shortcut
+#ifdef LEAN_CHECKS
+    long long owner = -1;           // checking build only: the node whose out_low or out_high this is
+    bool is_free = false;           // checking build only: true while the shortcut is in the free list
+#endif
 };
+
+// All shortcuts, plus a free list of dead shortcuts that can be handed out again.
+// The free list runs through the next pointers, because a dead shortcut is in no incoming list.
+struct ShortcutStore {
+    std::deque<Shortcut> pool;      // a deque never moves its elements, so pointers stay valid
+    Shortcut* free_list = nullptr;  // dead shortcuts, ready for reuse
+};
+
+// Checking build: stop at once if a freed shortcut is used, or a node reads a shortcut that is not its own
+#ifdef LEAN_CHECKS
+#include <cstdio>
+#include <cstdlib>
+#define LEAN_CHECK(condition, message) \
+    do { if (!(condition)) { std::fprintf(stderr, "LEAN_CHECKS failed: %s (%s:%d)\n", message, __FILE__, __LINE__); std::abort(); } } while (0)
+#define LEAN_CHECK_OUT(shortcut, node) \
+    do { if ((shortcut) != nullptr) { LEAN_CHECK(!(shortcut)->is_free, "read a freed shortcut"); \
+                                      LEAN_CHECK((shortcut)->owner == (node), "read a shortcut of another node"); } } while (0)
+#else
+#define LEAN_CHECK(condition, message) ((void) 0)
+#define LEAN_CHECK_OUT(shortcut, node) ((void) 0)
+#endif
 
 // Lean layout: each incoming list is a linked list that runs through the shortcuts themselves.
 // A node stores only the first shortcut of each of its four lists, indexed by Direction:
@@ -36,12 +61,36 @@ Shortcut*& incoming(Node& node, Direction direction) {
     return node.incoming[static_cast<int>(direction)];
 }
 
-// Allocate a new shortcut from the pool and return a pointer to it.
-// The pool is a deque, so pointers remain valid even if the deque is resized.
-Shortcut* allocate_shortcut(std::deque<Shortcut>& pool, long long target, double value, Direction direction) {
-    pool.push_back({target, value, nullptr, direction});
+// Allocate a shortcut and return a pointer to it. A dead shortcut from the free list is reused
+// first; only when the free list is empty does the pool grow.
+Shortcut* allocate_shortcut(ShortcutStore& store, long long target, double value, Direction direction) {
     COUNT(shortcuts_written);
-    return &pool.back();
+    Shortcut* shortcut;
+    if (store.free_list != nullptr) {
+        shortcut = store.free_list;
+        store.free_list = shortcut->next;
+        LEAN_CHECK(shortcut->is_free, "free list holds a shortcut that is in use");
+    } else {
+        store.pool.emplace_back();
+        shortcut = &store.pool.back();
+    }
+    *shortcut = Shortcut{};
+    shortcut->target = target;
+    shortcut->value = value;
+    shortcut->direction = direction;
+    return shortcut;
+}
+
+// Give a dead shortcut back to the store. The caller makes sure nothing will read it again:
+// it is in no incoming list, and its owner is dead.
+void free_shortcut(ShortcutStore& store, Shortcut* shortcut) {
+    if (shortcut == nullptr) return;
+    LEAN_CHECK(!shortcut->is_free, "shortcut freed twice");
+#ifdef LEAN_CHECKS
+    shortcut->is_free = true;
+#endif
+    shortcut->next = store.free_list;
+    store.free_list = shortcut;
 }
 
 // Attach child to parent in G, updating child's depth, parent index and flags.
@@ -67,6 +116,7 @@ bool u_side_at_most_v_side(const std::vector<Node>& G, long long u, long long v)
     while (u != v) {
         if (G[v].depth > G[u].depth) {
             // Walk v up the tree, using shortcuts if available
+            LEAN_CHECK_OUT(G[v].out_high, v);
             if (G[v].out_high != nullptr) {
                 max_distance_v = std::max(max_distance_v, G[v].out_high->value);
                 v = G[v].out_high->target;
@@ -78,6 +128,7 @@ bool u_side_at_most_v_side(const std::vector<Node>& G, long long u, long long v)
             }
         } else {
             // Walk u up the tree, using shortcuts if available
+            LEAN_CHECK_OUT(G[u].out_low, u);
             if (G[u].out_low != nullptr) {
                 max_distance_u = std::max(max_distance_u, G[u].out_low->value);
                 u = G[u].out_low->target;
@@ -112,6 +163,8 @@ Shortcut* get_deepest_shortcut(const std::vector<Node>& G, long long index) {
     int max_depth = -1;
 
     // Check both the low and high shortcuts for the deepest one
+    LEAN_CHECK_OUT(G[index].out_low, index);
+    LEAN_CHECK_OUT(G[index].out_high, index);
     for (Shortcut* shortcut : { G[index].out_low, G[index].out_high }) {
         if (shortcut != nullptr && G[shortcut->target].depth > max_depth) {
             best = shortcut;
@@ -127,6 +180,7 @@ Shortcut* get_deepest_shortcut(const std::vector<Node>& G, long long index) {
 // so the search usually stops at the first entry. If the shortcut is not listed, nothing changes.
 void remove_from_incoming(std::vector<Node>& G, Shortcut* shortcut) {
     if (shortcut == nullptr) return;
+    LEAN_CHECK(!shortcut->is_free, "removing a freed shortcut");
 
     // Walk the list, keeping the link that points at the current entry
     Shortcut** link = &incoming(G[shortcut->target], shortcut->direction);
@@ -142,14 +196,18 @@ void remove_from_incoming(std::vector<Node>& G, Shortcut* shortcut) {
 
 // Add a shortcut to the front of the incoming list of its target node.
 void add_to_incoming(std::vector<Node>& G, Shortcut* shortcut) {
+    LEAN_CHECK(!shortcut->is_free, "listing a freed shortcut");
     Shortcut*& first = incoming(G[shortcut->target], shortcut->direction);
     shortcut->next = first;
     first = shortcut;
 }
 
 // Add a shortcut from origin to target, either as a low or high shortcut.
-void add_shortcut(std::deque<Shortcut>& pool, std::vector<Node>& G, long long origin, bool is_low, long long target, double value, Direction direction) {
+void add_shortcut(ShortcutStore& pool, std::vector<Node>& G, long long origin, bool is_low, long long target, double value, Direction direction) {
     Shortcut* shortcut = allocate_shortcut(pool, target, value, direction);
+#ifdef LEAN_CHECKS
+    shortcut->owner = origin;
+#endif
 
     // Set the shortcut in the origin node
     if (is_low) G[origin].out_low  = shortcut;
@@ -178,8 +236,10 @@ void extend_shortcuts_to(std::vector<Node>& G, Shortcut*& list, Shortcut* follow
     shortcut = reversed;
 
     // Redirect each shortcut and add it to the list of its new target
+    LEAN_CHECK(followup_shortcut == nullptr || !followup_shortcut->is_free, "extending to a freed shortcut");
     while (shortcut != nullptr) {
         Shortcut* next = shortcut->next;
+        LEAN_CHECK(!shortcut->is_free, "a freed shortcut is still listed");
         shortcut->value = std::max(shortcut->value, followup_shortcut->value);
         shortcut->direction = followup_shortcut->direction;
         shortcut->target = followup_shortcut->target;
@@ -191,6 +251,8 @@ void extend_shortcuts_to(std::vector<Node>& G, Shortcut*& list, Shortcut* follow
 
 // Extend the shortcuts of a dead path base node to point to a new target, based on the final direction of the dead path.
 Shortcut* extend_shortcuts(std::vector<Node>& G, long long dead_path_base, Direction final_direction) {
+    LEAN_CHECK_OUT(G[dead_path_base].out_low, dead_path_base);
+    LEAN_CHECK_OUT(G[dead_path_base].out_high, dead_path_base);
     if (final_direction == Direction::DOWN) {
         if (G[dead_path_base].child_diagonal)
             extend_shortcuts_to(G, incoming(G[dead_path_base], Direction::DIAG_UPPER), G[dead_path_base].out_high);
@@ -218,14 +280,15 @@ Shortcut* extend_shortcuts(std::vector<Node>& G, long long dead_path_base, Direc
 
 // Add a shortcut from origin that continues its parent's shortcut (low or high) one step further.
 // It gets the same target and value a fresh NCA query would give, without the query.
-void add_extending_shortcut(std::deque<Shortcut>& pool, std::vector<Node>& G, long long origin, bool is_low) {
+void add_extending_shortcut(ShortcutStore& pool, std::vector<Node>& G, long long origin, bool is_low) {
     Shortcut* extend = is_low ? G[G[origin].parent].out_low : G[G[origin].parent].out_high;
+    LEAN_CHECK_OUT(extend, G[origin].parent);
     add_shortcut(pool, G, origin, is_low, extend->target, std::max(G[origin].distance, extend->value), extend->direction);
 }
 
 // Update shortcuts on A, C, D after attaching D to its parent.
 // A's and C's shortcuts are set before D's, because D's may extend them.
-void update_shortcuts(std::deque<Shortcut>& pool, std::vector<Node>& G, long long A, long long B, long long C, long long D, long long parent_D) {
+void update_shortcuts(ShortcutStore& pool, std::vector<Node>& G, long long A, long long B, long long C, long long D, long long parent_D) {
     bool AB = (G[A].parent == B);
     bool BC = (G[C].parent == B);
 

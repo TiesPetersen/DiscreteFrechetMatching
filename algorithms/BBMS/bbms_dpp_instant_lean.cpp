@@ -4,26 +4,43 @@
 
 namespace {
 
+// Free every shortcut in a list and empty the list. Only called for lists that hold
+// shortcuts of dead nodes: those that enter the dead path base from the dead side.
+void free_list_entries(ShortcutStore& pool, Shortcut*& list) {
+    Shortcut* shortcut = list;
+    list = nullptr;
+    while (shortcut != nullptr) {
+        Shortcut* next = shortcut->next;
+        free_shortcut(pool, shortcut);
+        shortcut = next;
+    }
+}
+
 // Detach a dead path from the tree, removing all incoming shortcuts to the dead node and clearing the child flags of its parent.
-void detach_dead_path(std::vector<Node>& G, long long B, long long dead_path_base, Direction final_direction) {
+void detach_dead_path(ShortcutStore& pool, std::vector<Node>& G, long long B, long long dead_path_base, Direction final_direction) {
     // Remove all incoming shortcuts starting from B
     remove_from_incoming(G, G[B].out_high);
     remove_from_incoming(G, G[B].out_low);
 
+    // B is dead and its shortcuts are in no list now, so they can be reused
+    free_shortcut(pool, G[B].out_high);
+    free_shortcut(pool, G[B].out_low);
+    G[B].out_high = G[B].out_low = nullptr;
+
     // Clear shortcuts and child flags of the dead path base node based on the final direction
     switch (final_direction) {
         case Direction::DOWN:
-            incoming(G[dead_path_base], Direction::DOWN) = nullptr;
+            free_list_entries(pool, incoming(G[dead_path_base], Direction::DOWN));
             G[dead_path_base].child_upper = false;
             break;
         case Direction::DIAG_UPPER:
         case Direction::DIAG_LOWER:
-            incoming(G[dead_path_base], Direction::DIAG_UPPER) = nullptr;
-            incoming(G[dead_path_base], Direction::DIAG_LOWER) = nullptr;
+            free_list_entries(pool, incoming(G[dead_path_base], Direction::DIAG_UPPER));
+            free_list_entries(pool, incoming(G[dead_path_base], Direction::DIAG_LOWER));
             G[dead_path_base].child_diagonal = false;
             break;
         case Direction::LEFT:
-            incoming(G[dead_path_base], Direction::LEFT) = nullptr;
+            free_list_entries(pool, incoming(G[dead_path_base], Direction::LEFT));
             G[dead_path_base].child_right = false;
             break;
     }
@@ -50,7 +67,7 @@ MatchingAndFrechetDistance bbms_dpp_instant_lean(const Curve& p, const Curve& q)
     // Attach left column to root
     for (long long j = 1; j < n; ++j) attach(G, j-1, j, n);
 
-    std::deque<Shortcut> pool;
+    ShortcutStore pool;
 
     // Attach interior nodes to parent with lowest max-dist path to NCA, while updating shortcuts and removing dead paths
     for (long long i = 1; i < m; ++i) {
@@ -75,10 +92,11 @@ MatchingAndFrechetDistance bbms_dpp_instant_lean(const Curve& p, const Curve& q)
                 long long dead_path_base = deepest_shortcut->target;
 
                 // Detach the dead path ending at B
-                detach_dead_path(G, B, dead_path_base, deepest_shortcut->direction);
+                Direction final_direction = deepest_shortcut->direction;
+                detach_dead_path(pool, G, B, dead_path_base, final_direction);
 
                 // Extend shortcuts from the dead path base to the followup shortcut
-                extend_shortcuts(G, dead_path_base, deepest_shortcut->direction);
+                extend_shortcuts(G, dead_path_base, final_direction);
             }
 
             // Update shortcuts on A, C, D after attaching D to its parent

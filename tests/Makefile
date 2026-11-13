@@ -1,5 +1,5 @@
 CXX      = g++
-CXXFLAGS = -O0 -g -std=c++17 -Wall -Wextra -I. -I../algorithms -I../algorithms/BBMS -I../algorithms/DP
+CXXFLAGS = -O0 -g -std=c++17 -Wall -Wextra -I. -I../algorithms -I../algorithms/BBMS -I../algorithms/DP -MMD -MP
 
 ALGO_DIR = ../algorithms
 
@@ -60,7 +60,10 @@ hand_counted_check.exe: hand_counted_check.cpp $(COUNTED_OBJS)
 all: dynamic_programming_check.exe matching_check.exe parent_trace_check.exe hand_counted_check.exe
 
 clean:
-	rm -f *.o reference/*.o *.exe
+	rm -f *.o *.d reference/*.o reference/*.d *.exe
 	rm -rf *.exe.dSYM
 
 .PHONY: all clean algorithms
+
+# Rebuild objects when a header they include changes
+-include $(wildcard *.d reference/*.d)

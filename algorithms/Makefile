@@ -1,5 +1,5 @@
 CXX      = g++
-CXXFLAGS = -O2 -std=c++17 -Wall -Wextra -I.
+CXXFLAGS = -O2 -std=c++17 -Wall -Wextra -I. -MMD -MP
 
 SRCS         = BBMS/bbms_core.cpp BBMS/bbms_inter.cpp BBMS/bbms_dpp_instant.cpp BBMS/bbms_dpp_stepwise.cpp \
                DP/dijkstra_prims.cpp counters.cpp
@@ -15,6 +15,9 @@ all: $(OBJS) $(COUNTED_OBJS)
 	$(CXX) $(CXXFLAGS) -DCOUNT_OPS -c -o $@ $<
 
 clean:
-	rm -f $(OBJS) $(COUNTED_OBJS)
+	rm -f $(OBJS) $(COUNTED_OBJS) $(OBJS:.o=.d) $(COUNTED_OBJS:.o=.d)
+
+# Rebuild objects when a header they include changes
+-include $(OBJS:.o=.d) $(COUNTED_OBJS:.o=.d)
 
 .PHONY: all clean

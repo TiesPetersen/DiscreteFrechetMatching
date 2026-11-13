@@ -7,8 +7,11 @@ ALGO_OBJS = $(ALGO_DIR)/BBMS/bbms_core.o $(ALGO_DIR)/BBMS/bbms_inter.o \
             $(ALGO_DIR)/BBMS/bbms_dpp_instant.o $(ALGO_DIR)/BBMS/bbms_dpp_stepwise.o \
             $(ALGO_DIR)/DP/dijkstra_prims.o $(ALGO_DIR)/counters.o
 
-$(ALGO_OBJS):
+# Always ask algorithms/ to rebuild what changed, so no stale objects get linked
+algorithms:
 	$(MAKE) -C $(ALGO_DIR)
+
+$(ALGO_OBJS): algorithms ;
 
 reference/dynamic_programming.o: reference/dynamic_programming.cpp reference/dynamic_programming.h
 	$(CXX) $(CXXFLAGS) -c -o $@ reference/dynamic_programming.cpp
@@ -49,8 +52,7 @@ COUNTED_OBJS = $(ALGO_DIR)/BBMS/bbms_core_counted.o $(ALGO_DIR)/BBMS/bbms_inter_
                $(ALGO_DIR)/BBMS/bbms_dpp_instant_counted.o $(ALGO_DIR)/BBMS/bbms_dpp_stepwise_counted.o \
                $(ALGO_DIR)/DP/dijkstra_prims_counted.o $(ALGO_DIR)/counters_counted.o
 
-$(COUNTED_OBJS):
-	$(MAKE) -C $(ALGO_DIR)
+$(COUNTED_OBJS): algorithms ;
 
 hand_counted_check.exe: hand_counted_check.cpp $(COUNTED_OBJS)
 	$(CXX) $(CXXFLAGS) -DCOUNT_OPS -o $@ hand_counted_check.cpp $(COUNTED_OBJS)
@@ -61,4 +63,4 @@ clean:
 	rm -f *.o reference/*.o *.exe
 	rm -rf *.exe.dSYM
 
-.PHONY: all clean
+.PHONY: all clean algorithms

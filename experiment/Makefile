@@ -11,9 +11,11 @@ ALGO_COUNTED_OBJS = $(ALGO_DIR)/BBMS/bbms_core_counted.o $(ALGO_DIR)/BBMS/bbms_i
 
 all: runner.exe runner_counted.exe
 
-# Build the algorithm objects by delegating to algorithms/Makefile.
-$(ALGO_OBJS) $(ALGO_COUNTED_OBJS):
+# Always ask algorithms/ to rebuild what changed, so no stale objects get linked
+algorithms:
 	$(MAKE) -C $(ALGO_DIR)
+
+$(ALGO_OBJS) $(ALGO_COUNTED_OBJS): algorithms ;
 
 runner.exe: runner.cpp $(ALGO_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ runner.cpp $(ALGO_OBJS)
@@ -24,4 +26,4 @@ runner_counted.exe: runner.cpp $(ALGO_COUNTED_OBJS)
 clean:
 	rm -f runner.exe runner_counted.exe
 
-.PHONY: all clean
+.PHONY: all clean algorithms

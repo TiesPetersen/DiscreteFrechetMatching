@@ -10,3 +10,4 @@ analysis/output/
 *.dSYM
 /extra
 /external_datasets
+*.d

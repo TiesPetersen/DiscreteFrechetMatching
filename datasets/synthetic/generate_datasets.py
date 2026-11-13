@@ -1,6 +1,8 @@
 """
-Generates the identical, random, outlier and alternating curve datasets used by the
-synthetic experiment. One file per (dataset, N), each containing K sample curve pairs.
+Generates the identical, random, outlier, alternating and alternating_cheap_column curve
+datasets used by the synthetic experiment, plus outlier_swapped and alternating_swapped
+(the same pairs with p and q exchanged). One file per (dataset, N), each containing K
+sample curve pairs.
 
 Run from the project root:
     python3 datasets/synthetic/generate_datasets.py
@@ -23,6 +25,13 @@ K_OVERRIDES = {
 OUTLIER_DISTANCE = 1000.0  # for outlier/alternating: fixed distance of the outlier point(s)
 ANCHOR_DISTANCE = 100.0    # for alternating: p[0]
 BARRIER_DISTANCE = 200.0   # for alternating: q's odd indices
+
+# alternating_cheap_column: the first column (cells p[0], q[j]) is cheaper than every strip cell,
+# and every strip cell is cheaper than every barrier cell. Values with these settings:
+# first column at most 25, strip cells 28 to 54, barrier cells at least 55.
+CHEAP_P_CENTER = -40.0     # interior points of p: a square of half-width 10 around (-40, 0)
+CHEAP_Q_SCALE = 2.0        # random points of q: a square of half-width 2 around the origin
+CHEAP_BARRIER = 25.0       # q's odd indices: (25, 0); p[0] is the origin
 
 
 def deterministic_seed(*parts):
@@ -75,11 +84,45 @@ def generate_alternating(n, seed):
     return p, q
 
 
+def generate_alternating_cheap_column(n, seed):
+    """Like alternating, but the first column is the cheapest part of the grid.
+
+    p: the origin + random points around (-40, 0) + an outlier.
+    q: alternates a random point near the origin / a fixed barrier (25, 0), ending in an opposite-signed outlier.
+    The first column (p[0] = origin against q) costs at most 25, so DijkstraPrims pops it
+    first and then has every cheap strip open at once. It pops strip cells in value order
+    across all strips instead of one strip at a time. Barrier cells (at least 55) stay
+    more expensive than every strip cell (28 to 54).
+    """
+    rng = random.Random(seed)
+    p = [(0.0, 0.0)]
+    for _ in range(n - 2):
+        x, y = random_point(rng)
+        p.append((x + CHEAP_P_CENTER, y))
+    p.append((OUTLIER_DISTANCE, 0.0))
+    q = []
+    for j in range(n - 1):
+        if j % 2 == 0:
+            q.append(random_point(rng, scale=CHEAP_Q_SCALE))
+        else:
+            q.append((CHEAP_BARRIER, 0.0))
+    q.append((-OUTLIER_DISTANCE, 0.0))
+    return p, q
+
+
 GENERATORS = {
     "outlier": generate_outlier,
     "identical": generate_identical,
     "random": generate_random,
     "alternating": generate_alternating,
+    "alternating_cheap_column": generate_alternating_cheap_column,
+}
+
+# Datasets that are another dataset with p and q exchanged in every pair. They use the
+# source dataset's seeds, so each pair is exactly the transpose of the source pair.
+SWAPPED = {
+    "outlier_swapped": "outlier",
+    "alternating_swapped": "alternating",
 }
 
 
@@ -97,10 +140,12 @@ def write_dataset_file(path, samples):
 
 
 def main():
-    for dataset_name, generator in GENERATORS.items():
+    jobs = [(name, name, generator, False) for name, generator in GENERATORS.items()]
+    jobs += [(name, source, GENERATORS[source], True) for name, source in SWAPPED.items()]
+    for dataset_name, seed_name, generator, swap in jobs:
         out_dir = os.path.join(DATASETS_DIR, dataset_name)
         os.makedirs(out_dir, exist_ok=True)
-        k = K_OVERRIDES.get(dataset_name, K)
+        k = K_OVERRIDES.get(seed_name, K)
         for n in GRID:
             out_path = os.path.join(out_dir, f"N_{n}.txt")
             if os.path.exists(out_path):
@@ -110,8 +155,9 @@ def main():
             samples = []
             for sample_idx in range(k):
                 # Deterministic per (dataset, N, sample, SEED) so results are reproducible.
-                seed = deterministic_seed(dataset_name, n, sample_idx, SEED)
-                samples.append(generator(n, seed))
+                seed = deterministic_seed(seed_name, n, sample_idx, SEED)
+                p, q = generator(n, seed)
+                samples.append((q, p) if swap else (p, q))
 
             write_dataset_file(out_path, samples)
             print(f"  {dataset_name:12s} N={n:6d}  wrote {len(samples)} samples")

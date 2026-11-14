@@ -11,3 +11,4 @@ analysis/output/
 /extra
 /external_datasets
 *.d
+/old_code

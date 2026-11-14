@@ -1,0 +1,21 @@
+2026-11-14 00:23:55  start: 6472 jobs, 0 already done
+2026-11-14 00:23:59  1/6472 A old time BBMSCore random N_2300.txt:0 -> ok in 4.1s
+2026-11-14 00:24:00  2/6472 A old time BBMSInter random N_2300.txt:0 -> ok in 1.2s
+2026-11-14 00:24:02  3/6472 A old time BBMSDppStepwise random N_2300.txt:0 -> ok in 1.9s
+2026-11-14 00:24:04  4/6472 A old time BBMSDppInstant random N_2300.txt:0 -> ok in 1.8s
+2026-11-14 00:24:05  5/6472 A old time DijkstraPrims random N_2300.txt:0 -> ok in 0.7s
+2026-11-14 00:24:09  6/6472 A old count BBMSCore random N_2300.txt:0 -> ok in 4.1s
+2026-11-14 00:24:10  7/6472 A old count BBMSInter random N_2300.txt:0 -> ok in 1.2s
+2026-11-14 00:24:12  8/6472 A old count BBMSDppStepwise random N_2300.txt:0 -> ok in 1.9s
+2026-11-14 00:24:14  9/6472 A old count BBMSDppInstant random N_2300.txt:0 -> ok in 1.8s
+2026-11-14 00:24:15  10/6472 A old count DijkstraPrims random N_2300.txt:0 -> ok in 0.7s
+2026-11-14 00:24:19  11/6472 A old time BBMSCore outlier N_2300.txt:0 -> ok in 4.3s
+2026-11-14 00:24:20  12/6472 A old time BBMSInter outlier N_2300.txt:0 -> ok in 1.3s
+2026-11-14 00:24:22  13/6472 A old time BBMSDppStepwise outlier N_2300.txt:0 -> ok in 2.0s
+2026-11-14 00:24:24  14/6472 A old time BBMSDppInstant outlier N_2300.txt:0 -> ok in 1.8s
+2026-11-14 00:24:26  15/6472 A old time DijkstraPrims outlier N_2300.txt:0 -> ok in 2.0s
+2026-11-14 00:24:30  16/6472 A old count BBMSCore outlier N_2300.txt:0 -> ok in 4.4s
+2026-11-14 00:24:32  17/6472 A old count BBMSInter outlier N_2300.txt:0 -> ok in 1.3s
+2026-11-14 00:24:33  18/6472 A old count BBMSDppStepwise outlier N_2300.txt:0 -> ok in 1.9s
+2026-11-14 00:24:35  19/6472 A old count BBMSDppInstant outlier N_2300.txt:0 -> ok in 1.8s
+2026-11-14 00:24:37  20/6472 A old count DijkstraPrims outlier N_2300.txt:0 -> ok in 2.0s

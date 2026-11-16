@@ -82,6 +82,24 @@ static double maxrss_to_mb(long raw) {
 #endif
 }
 
+// Peak memory of this process so far, in MB.
+//
+// On Linux, ru_maxrss is kept across execve, so a runner started by a Python
+// script begins with that script's peak (about 34 MB in the November 2026 AWS
+// run). Every pair that needed less than that showed the same value. VmHWM in
+// /proc/self/status is the peak of this program alone, so Linux reads that.
+// macOS has no such carry-over, so it keeps ru_maxrss.
+static double peak_memory_mb(const struct rusage& usage) {
+#ifdef __linux__
+    std::ifstream status("/proc/self/status");
+    std::string line;
+    while (std::getline(status, line)) {
+        if (line.rfind("VmHWM:", 0) == 0) return std::stol(line.substr(6)) / 1024.0;  // "VmHWM:   1234 kB"
+    }
+#endif
+    return maxrss_to_mb(usage.ru_maxrss);
+}
+
 static double timeval_diff_s(const struct timeval& a, const struct timeval& b) {
     return (a.tv_sec - b.tv_sec) + (a.tv_usec - b.tv_usec) / 1e6;
 }
@@ -103,6 +121,7 @@ static void run_timing_and_memory(const std::string& algorithm, long long N, int
     try {
         struct rusage before{}, after{};
         getrusage(RUSAGE_SELF, &before);
+        maxrss_before_mb = peak_memory_mb(before);  // read now: on Linux it is read live, not from `before`
 
         auto t0 = std::chrono::steady_clock::now();
         MatchingAndFrechetDistance result = run_algorithm(algorithm, p, q);
@@ -113,8 +132,7 @@ static void run_timing_and_memory(const std::string& algorithm, long long N, int
         runtime_s = std::chrono::duration<double>(t1 - t0).count();
         frechet   = result.frechet_distance;
 
-        maxrss_before_mb   = maxrss_to_mb(before.ru_maxrss);
-        maxrss_after_mb    = maxrss_to_mb(after.ru_maxrss);
+        maxrss_after_mb    = peak_memory_mb(after);
         minor_faults       = after.ru_minflt  - before.ru_minflt;
         major_faults       = after.ru_majflt  - before.ru_majflt;
         block_input_ops    = after.ru_inblock - before.ru_inblock;

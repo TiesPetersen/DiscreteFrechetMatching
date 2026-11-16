@@ -41,7 +41,7 @@ from collections import defaultdict
 
 import plotly.offline
 
-KNOWN_ALGORITHM_ORDER = ["BBMSCore", "BBMSInter", "BBMSDppInstant", "BBMSDppStepwise", "DijkstraPrims"]
+import algorithm_styles
 
 ALGORITHM_STYLE_PALETTE = [
     {"color": "#4E9BFF", "symbol": "circle"},
@@ -131,9 +131,7 @@ def discover_algorithms(results_root, datasets):
             for row in load_rows(os.path.join(results_root, dataset, filename)):
                 if row["algorithm"] not in seen:
                     seen.append(row["algorithm"])
-    ordered = [a for a in KNOWN_ALGORITHM_ORDER if a in seen]
-    ordered += [a for a in seen if a not in ordered]
-    return ordered
+    return sorted(seen, key=algorithm_styles.sort_key)
 
 
 def assign_styles(names, palette):
@@ -411,24 +409,55 @@ def build_overview_stat_table(rows, algorithms, attribute):
     trace-columns (built for click-through comparison of one attribute across
     many traces, not two fixed attributes across few algorithms at once)."""
     stat_cols = ["runs", "timeouts", "ooms", "mean", "median", "IQR 25-75%", "min", "max", "note"]
+    # Memory is the peak since the process started. When that peak starts high
+    # (on Linux the runner used to carry over the peak of the script that
+    # started it), a run that needed less shows only that starting value: the
+    # floor. Count those runs, and say what the floor means.
+    floor = None
+    if attribute == "maxrss_after_mb":
+        before = [float(r["maxrss_before_mb"]) for r in rows if r.get("status") == "ok" and r.get("maxrss_before_mb")]
+        if before and statistics.median(before) >= 5:
+            floor = statistics.median(before)
+            stat_cols.insert(3, "at floor")
     table = {"algorithm": list(algorithms), "cols": stat_cols}
+    if floor is not None:
+        table["subtitle"] = (
+            f"Floor: every run already started at about {fmt(floor)} MB, the memory of the Python script that "
+            f"launched it, which Linux carried over into the runner's peak (fixed in the runner after the "
+            f"November 2026 run). A run at the floor used less than that, by an unknown amount. \"at floor\" "
+            f"counts those runs. Where most runs are at the floor, the mean, median and min don't rank the algorithms.")
     for col in stat_cols:
         table[col] = []
     timeout_bound = TIMEOUT_SECONDS if attribute == "runtime_s" else None
+    all_pairs = {r["pair_index"] for r in rows}
     for algo in algorithms:
         algo_rows = [r for r in rows if r["algorithm"] == algo]
         counts = status_counts(algo_rows, [algo])[algo]
+        # A run plan can leave pairs out (by design, or after a failure on a
+        # smaller pair); then these stats cover other pairs than the rest
+        attempted = {r["pair_index"] for r in algo_rows}
+        skipped_note = ""
+        if attempted and len(attempted) < len(all_pairs):
+            skipped_note = (f"ran on {len(attempted)} of {len(all_pairs)} pairs; the others were skipped "
+                            f"(by plan, or after a failure on a smaller pair), so these stats are not "
+                            f"comparable with the other rows")
+        elif not attempted:
+            skipped_note = "not run on this dataset"
         values = [v for _, v in aggregate_by_pair(algo_rows, attribute)]
         d = distribution_stats(values, counts.get("timeout", 0), counts.get("oom", 0), timeout_bound)
         table["runs"].append(cell(str(counts.get("ok", 0))))
         table["timeouts"].append(cell(str(counts.get("timeout", 0))))
         table["ooms"].append(cell(str(counts.get("oom", 0))))
+        if floor is not None:
+            ok = [r for r in algo_rows if r.get("status") == "ok" and r.get(attribute) and r.get("maxrss_before_mb")]
+            at_floor = sum(1 for r in ok if float(r[attribute]) - float(r["maxrss_before_mb"]) < 0.1)
+            table["at floor"].append(cell(f"{at_floor} of {len(ok)}" if ok else "-"))
         table["mean"].append(d["mean"])
         table["median"].append(d["median"])
         table["IQR 25-75%"].append(d["iqr"])
         table["min"].append(d["min"])
         table["max"].append(cell(d["max"]["value"]))  # note moved to its own column below
-        table["note"].append(cell(d["max"]["note"] or ""))
+        table["note"].append(cell("; ".join(n for n in [d["max"]["note"], skipped_note] if n)))
     return table
 
 
@@ -473,7 +502,7 @@ def build_report(results_root):
             for attr in attrs:
                 raw_points[pass_name][attr][dataset] = aggregate_by_pair(rows, attr)
 
-    default_style_algo = assign_styles(algorithms, ALGORITHM_STYLE_PALETTE)
+    default_style_algo = algorithm_styles.styles(algorithms)
     default_style_ds = assign_styles(datasets, DATASET_STYLE_PALETTE)
 
     # --- By dataset: one point-set per algorithm, for a fixed dataset ---
@@ -589,6 +618,8 @@ PAGE_TEMPLATE = """<!doctype html>
   .status-marker { font-size: 0.95rem; }
   .cell-note { color: #FFA500; font-size: 0.68rem; margin-top: 3px; white-space: normal; }
   .best-value { color: #5FD068; font-weight: 700; }
+  .row-excluded td { color: var(--muted); }
+  .row-excluded .cell-note { color: #FFA500; }
   #graph { width: 100%; height: 480px; }
   #graph-box { width: 100%; height: 420px; }
   .data-table-panel { border: 1px solid var(--border); border-radius: 4px; padding: 16px;
@@ -776,19 +807,27 @@ function renderStatTable(container, title, subtitle, headerCol, rowLabels, colum
   // Best (displayed/rounded) value per column -- compared against below rather
   // than tracking a single winning row, so every row tied for best gets
   // highlighted, not just whichever one happened to come first.
+  // A row with a note (a timeout, an out-of-memory run, or pairs it never
+  // ran on) has stats that don't compare with the other rows: it is greyed
+  // out and can't be "best".
+  const excluded = rowLabels.map((_, i) => !!(dataByCol.note && dataByCol.note[i].value));
   const bestValue = {};
   if (highlightBest) {
     columns.forEach(col => {
       const direction = BEST_DIRECTION[col];
       if (!direction) return;
       let bestV = null;
-      dataByCol[col].forEach(c => {
+      dataByCol[col].forEach((c, i) => {
+        if (excluded[i]) return;
         const v = parseFloat(c.value);
         if (Number.isNaN(v)) return;
         if (bestV === null || (direction === 'min' ? v < bestV : v > bestV)) {
           bestV = v;
         }
       });
+      // A value every compared row shares is a tie, not a "best"
+      const compared = dataByCol[col].filter((c, i) => !excluded[i] && !Number.isNaN(parseFloat(c.value)));
+      if (compared.length > 1 && compared.every(c => parseFloat(c.value) === bestV)) bestV = null;
       bestValue[col] = bestV;
     });
   }
@@ -796,9 +835,10 @@ function renderStatTable(container, title, subtitle, headerCol, rowLabels, colum
   const tbody = document.createElement('tbody');
   rowLabels.forEach((label, i) => {
     const tr = document.createElement('tr');
+    if (excluded[i]) tr.className = 'row-excluded';
     const tdLabel = document.createElement('td');
     tdLabel.textContent = label;
-    if (rowColorMap && rowColorMap[label]) tdLabel.style.color = rowColorMap[label];
+    if (rowColorMap && rowColorMap[label] && !excluded[i]) tdLabel.style.color = rowColorMap[label];
     tr.appendChild(tdLabel);
     columns.forEach(col => {
       const td = document.createElement('td');
@@ -810,7 +850,7 @@ function renderStatTable(container, title, subtitle, headerCol, rowLabels, colum
       // even though it's this cell's main value, not a note on another cell.
       if (col === 'note') {
         value.className = 'cell-note';
-      } else if (bestValue[col] !== undefined && bestValue[col] !== null && parseFloat(c.value) === bestValue[col]) {
+      } else if (!excluded[i] && bestValue[col] !== undefined && bestValue[col] !== null && parseFloat(c.value) === bestValue[col]) {
         value.className = 'best-value';
       }
       td.appendChild(value);
@@ -846,7 +886,7 @@ function renderOverview() {
     const runtimeTitle = {coloredText: ds, color: DATASET_COLORS[ds], rest: ': runtime_s'};
     const memTitle = {coloredText: ds, color: DATASET_COLORS[ds], rest: ': maxrss_after_mb'};
     renderStatTable(section, runtimeTitle, null, 'algorithm', rt.algorithm, rt.cols, rt, true, ALGORITHM_COLORS);
-    renderStatTable(section, memTitle, null, 'algorithm', mem.algorithm, mem.cols, mem, true, ALGORITHM_COLORS);
+    renderStatTable(section, memTitle, mem.subtitle || null, 'algorithm', mem.algorithm, mem.cols, mem, true, ALGORITHM_COLORS);
     container.appendChild(section);
   });
 }
@@ -1030,7 +1070,7 @@ def render_html(report, datasets, algorithms, results_root):
     # Same color assignment build_report used for the figures -- recomputed
     # here (rather than threaded through the report dict) so the overview
     # tab's dataset/algorithm name labels match the graphs' trace colors.
-    algo_colors = {name: style["color"] for name, style in assign_styles(algorithms, ALGORITHM_STYLE_PALETTE).items()}
+    algo_colors = {name: style["color"] for name, style in algorithm_styles.styles(algorithms).items()}
     dataset_colors = {name: style["color"] for name, style in assign_styles(datasets, DATASET_STYLE_PALETTE).items()}
 
     html = PAGE_TEMPLATE

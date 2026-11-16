@@ -37,8 +37,7 @@ from collections import defaultdict
 
 import plotly.offline
 
-# Preferred ordering for algorithms we already know about, so existing runs keep stable legend order/colors
-KNOWN_ALGORITHM_ORDER = ["BBMSCore", "BBMSInter", "BBMSDppInstant", "BBMSDppStepwise", "DijkstraPrims"]
+import algorithm_styles
 
 ALGORITHM_STYLE_PALETTE = [
     {"color": "#4E9BFF", "dash": "solid", "symbol": "circle"},
@@ -157,8 +156,7 @@ def discover_algorithms(results_root, datasets):
         for _, filename in PASSES:
             for row in load_rows(os.path.join(dataset_path, filename)):
                 found.add(row["algorithm"])
-    known = [a for a in KNOWN_ALGORITHM_ORDER if a in found]
-    return known + sorted(found - set(known))
+    return sorted(found, key=algorithm_styles.sort_key)
 
 
 def assign_styles(names, palette):
@@ -186,7 +184,14 @@ def compute_stop_status(rows, algorithms):
             worst = min(failures, key=lambda r: int(r["N"]))
             status[algo] = {"state": worst["status"], "at_n": int(worst["N"])}
         else:
-            status[algo] = {"state": "completed", "at_n": None}
+            # An algorithm can stop below the dataset's largest N without a
+            # failure when the run's plan left the larger N out on purpose
+            algo_max = max(int(r["N"]) for r in algo_rows)
+            dataset_max = max(int(r["N"]) for r in rows)
+            if algo_max < dataset_max:
+                status[algo] = {"state": "not in plan", "at_n": algo_max}
+            else:
+                status[algo] = {"state": "completed", "at_n": None}
     return status
 
 
@@ -404,6 +409,8 @@ def build_table(series_by_trace, stop_status_by_trace, trace_order):
         s = stop_status_by_trace.get(name, {"state": "no data", "at_n": None})
         if s["state"] == "completed":
             stop_row[name] = "completed configured grid"
+        elif s["state"] == "not in plan":
+            stop_row[name] = f"ran up to N={s['at_n']}; larger N not in the plan"
         elif s["state"] == "no data":
             stop_row[name] = "no data"
         else:
@@ -463,7 +470,7 @@ def build_report(results_root):
                     raw[pass_name][attr][algo][dataset] = points
 
     default_stop = {"state": "no data", "at_n": None}
-    algorithm_styles = assign_styles(algorithms, ALGORITHM_STYLE_PALETTE)
+    algorithm_style_map = algorithm_styles.styles(algorithms)
     dataset_styles = assign_styles(datasets, DATASET_STYLE_PALETTE)
 
     # --- By dataset: for a fixed dataset, one line per algorithm ---
@@ -482,7 +489,7 @@ def build_report(results_root):
                     continue
                 present_attrs.append(attr)
                 stop_for_dataset = {algo: stop[pass_name][algo].get(dataset, default_stop) for algo in algorithms}
-                figures[attr] = build_figure(attr, series_by_algo, algorithms, algorithm_styles, stop_for_dataset)
+                figures[attr] = build_figure(attr, series_by_algo, algorithms, algorithm_style_map, stop_for_dataset)
                 tables[attr] = build_table(series_by_algo, stop_for_dataset, algorithms)
             if present_attrs:
                 by_dataset[dataset][pass_name] = {"attributes": present_attrs, "figures": figures, "tables": tables}

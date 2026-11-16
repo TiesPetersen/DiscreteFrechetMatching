@@ -442,7 +442,7 @@ def main():
             .replace("__BODY__", "\n".join(body)).replace("__PLOTLY__", plotly.offline.get_plotlyjs())
             .replace("__FIGURES__", json.dumps(figures)))
     os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
-    with open(args.output, "w") as f:
+    with open(args.output, "w", encoding="utf-8") as f:
         f.write(page)
     print(f"wrote {args.output}")
 

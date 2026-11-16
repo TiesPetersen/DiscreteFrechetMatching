@@ -33,13 +33,13 @@ REAL_WORLD_COUNTS = ["algorithm", "pair_index", "m", "n", "cells"] + SYNTHETIC_C
 
 
 def read(path):
-    with open(path, newline="") as f:
+    with open(path, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
 def write(path, records, fields):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", newline="") as f:
+    with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(records)

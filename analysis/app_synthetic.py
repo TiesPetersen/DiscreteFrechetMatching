@@ -133,7 +133,7 @@ def load_rows(csv_path):
     """All rows in a results CSV, ok and failed alike."""
     if not os.path.exists(csv_path):
         return []
-    with open(csv_path, newline="") as f:
+    with open(csv_path, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 

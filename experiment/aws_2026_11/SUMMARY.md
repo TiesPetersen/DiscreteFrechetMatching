@@ -1,19 +1,21 @@
 # November 2026: what changed, and what the AWS run shows
 
-This page is a quick catch-up on two days of work, 13 and 14 November 2026. The work had three parts. The first was an audit of the code, which included Wouter's three suggestions. The second was a leaner memory layout for the two BBMS variants with dead path pruning. The third was a set of fixes and additions to the datasets. A half-day run on AWS then measured all of it on one machine.
+This page is a quick catch-up on two days of work, 13 and 14 November 2026. The work had three parts. The first was an audit of the code, which included Wouter's three suggestions. The second was a leaner memory layout for the two BBMS variants with dead path pruning. The third was a set of fixes and additions to the datasets. A half-day run on AWS then measured all of it on one machine. On 16 November a separate AI model, given the code and data but not my conclusions, checked whether the comparison is fair. Section 6 gives its findings, and this page is corrected for them.
 
-The July AWS run had suggested that the simpler algorithm, DijkstraPrims, beats BBMS in practice, even on inputs built to be hard. This run changes that picture for synthetic data.
+The July AWS run had suggested that the simpler algorithm, DijkstraPrims, beats BBMS in practice, even on inputs built to be hard. This run shows BBMS clearly ahead only on inputs where DijkstraPrims has to visit every cell. The comparison is also not fair yet, because DijkstraPrims has not had the same optimization as BBMS.
 
 ## The short version
 
 - The audit made the two dead path pruning variants 1.2 to 9.7 times faster than the code from before the audit. The largest gain is on alternating. The running time of DijkstraPrims barely changed.
 - The lean variants store the same data more compactly. They make the exact same parent choices and return the same matchings and operation counts. They use a fifth to a third of the memory, and they are 1.3 to 3.8 times faster than the versions after the audit.
 - Together, the two changes took the Stepwise pruning variant on alternating at N = 11000 from 269 s before the audit to 7.9 s for BBMSDppStepwiseLean. That is 34 times faster.
-- With both changes, BBMSDppStepwiseLean beats DijkstraPrims on every synthetic dataset except identical. On alternating at N = 30000 it takes 59 s against 461 s. Before the audit, DijkstraPrims was ahead on random and alternating.
+- With both changes, BBMSDppStepwiseLean is faster than DijkstraPrims on every pair of the three alternating sets (4.6 to 9.7 times) and the two outlier sets (3.0 to 3.3 times). On all of these, DijkstraPrims visits every cell. On alternating at N = 30000 BBMSDppStepwiseLean takes 59 s against 461 s.
+- On random the result depends on the pair. DijkstraPrims is faster on 5 of the 13 random pairs. On the pairs where it wins and the cells were counted, it visits 9 to 19 % of the cells. Where it loses, it visits 36 to 88 %. On identical it is faster on all pairs.
 - After the audit, BBMSCore and BBMSInter depend strongly on which curve comes first. On alternating at N = 2300 they are 20 to 28 times faster when the two curves are swapped.
-- On real-world data the result is mixed. BBMSDppStepwiseLean wins on drifter, the two are about equal on geolife, and DijkstraPrims is about 6 times faster on pigeons.
+- On real-world data the result is mixed. BBMSDppStepwiseLean wins on drifter. On geolife DijkstraPrims is slightly faster, 50 s against 53 s in total, and faster on 55 % of the pairs. DijkstraPrims is about 6 times faster on pigeons.
+- DijkstraPrims still stores its parents in a hash map. A plain array of one byte per cell gives exactly the same matching. In tests on a Mac it made DijkstraPrims 1.4 to 4 times faster and cut its memory by 3 to 23 times. These are Mac numbers on a few pairs, not an AWS run. With that change, the lead of BBMSDppStepwiseLean shrinks from about 3 to about 2 times on outlier. On alternating at N = 6500 it stays about 6 times. On the one random pair tested, the two were about equal. On random pairs where DijkstraPrims visits few cells it already wins, so random probably tips toward DijkstraPrims. On two large geolife pairs DijkstraPrims became faster. On the 300 drifter pairs the two were equal.
 - The pigeon data has long runs of repeated points, which the logger records while a bird sits still. With the repeats removed, the grids are 23 times smaller in total. BBMSDppStepwiseLean then gets 72 times faster and DijkstraPrims 14 times, and the gap between them almost closes.
-- Each pair ran once, so small differences, such as a 1.2 times win, are not settled yet.
+- Each pair ran once, and a synthetic number is the mean of only 1 to 3 pairs. That hides large differences between pairs, so small differences, such as a 1.2 times win, are not settled.
 
 ## The algorithms and terms
 
@@ -35,8 +37,8 @@ The audit made five changes to the code the July run used.
 - **Two NCA queries per cell instead of three.** This was Wouter's point 3. The first query compares (i-1, j) with the diagonal cell. The second compares the winner with (i, j-1). BBMSCore and the two pruning variants also take Wouter's way of building a cell's shortcut, which extends the parent's shortcut by one step. In BBMSInter that did not work. Without pruning, the parent's shortcut is often out of date. Extending it more than doubled BBMSInter's NCA steps. So BBMSInter runs a third query, but only when its shortcut update needs the result.
 - **Shortcut removal from the back of the lists.** This was Wouter's point 2. The pruning variants keep, for each cell, lists of the shortcuts that point to it. The shortcut to remove is almost always the last one, but the old code searched from the front.
 - **Squared distances.** All algorithms now compare squared distances and take one square root at the end. DijkstraPrims also looks each neighbour up once in its hash map instead of twice.
-- **Pruning at the last cell for each i was tested and left out.** This was Wouter's point 1. The pruning variants only check for a dead path at the diagonal candidate (i-1, j-1). The cell (i-1, n-1) is never in that position, so a dead path that ends there is never pruned. I added a check for that cell in the pruning variants. About one more path per value of i was pruned, and the number of NCA steps did not change at all on the four synthetic sets at N = 2300. So these missed paths cost nothing measurable. The change is not in the code, but it is saved as a patch.
-- **A new test for local correctness.** A matching is locally correct if every piece of it, between any two matched cells, is itself a best matching of the two pieces of curve. The test checks this for all five algorithms. With many equal distances, BBMS and DijkstraPrims can return different matchings. Both are locally correct and give the same distance.
+- **Pruning at the last cell for each i was tested and left out.** This was Wouter's point 1. The pruning variants only check for a dead path at the diagonal candidate (i-1, j-1). The cell (i-1, n-1) is never in that position, so a dead path that ends there is never pruned. I added a check for that cell in the pruning variants. About one more path per value of i was pruned, and the number of NCA steps did not change at all on the four synthetic sets at N = 2300. A retest on 16 November, on 37 synthetic and real-world pairs, found the same for NCA steps. It did find that the lean variants then use less memory, because the pruned shortcuts are reused. The saving is 0 to 6 % on most sets, 8 to 14 % on geolife and 17 to 33 % on alternating_swapped. The time grows with it, by 2 to 12 % on most sets and 36 to 50 % on alternating_swapped. The change is not in the code, but it is saved as a patch.
+- **A new test for local correctness.** A matching is locally correct if every piece of it, between any two matched cells, is itself a best matching of the two pieces of curve. The test checks this for the five original algorithms. It does not include the lean variants yet. They passed when the review added them. With many equal distances, BBMS and DijkstraPrims can return different matchings. Both are locally correct and give the same distance.
 
 ## 2. The lean dead path pruning variants
 
@@ -68,11 +70,11 @@ All old real-world results came from the faulty projection, so they should not b
 
 ## 4. The AWS run
 
-The run used one EC2 machine with 4 vCPUs and 124 GB of memory, the same type as in July. It ran on 14 November from 00:24 to 11:09 UTC. Jobs ran one at a time. A memory cap at 90 % of the machine made an algorithm that needs too much memory stop cleanly. Each real-world run had a limit of 300 s. Each pair ran once. A synthetic number is the mean over the 1 to 3 pairs in a dataset file.
+The run used one EC2 machine with 4 vCPUs and 124 GB of memory, the same type as in July. It ran on 14 November from 00:24 to 11:09 UTC. Jobs ran one at a time. A memory cap at 90 % of the machine made an algorithm that needs too much memory stop cleanly. Each real-world run had a limit of 300 s. Each pair ran once. A synthetic number is the mean over the 1 to 3 pairs in a dataset file. The runs at N = 18000 and 30000 had no counting runs, so how many cells DijkstraPrims visited there is not known.
 
 Operation counts come from separate counting runs. The counters are compiled into a separate program, so they do not slow down the timing runs.
 
-Memory is the peak memory of the process. On Linux that peak carried over from the Python script that started each run, so every run started at about 34 MB. A run that needed less than that shows 34 MB, whatever it really used. This hides the differences on most real-world pairs, which are small. On drifter, 74 to 99 % of the runs of each algorithm sit at that floor. It does not change any number in this summary, which are all in gigabytes or seconds. The July run measured memory the same way. The runner now reads the peak of its own program only, so the next run will show these small differences.
+Memory is the peak memory of the process. On Linux that peak carried over from the Python script that started each run, so every run started at about 34 MB. A run that needed less than that shows 34 MB, whatever it really used. This hides the differences on most real-world pairs, which are small. On drifter, 74 to 99 % of the runs of each algorithm sit at that floor. All memory numbers in this summary are in gigabytes, so the floor does not change them. The July run measured memory the same way. The runner now reads the peak of its own program only, so the next run will show these small differences.
 
 When an algorithm failed on a pair, the run skipped that algorithm's larger pairs of the same dataset. Some algorithms were also left out of the largest pairs on purpose, to keep the run to half a day. On pigeons, BBMSInter and BBMSDppInstantLean only ran on the 17 pairs below 100 million cells, and BBMSCore did not run at all.
 
@@ -112,11 +114,11 @@ The table gives the peak memory and the time of BBMSDppStepwise after the audit,
 
 BBMSDppStepwise needs about 70 GB at N = 18000 and cannot run N = 30000 on this machine. BBMSDppStepwiseLean runs N = 30000 with 40 to 60 GB. It is 1.9 to 3.6 times faster than BBMSDppStepwise. The lean layout helps the Instant variant by a similar amount, and BBMSDppInstantLean is 1.3 to 3.8 times faster than BBMSDppInstant.
 
-DijkstraPrims uses less memory than BBMSDppStepwiseLean in every case except random at N = 30000. There its memory jumps from 7.1 GB at N = 18000 to 47.4 GB, far more than the growth in cells. A likely cause is its hash map doubling in size, but nobody has looked into it yet.
+In this table DijkstraPrims uses less memory than BBMSDppStepwiseLean in every case except random at N = 30000. Its random numbers are means of two or three pairs that differ a lot, and per pair it sometimes uses more. The 7.1 GB at N = 18000 is the mean of 0.4 GB and 14 GB, and the 74.2 s the mean of 2.6 s and 146 s. So the jump to 47.4 GB at N = 30000 mostly reflects which pairs were drawn. Both pairs there use as much memory as outlier at N = 30000, where DijkstraPrims visits every cell. The cells visited were not counted at these sizes, and the hash map may add to the jump.
 
 ### Who wins on synthetic data?
 
-The table gives how many times longer DijkstraPrims takes than BBMSDppStepwiseLean.
+The table gives how many times longer DijkstraPrims takes than BBMSDppStepwiseLean, from the mean time over the pairs of each dataset file. On random the mean hides a wide spread. Per pair, the factor runs from 0.05 to 2.8, and DijkstraPrims is faster on 5 of the 13 random pairs. On the other sets in the table, every pair goes the same way.
 
 | dataset | N = 2300 | N = 11000 | N = 30000 |
 |---|---|---|---|
@@ -128,6 +130,8 @@ The table gives how many times longer DijkstraPrims takes than BBMSDppStepwiseLe
 | alternating_cheap_column | 5.6 | 8.0 | 9.7 |
 
 On identical, DijkstraPrims finishes almost instantly, because the diagonal is a free path. There it wins easily.
+
+On outlier, outlier_swapped and the three alternating sets, DijkstraPrims visits 99.96 to 100 % of the cells. These sets were built to be hard for it, and alternating_cheap_column was built to slow it down further. No set is built to be hard for the pruning variants. So the table shows worst cases for DijkstraPrims, not typical inputs.
 
 **Why BBMSCore and BBMSInter are slow on alternating.** At N = 2300, BBMSCore takes about 106 NCA steps per cell on random and 2299 on alternating. That is about N. BBMSInter takes 17 and 1151. The pruning variants take about 4 on every set. The mechanism for BBMSCore goes in three steps.
 
@@ -145,7 +149,7 @@ The time drops much more than the steps. BBMSCore goes from 131 s to 6.5 s, and 
 
 ### Who wins on real data?
 
-The table gives the total seconds on the pairs where both algorithms finished.
+The table gives the total seconds on the pairs where both algorithms finished. DijkstraPrims still uses its hash map here. In the review's test with the array version on a Mac, the 300 drifter pairs took 4.1 s with DijkstraPrims and 4.3 s with BBMSDppStepwiseLean. On two large geolife pairs, DijkstraPrims took about 0.45 s each, and BBMSDppStepwiseLean took 0.67 s and 0.97 s.
 
 | dataset | pairs | BBMSDppStepwiseLean | DijkstraPrims | BBMSDppStepwiseLean faster on |
 |---|---|---|---|---|
@@ -169,15 +173,30 @@ The largest pigeon pair has 678 million cells. BBMSDppStepwise runs out of memor
 
 BBMSCore and BBMSInter are much slower than DijkstraPrims on all real data. After its one time-out on geolife, BBMSCore skipped the 3 larger pairs, so it finished 227 of the 231. On those 227 pairs it took 2139 s in total, and DijkstraPrims took 33 s.
 
-## 6. Open questions to discuss
+## 6. Is the comparison fair?
+
+On 16 November a separate AI model judged the comparison from the code and the data, without my conclusions. Its verdict is "partly fair". Both sides ran on the same machine with the same compiler settings and the same timer. The operation counters were compiled out of both. The issues are below, most important first. The first four favour BBMS. The last two make every result less certain.
+
+1. **DijkstraPrims has not been optimized to the same level.** BBMS got the audit and the lean layout, up to 34 times faster in total. DijkstraPrims still keeps every visited cell in a hash map, at about 55 bytes per visited cell. BBMS already keeps all cells in an array, so an array of one byte per cell is the fair choice for DijkstraPrims too. It gives the same matching. On a Mac it made DijkstraPrims 1.4 to 4 times faster and cut its memory by 3 to 23 times.
+2. **Skipping the heap is not allowed.** A cell whose value is at most the current maximum could skip the heap. That gives the same distance, but the matching then fails the local correctness test in 1,692 of 2,000 trials. A locally correct matching is required, so this speed-up is out.
+3. **Averages hide large differences between pairs.** On random, DijkstraPrims visits 9 % of the cells on one pair and 88 % on another. With two or three pairs per size, the winner depends on which pairs happened to be drawn. The paper needs at least 10 random pairs per size, reported per pair or as median and spread.
+4. **The synthetic sets are worst cases for DijkstraPrims.** Five of the seven make it visit every cell, and none is hard for the pruning variants. They should be presented as worst cases. A new dataset is needed where one setting makes the input easier or harder for both algorithms. The real-world data should be the main result.
+5. **Memory is not measured for small runs.** The 34 MB floor in section 4 hides most real-world memory. That needs a rerun with the fixed runner.
+6. **Each pair ran once.**
+
+The alternating numbers survive these checks. BBMSDppStepwiseLean stays about 6 times faster at N = 6500, even against the array version of DijkstraPrims. Alternating is still a worst case for DijkstraPrims.
+
+## 7. Open questions to discuss
 
 1. Should the lean variants replace the after-the-audit ones for the paper? They compute the same thing with less memory, faster.
 2. Should BBMSDppInstant stay? BBMSDppInstantLean is about 5 % faster than BBMSDppStepwiseLean on the alternating sets. It is 7 to 39 % slower on random, outlier and identical. On pigeons it is about 2 times slower. On the 17 pigeon pairs where both ran, it took 374 s and BBMSDppStepwiseLean took 178 s.
 3. BBMSCore and BBMSInter depend on which curve comes first, because the first NCA query always compares the same two candidates. Should the code choose the first query in a way that does not depend on which curve comes first? Or should every input run in both directions, with both reported?
 4. Which new datasets should go into the paper? A review of the datasets during the audit proposed a curve and a noisy copy of it, with the noise level as a dial from easy to hard. In a small Python test of that idea, DijkstraPrims went from 0.3 % to 90 % of the cells as the noise grew, while BBMSCore's steps per cell stayed flat.
-5. What is the paper's angle now? The July run suggested that the simpler algorithm wins in practice. Now the pruning variant wins on synthetic data, and DijkstraPrims wins on real data with repeated points. BBMSCore and BBMSInter also depend on which curve comes first.
+5. What is the paper's angle now? The July run suggested that the simpler algorithm wins in practice. Now the pruning variant wins clearly on inputs where DijkstraPrims must visit every cell. On random and on real data the result is mixed, and DijkstraPrims is not optimized yet. BBMSCore and BBMSInter also depend on which curve comes first.
 6. Should the geolife pairs whose curves are far apart be dropped? The generator picks 22 random trips from the whole dataset and pairs every trip with every other, which gives 231 pairs. Some trips lie in other countries or continents. In 22 of the 231 pairs, the two curves lie more than 1,000 km apart, and a flat projection is rough at that distance.
 7. The final numbers need several runs per pair. Where should that rerun happen, on AWS again or on the TU server?
+8. Should DijkstraPrims get the array version, and maybe a faster heap, before the rerun? Section 6 argues that a fair comparison needs it.
+9. Should the lean variants get the pruning at the last cell for each i (section 1)? It saves up to a third of the memory and costs up to half again as much time.
 
 ## Where to find things
 

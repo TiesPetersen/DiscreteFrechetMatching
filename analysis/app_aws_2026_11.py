@@ -410,9 +410,11 @@ def main():
     body.append("<h2 id='be'>B + E · All synthetic datasets with the final code</h2>"
                 "<p>Every synthetic dataset, N = 2300 to 30000. The swapped sets are the same pairs with the two curves "
                 "exchanged; the cheap-column set is alternating with a cheap first column, which makes DijkstraPrims visit "
-                "cells in a jumbled order. With the lean DPP, StepwiseLean is faster than DijkstraPrims on every set "
-                "except identical, and the lead grows with N: about 1.0 to 2.1× on random, 3× on outlier, and 5 to 10× on "
-                "the alternating sets.</p>"
+                "cells in a jumbled order. StepwiseLean is faster than DijkstraPrims on every pair of the alternating sets "
+                "(about 5 to 10×) and the outlier sets (about 3×). On all of these DijkstraPrims visits every cell, so they "
+                "are worst cases for it. On random the winner depends on the pair: DijkstraPrims is faster on 5 of the 13 "
+                "random pairs, and the means below (1.0 to 2.1×) hide that. On identical DijkstraPrims wins easily. "
+                "DijkstraPrims still uses a hash map here; see SUMMARY.md section 6 on fairness.</p>"
                 + chart("fig_ratio", fig_ratio) + table_be + chart("fig_be", fig_be))
 
     fig_d, table_d, table_pig, fig_dedup = block_d(timing)
